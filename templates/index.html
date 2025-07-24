@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business ROI Calculator - Calculate Your Project's Success</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-accent: #00f2fe;
+            --glow-color: rgba(0, 242, 254, 0.3);
+            --success-color: #00ff88;
+            --warning-color: #ffaa00;
+            --error-color: #ff4757;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+            z-index: -2;
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(0.5deg); }
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--card-border);
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 2rem 2rem;
+            min-height: 100vh;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        /* Form Steps */
+        .form-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .form-step {
+            transition: all 0.3s ease;
+        }
+
+        .form-step.active {
+            transform: scale(1.02);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 1rem;
+            box-shadow: 0 0 20px var(--glow-color);
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--text-accent);
+            box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        /* Selection Cards */
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .selection-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .selection-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .selection-card.selected {
+            border-color: var(--text-accent);
+            background: rgba(0, 242, 254, 0.1);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+        }
+
+        .selection-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .selection-card.selected::before {
+            transform: scaleX(1);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Calculate Button */
+        .calculate-btn {
+            background: var(--accent-gradient);
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            color: var(--dark-bg);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin: 2rem auto;
+            display: block;
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.3);
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 242, 254, 0.4);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .calculate-btn.loading {
+            pointer-events: none;
+        }
+
+        .calculate-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: var(--dark-bg);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Results Section */
+        .results-container {
+            display: none;
+            margin-top: 3rem;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .results-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .result-card {
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .metric-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Charts */
+        .chart-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            height: 400px;
+            position: relative;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .form-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .selection-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 10, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--card-border);
+            border-top: 3px solid var(--text-accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-up {
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i> ROI Calculator
+            </div>
+            <div class="nav-links">
+                <span class="text-secondary">Calculate Your Business Success</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero fade-in">
+            <h1>Calculate Your Project's ROI</h1>
+            <p>Get accurate cost estimates and ROI projections for your next business venture. Make data-driven decisions with our advanced calculator.</p>
+        </section>
+
+        <!-- Form Section -->
+        <section class="form-section">
+            <div class="form-container">
+                <!-- Step 1: Company Information -->
+                <div class="form-step glass-card slide-up">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Company Information</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" class="form-input" id="companyName" placeholder="Enter your company name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Company Size</label>
+                        <select class="form-input form-select" id="companySize">
+                            <option value="startup">Startup (1-10 employees)</option>
+                            <option value="small">Small (11-50 employees)</option>
+                            <option value="medium" selected>Medium (51-200 employees)</option>
+                            <option value="enterprise">Enterprise (200+ employees)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Current Industry</label>
+                        <select class="form-input form-select" id="currentIndustry">
+                            <option value="saas">SaaS</option>
+                            <option value="fintech">FinTech</option>
+                            <option value="healthtech">HealthTech</option>
+                            <option value="edtech">EdTech</option>
+                            <option value="ecommerce">E-commerce</option>
+                            <option value="gaming">Gaming</option>
+                            <option value="realEstate">Real Estate</option>
+                            <option value="foodBeverage">Food & Beverage</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="logistics">Logistics</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Step 2: Project Details -->
+                <div class="form-step glass-card slide-up">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Project Details</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">What do you want to build?</label>
+                        <div class="selection-grid" id="projectTypes">
+                            <!-- Project types will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Target Industry/Market</label>
+                        <select class="form-input form-select" id="targetIndustry">
+                            <option value="saas">SaaS</option>
+                            <option value="fintech">FinTech</option>
+                            <option value="healthtech">HealthTech</option>
+                            <option value="edtech">EdTech</option>
+                            <option value="ecommerce">E-commerce</option>
+                            <option value="gaming">Gaming</option>
+                            <option value="realEstate">Real Estate</option>
+                            <option value="foodBeverage">Food & Beverage</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="logistics">Logistics</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculate Button -->
+            <button class="calculate-btn" id="calculateBtn">
+                <i class="fas fa-calculator"></i> Calculate ROI
+            </button>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-container" id="resultsContainer">
+            <div class="results-header">
+                <h2 id="resultsTitle">Your Project Analysis</h2>
+                <p id="resultsSubtitle">Based on your company profile and project requirements</p>
+            </div>
+
+            <div class="results-grid" id="resultsGrid">
+                <!-- Results will be populated here -->
+            </div>
+
+            <!-- Charts Section -->
+            <div class="chart-container">
+                <h3 class="chart-title">ROI Projection Scenarios</h3>
+                <canvas id="roiChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">Cost Breakdown</h3>
+                <canvas id="costChart"></canvas>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedProjectType = null;
+        let roiChart = null;
+        let costChart = null;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProjectTypes();
+            setupEventListeners();
+        });
+
+        // Load project types from API
+        async function loadProjectTypes() {
+            try {
+                const response = await fetch('/api/projects');
+                const projects = await response.json();
+                
+                const container = document.getElementById('projectTypes');
+                container.innerHTML = '';
+                
+                projects.forEach(project => {
+                    const card = document.createElement('div');
+                    card.className = 'selection-card';
+                    card.dataset.projectId = project.id;
+                    card.innerHTML = `
+                        <div class="card-icon">
+                            <i class="fas ${getProjectIcon(project.id)}"></i>
+                        </div>
+                        <div class="card-title">${project.name}</div>
+                        <div class="card-description">
+                            ${project.complexity} complexity<br>
+                            ${project.timeline}
+                        </div>
+                    `;
+                    
+                    card.addEventListener('click', () => selectProjectType(project.id, card));
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading project types:', error);
+            }
+        }
+
+        // Get icon for project type
+        function getProjectIcon(projectId) {
+            const icons = {
+                'product_development': 'fa-rocket',
+                'digital_transformation': 'fa-digital-tachograph',
+                'market_expansion': 'fa-globe',
+                'tech_upgrade': 'fa-microchip',
+                'marketing_campaign': 'fa-bullhorn',
+                'ecommerce_platform': 'fa-shopping-cart',
+                'mobile_app': 'fa-mobile-alt',
+                'ai_integration': 'fa-brain'
+            };
+            return icons[projectId] || 'fa-cog';
+        }
+
+        // Select project type
+        function selectProjectType(projectId, cardElement) {
+            // Remove previous selection
+            document.querySelectorAll('.selection-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked card
+            cardElement.classList.add('selected');
+            selectedProjectType = projectId;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('calculateBtn').addEventListener('click', calculateROI);
+        }
+
+        // Calculate ROI
+        async function calculateROI() {
+            if (!selectedProjectType) {
+                alert('Please select a project type');
+                return;
+            }
+
+            const button = document.getElementById('calculateBtn');
+            const overlay = document.getElementById('loadingOverlay');
+            
+            // Show loading state
+            button.classList.add('loading');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calculating...';
+            overlay.style.display = 'flex';
+
+            try {
+                const formData = {
+                    company_name: document.getElementById('companyName').value || 'Your Company',
+                    company_size: document.getElementById('companySize').value,
+                    current_industry: document.getElementById('currentIndustry').value,
+                    project_type: selectedProjectType,
+                    target_industry: document.getElementById('targetIndustry').value
+                };
+
+                const response = await fetch('/api/calculate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const results = await response.json();
+                displayResults(results);
+                
+            } catch (error) {
+                console.error('Error calculating ROI:', error);
+                alert('Error calculating ROI. Please try again.');
+            } finally {
+                // Hide loading state
+                button.classList.remove('loading');
+                button.innerHTML = '<i class="fas fa-calculator"></i> Calculate ROI';
+                overlay.style.display = 'none';
+            }
+        }
+
+        // Display results
+        function displayResults(data) {
+            const container = document.getElementById('resultsContainer');
+            const grid = document.getElementById('resultsGrid');
+            const title = document.getElementById('resultsTitle');
+            const subtitle = document.getElementById('resultsSubtitle');
+            
+            // Update titles
+            title.textContent = `${data.company_name} - ${data.project_summary.type}`;
+            subtitle.textContent = `${data.project_summary.industry} • ${data.project_summary.timeline} • ${data.project_summary.complexity} Complexity`;
+            
+            // Create result cards
+            grid.innerHTML = '';
+            
+            // Total Cost Card
+            const costCard = createResultCard(
+                `$${data.cost_analysis.total_cost.toLocaleString()}`,
+                'Total Project Cost',
+                `Estimated investment required for ${data.project_summary.type.toLowerCase()}`,
+                'fas fa-dollar-sign'
+            );
+            grid.appendChild(costCard);
+            
+            // ROI Cards for each scenario
+            Object.entries(data.roi_projections).forEach(([scenario, projection]) => {
+                const card = createResultCard(
+                    `${projection.roi_percentage}%`,
+                    `${scenario.charAt(0).toUpperCase() + scenario.slice(1)} ROI`,
+                    `${projection.description}\nBreak-even: ${projection.break_even_months} months`,
+                    'fas fa-chart-line'
+                );
+                grid.appendChild(card);
+            });
+            
+            // Market Size Card
+            const marketCard = createResultCard(
+                data.market_insights.market_size,
+                'Market Size',
+                `Growth rate: ${data.market_insights.growth_rate}\nRisk level: ${data.market_insights.risk_level}`,
+                'fas fa-globe'
+            );
+            grid.appendChild(marketCard);
+            
+            // Create charts
+            createROIChart(data.roi_projections);
+            createCostChart(data.cost_analysis.breakdown);
+            
+            // Show results with animation
+            container.style.display = 'block';
+            container.classList.add('fade-in');
+            
+            // Scroll to results
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Create result card
+        function createResultCard(value, label, description, icon) {
+            const card = document.createElement('div');
+            card.className = 'result-card glass-card';
+            card.innerHTML = `
+                <div class="card-icon">
+                    <i class="${icon}"></i>
+                </div>
+                <div class="metric-value">${value}</div>
+                <div class="metric-label">${label}</div>
+                <div class="metric-description">${description.replace('\n', '<br>')}</div>
+            `;
+            return card;
+        }
+
+        // Create ROI chart
+        function createROIChart(projections) {
+            const ctx = document.getElementById('roiChart').getContext('2d');
+            
+            if (roiChart) {
+                roiChart.destroy();
+            }
+            
+            const scenarios = Object.keys(projections);
+            const roiValues = scenarios.map(scenario => projections[scenario].roi_percentage);
+            const probabilities = scenarios.map(scenario => projections[scenario].probability * 100);
+            
+            roiChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: scenarios.map(s => s.charAt(0).toUpperCase() + s.slice(1)),
+                    datasets: [{
+                        label: 'ROI %',
+                        data: roiValues,
+                        backgroundColor: [
+                            'rgba(255, 170, 0, 0.8)',
+                            'rgba(0, 242, 254, 0.8)',
+                            'rgba(0, 255, 136, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 170, 0, 1)',
+                            'rgba(0, 242, 254, 1)',
+                            'rgba(0, 255, 136, 1)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create cost breakdown chart
+        function createCostChart(breakdown) {
+            const ctx = document.getElementById('costChart').getContext('2d');
+            
+            if (costChart) {
+                costChart.destroy();
+            }
+            
+            const labels = Object.keys(breakdown).map(key => 
+                key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+            );
+            const values = Object.values(breakdown);
+            
+            costChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(118, 75, 162, 0.8)',
+                            'rgba(0, 242, 254, 0.8)',
+                            'rgba(255, 170, 0, 0.8)',
+                            'rgba(0, 255, 136, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(102, 126, 234, 1)',
+                            'rgba(118, 75, 162, 1)',
+                            'rgba(0, 242, 254, 1)',
+                            'rgba(255, 170, 0, 1)',
+                            'rgba(0, 255, 136, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
