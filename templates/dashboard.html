@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevCost - Real-Time Development Cost Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .settings {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .settings input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #667eea;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .category-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .feature { background: #e3f2fd; color: #1976d2; }
+        .bug-fix { background: #ffebee; color: #d32f2f; }
+        .refactoring { background: #f3e5f5; color: #7b1fa2; }
+        .testing { background: #e8f5e8; color: #388e3c; }
+        .documentation { background: #fff3e0; color: #f57c00; }
+        .maintenance { background: #f5f5f5; color: #616161; }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #5a6fd8;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-chart-line"></i> DevCost Analytics
+        </div>
+        <div class="settings">
+            <label>Hourly Rate: $</label>
+            <input type="number" id="hourlyRate" value="75" min="1" max="500">
+            <button class="refresh-btn" onclick="refreshData()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Analyzing your repository...
+        </div>
+
+        <div id="dashboard" style="display: none;">
+            <!-- Key Metrics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-value" id="totalCost">$0</div>
+                    <div class="stat-label">Total Development Cost</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-value" id="totalHours">0h</div>
+                    <div class="stat-label">Total Development Hours</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <div class="stat-value" id="totalCommits">0</div>
+                    <div class="stat-label">Total Commits</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <div class="stat-value" id="avgCostPerCommit">$0</div>
+                    <div class="stat-label">Average Cost per Commit</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Cost by Category</div>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title">Daily Development Activity</div>
+                    <canvas id="dailyChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title">Cost by Developer</div>
+                    <canvas id="developerChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title">File Hotspots</div>
+                    <canvas id="hotspotChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Commits Table -->
+            <div class="table-container">
+                <div class="chart-title" style="padding: 1.5rem 1.5rem 0;">Recent Commits</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hash</th>
+                            <th>Author</th>
+                            <th>Message</th>
+                            <th>Category</th>
+                            <th>Files</th>
+                            <th>Lines</th>
+                            <th>Hours</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody id="commitsTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let analysisData = null;
+        let charts = {};
+
+        async function loadAnalysis() {
+            try {
+                const response = await fetch('/api/analysis');
+                analysisData = await response.json();
+                updateDashboard();
+            } catch (error) {
+                console.error('Error loading analysis:', error);
+                document.getElementById('loading').innerHTML = 
+                    '<i class="fas fa-exclamation-triangle"></i> Error loading data. Make sure you\'re in a git repository.';
+            }
+        }
+
+        function updateDashboard() {
+            // Update key metrics
+            document.getElementById('totalCost').textContent = `$${analysisData.total_cost.toLocaleString()}`;
+            document.getElementById('totalHours').textContent = `${analysisData.total_hours}h`;
+            document.getElementById('totalCommits').textContent = analysisData.total_commits.toLocaleString();
+            document.getElementById('avgCostPerCommit').textContent = `$${analysisData.avg_cost_per_commit}`;
+
+            // Create charts
+            createCategoryChart();
+            createDailyChart();
+            createDeveloperChart();
+            createHotspotChart();
+
+            // Update commits table
+            updateCommitsTable();
+
+            // Show dashboard
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+        }
+
+        function createCategoryChart() {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            if (charts.category) charts.category.destroy();
+            
+            const categories = Object.keys(analysisData.category_costs);
+            const costs = Object.values(analysisData.category_costs);
+            
+            charts.category = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        data: costs,
+                        backgroundColor: [
+                            '#1976d2', '#d32f2f', '#7b1fa2', 
+                            '#388e3c', '#f57c00', '#616161'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function createDailyChart() {
+            const ctx = document.getElementById('dailyChart').getContext('2d');
+            if (charts.daily) charts.daily.destroy();
+            
+            const dates = Object.keys(analysisData.daily_activity).sort();
+            const costs = dates.map(date => analysisData.daily_activity[date].cost);
+            
+            charts.daily = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates.map(date => new Date(date).toLocaleDateString()),
+                    datasets: [{
+                        label: 'Daily Cost ($)',
+                        data: costs,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function createDeveloperChart() {
+            const ctx = document.getElementById('developerChart').getContext('2d');
+            if (charts.developer) charts.developer.destroy();
+            
+            const developers = Object.keys(analysisData.commits_by_author);
+            const costs = developers.map(dev => 
+                analysisData.commits_by_author[dev].reduce((sum, commit) => sum + commit.cost, 0)
+            );
+            
+            charts.developer = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: developers,
+                    datasets: [{
+                        label: 'Cost by Developer ($)',
+                        data: costs,
+                        backgroundColor: '#667eea'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function createHotspotChart() {
+            const ctx = document.getElementById('hotspotChart').getContext('2d');
+            if (charts.hotspot) charts.hotspot.destroy();
+            
+            const files = Object.keys(analysisData.file_hotspots);
+            const changes = Object.values(analysisData.file_hotspots);
+            
+            charts.hotspot = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: files.slice(0, 8), // Top 8 files
+                    datasets: [{
+                        label: 'Number of Changes',
+                        data: changes.slice(0, 8),
+                        backgroundColor: '#f57c00'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCommitsTable() {
+            const tbody = document.getElementById('commitsTable');
+            tbody.innerHTML = '';
+            
+            analysisData.commit_details.forEach(commit => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><code>${commit.hash}</code></td>
+                    <td>${commit.author}</td>
+                    <td>${commit.message.substring(0, 50)}${commit.message.length > 50 ? '...' : ''}</td>
+                    <td><span class="category-badge ${commit.category.toLowerCase().replace(' ', '-')}">${commit.category}</span></td>
+                    <td>${commit.files_changed}</td>
+                    <td>${commit.lines_changed}</td>
+                    <td>${commit.estimated_hours}h</td>
+                    <td>$${commit.estimated_cost}</td>
+                `;
+            });
+        }
+
+        async function refreshData() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            
+            // Update hourly rate
+            const hourlyRate = document.getElementById('hourlyRate').value;
+            await fetch('/api/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({hourly_rate: parseFloat(hourlyRate)})
+            });
+            
+            await loadAnalysis();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadAnalysis);
+        
+        // Auto-refresh every 5 minutes
+        setInterval(loadAnalysis, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
