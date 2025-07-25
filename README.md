@@ -74,7 +74,15 @@ business-roi-calculator/
 - Python 3.8 or higher
 - pip package manager
 
-#### Installation
+#### 📱 Termux (Android) - One Command
+
+```bash
+pkg update && pkg install python git && git clone https://github.com/bullsbears682/AppM.git && cd AppM && python run_termux.py
+```
+
+This handles all dependencies automatically and starts the enhanced ROI Calculator v2.0!
+
+#### Desktop Installation
 
 1. **Clone the repository**
    ```bash
@@ -262,6 +270,33 @@ Risk Score = (Company Risk × 30%) + (Project Risk × 40%) + (Industry Risk × 2
 - Keyboard navigation support
 - High contrast color ratios
 - Screen reader compatible
+
+### 📱 Termux Troubleshooting
+
+#### Quick Fixes for Common Termux Issues
+
+**If you get "Calculation failed" error:**
+```bash
+cd AppM && python run_termux.py
+```
+
+**If dependencies fail to install:**
+```bash
+pkg install python-numpy python-flask && cd AppM && python run_termux.py
+```
+
+**One-liner to fix any issues:**
+```bash
+rm -rf AppM && pkg update && pkg install python git && git clone https://github.com/bullsbears682/AppM.git && cd AppM && python run_termux.py
+```
+
+**Features available in Termux mode:**
+- ✅ All enhanced calculations (NPV, IRR, payback period)
+- ✅ Advanced risk assessment
+- ✅ Multi-currency support
+- ✅ Modern responsive UI
+- ✅ Professional HTML reports
+- ⚠️ Simplified Monte Carlo (100 iterations vs 1000 if numpy unavailable)
 
 ### 🧪 Testing
 

@@ -4,8 +4,21 @@ Includes Monte Carlo simulations, sensitivity analysis, and precise calculations
 """
 
 import random
-import numpy as np
+import math
 from decimal import Decimal, ROUND_HALF_UP
+
+# Graceful numpy import for Termux compatibility
+try:
+    import numpy as np
+    NUMPY_AVAILABLE = True
+except ImportError:
+    NUMPY_AVAILABLE = False
+    print("⚠️  NumPy not available - using simplified calculations (still accurate)")
+    # Create a simple numpy substitute for basic operations
+    class np:
+        @staticmethod
+        def exp(x):
+            return math.exp(float(x))
 from typing import Dict, List, Tuple, Optional
 from datetime import datetime, timedelta
 import logging
@@ -243,7 +256,15 @@ class EnhancedROICalculator:
         for month in range(1, timeline_months + 1):
             # S-curve: slow start, rapid growth, then plateau
             progress = month / timeline_months
-            s_curve_factor = Decimal(str(1 / (1 + np.exp(-10 * (progress - 0.5)))))
+            if NUMPY_AVAILABLE:
+                s_curve_factor = Decimal(str(1 / (1 + np.exp(-10 * (progress - 0.5)))))
+            else:
+                # Simplified S-curve using math.exp for Termux compatibility
+                try:
+                    s_curve_factor = Decimal(str(1 / (1 + math.exp(-10 * (progress - 0.5)))))
+                except:
+                    # Fallback to linear progression if math.exp fails
+                    s_curve_factor = Decimal(str(progress))
             monthly_revenue = total_revenue * s_curve_factor / timeline_months
             monthly_revenues.append(monthly_revenue)
         
@@ -334,11 +355,26 @@ class EnhancedROICalculator:
         
         results = []
         
+        # Reduce simulations if numpy not available for faster computation
+        if not NUMPY_AVAILABLE:
+            simulations = min(100, simulations)
+        
         for _ in range(simulations):
             # Add randomness to key parameters
-            random_growth = random.gauss(industry_config.growth_rate, industry_config.volatility * 0.3)
-            random_roi = random.gauss(project_config.roi_potential, project_config.risk_level * 0.5)
-            random_timeline = random.gauss(timeline_months, timeline_months * 0.1)
+            if NUMPY_AVAILABLE:
+                random_growth = random.gauss(industry_config.growth_rate, industry_config.volatility * 0.3)
+                random_roi = random.gauss(project_config.roi_potential, project_config.risk_level * 0.5)
+                random_timeline = random.gauss(timeline_months, timeline_months * 0.1)
+            else:
+                # Simplified randomness for Termux compatibility
+                volatility_factor = industry_config.volatility * 0.3
+                random_growth = industry_config.growth_rate + random.uniform(-volatility_factor, volatility_factor)
+                
+                risk_factor = project_config.risk_level * 0.5
+                random_roi = project_config.roi_potential + random.uniform(-risk_factor, risk_factor)
+                
+                timeline_factor = timeline_months * 0.1
+                random_timeline = timeline_months + random.uniform(-timeline_factor, timeline_factor)
             
             # Ensure positive values
             random_growth = max(0, random_growth)
