@@ -14,11 +14,11 @@ from config import Config
 @dataclass
 class MarketAnalysis:
     """Market analysis and insights"""
-    market_size: Decimal
-    growth_rate: Decimal
+    market_size: float
+    growth_rate: float
     competition_level: str
     market_maturity: str
-    seasonal_factors: Dict[str, Decimal]
+    seasonal_factors: Dict[str, float]
     key_trends: List[str]
     opportunities: List[str]
     threats: List[str]
@@ -26,9 +26,9 @@ class MarketAnalysis:
 @dataclass
 class CompetitiveAnalysis:
     """Competitive landscape analysis"""
-    market_share_potential: Decimal
+    market_share_potential: float
     competitive_advantage: str
-    differentiation_score: Decimal
+    differentiation_score: float
     pricing_power: str
     barriers_to_entry: List[str]
     competitive_threats: List[str]
@@ -36,24 +36,24 @@ class CompetitiveAnalysis:
 @dataclass
 class FinancialMetrics:
     """Enhanced financial metrics"""
-    customer_acquisition_cost: Decimal
-    lifetime_value: Decimal
-    gross_margin: Decimal
-    operating_margin: Decimal
-    working_capital_needs: Decimal
-    burn_rate: Decimal
+    customer_acquisition_cost: float
+    lifetime_value: float
+    gross_margin: float
+    operating_margin: float
+    working_capital_needs: float
+    burn_rate: float
     runway_months: int
     break_even_units: int
 
 @dataclass
 class RiskAnalysis:
     """Comprehensive risk analysis"""
-    market_risk: Decimal
-    execution_risk: Decimal
-    financial_risk: Decimal
-    regulatory_risk: Decimal
-    technology_risk: Decimal
-    overall_risk: Decimal
+    market_risk: float
+    execution_risk: float
+    financial_risk: float
+    regulatory_risk: float
+    technology_risk: float
+    overall_risk: float
     risk_mitigation: List[str]
     contingency_plans: List[str]
 
@@ -64,7 +64,7 @@ class BusinessIntelligence:
     competitive_analysis: CompetitiveAnalysis
     financial_metrics: FinancialMetrics
     risk_analysis: RiskAnalysis
-    success_probability: Decimal
+    success_probability: float
     recommended_actions: List[str]
     kpi_targets: Dict[str, Any]
     milestones: List[Dict[str, Any]]
@@ -197,8 +197,8 @@ class AdvancedAnalyticsEngine:
         threats = self._get_market_threats(industry)
         
         return MarketAnalysis(
-            market_size=market_size,
-            growth_rate=growth_rate,
+            market_size=float(market_size),
+            growth_rate=float(growth_rate),
             competition_level=competition_level,
             market_maturity=market_maturity,
             seasonal_factors=seasonal_factors,
@@ -263,9 +263,9 @@ class AdvancedAnalyticsEngine:
         threats = self._get_competitive_threats(industry, company_size)
         
         return CompetitiveAnalysis(
-            market_share_potential=market_share_potential,
+            market_share_potential=float(market_share_potential),
             competitive_advantage=competitive_advantage,
-            differentiation_score=differentiation_score,
+            differentiation_score=float(differentiation_score),
             pricing_power=pricing_power,
             barriers_to_entry=barriers,
             competitive_threats=threats
@@ -339,12 +339,12 @@ class AdvancedAnalyticsEngine:
         break_even_units = int(fixed_costs / unit_margin) if unit_margin > 0 else 1000
         
         return FinancialMetrics(
-            customer_acquisition_cost=customer_acquisition_cost.quantize(Decimal('0.01')),
-            lifetime_value=lifetime_value.quantize(Decimal('0.01')),
-            gross_margin=gross_margin.quantize(Decimal('0.1')),
-            operating_margin=operating_margin.quantize(Decimal('0.1')),
-            working_capital_needs=working_capital_needs.quantize(Decimal('0.01')),
-            burn_rate=burn_rate.quantize(Decimal('0.01')),
+            customer_acquisition_cost=float(customer_acquisition_cost.quantize(Decimal('0.01'))),
+            lifetime_value=float(lifetime_value.quantize(Decimal('0.01'))),
+            gross_margin=float(gross_margin.quantize(Decimal('0.1'))),
+            operating_margin=float(operating_margin.quantize(Decimal('0.1'))),
+            working_capital_needs=float(working_capital_needs.quantize(Decimal('0.01'))),
+            burn_rate=float(burn_rate.quantize(Decimal('0.01'))),
             runway_months=runway_months,
             break_even_units=break_even_units
         )
@@ -391,18 +391,18 @@ class AdvancedAnalyticsEngine:
         contingency = self._get_contingency_plans(industry, project_type)
         
         return RiskAnalysis(
-            market_risk=market_risk.quantize(Decimal('0.1')),
-            execution_risk=execution_risk.quantize(Decimal('0.1')),
-            financial_risk=financial_risk.quantize(Decimal('0.1')),
-            regulatory_risk=regulatory_risk.quantize(Decimal('0.1')),
-            technology_risk=technology_risk.quantize(Decimal('0.1')),
-            overall_risk=overall_risk.quantize(Decimal('0.1')),
+            market_risk=float(market_risk.quantize(Decimal('0.1'))),
+            execution_risk=float(execution_risk.quantize(Decimal('0.1'))),
+            financial_risk=float(financial_risk.quantize(Decimal('0.1'))),
+            regulatory_risk=float(regulatory_risk.quantize(Decimal('0.1'))),
+            technology_risk=float(technology_risk.quantize(Decimal('0.1'))),
+            overall_risk=float(overall_risk.quantize(Decimal('0.1'))),
             risk_mitigation=mitigation,
             contingency_plans=contingency
         )
     
     def _calculate_success_probability(self, market: MarketAnalysis, competitive: CompetitiveAnalysis,
-                                     financial: FinancialMetrics, risk: RiskAnalysis) -> Decimal:
+                                     financial: FinancialMetrics, risk: RiskAnalysis) -> float:
         """Calculate realistic success probability"""
         
         # Base probability starts at 50%
@@ -425,28 +425,28 @@ class AdvancedAnalyticsEngine:
         base_prob += comp_adjustments.get(market.competition_level, 0)
         
         # Financial health
-        if financial.lifetime_value > financial.customer_acquisition_cost * Decimal('4'):
+        if financial.lifetime_value > financial.customer_acquisition_cost * 4:
             base_prob += 15  # Healthy LTV/CAC ratio
-        elif financial.lifetime_value < financial.customer_acquisition_cost * Decimal('3'):
+        elif financial.lifetime_value < financial.customer_acquisition_cost * 3:
             base_prob -= 10  # Poor unit economics
             
         # Risk adjustment
-        risk_adjustment = float(risk.overall_risk) * -0.3  # Higher risk reduces probability
+        risk_adjustment = risk.overall_risk * -0.3  # Higher risk reduces probability
         base_prob += risk_adjustment
         
         # Differentiation bonus
-        if competitive.differentiation_score > Decimal('7'):
+        if competitive.differentiation_score > 7:
             base_prob += 10
-        elif competitive.differentiation_score < Decimal('5'):
+        elif competitive.differentiation_score < 5:
             base_prob -= 5
             
         # Ensure probability is between 10% and 85%
         final_prob = max(10, min(85, base_prob))
         
-        return Decimal(str(final_prob)).quantize(Decimal('0.1'))
+        return float(Decimal(str(final_prob)).quantize(Decimal('0.1')))
     
     # Helper methods for generating realistic business data
-    def _get_seasonal_factors(self, industry: str) -> Dict[str, Decimal]:
+    def _get_seasonal_factors(self, industry: str) -> Dict[str, float]:
         """Get seasonal multipliers by month"""
         seasonal_patterns = {
             'retail': {
@@ -461,7 +461,7 @@ class AdvancedAnalyticsEngine:
         }
         
         pattern = seasonal_patterns.get(industry, {'Q1': 1.0, 'Q2': 1.0, 'Q3': 1.0, 'Q4': 1.0})
-        return {k: Decimal(str(v)) for k, v in pattern.items()}
+        return pattern  # Already floats, no need for Decimal conversion
     
     def _get_market_trends(self, industry: str) -> List[str]:
         """Get current market trends"""
@@ -650,28 +650,28 @@ class AdvancedAnalyticsEngine:
                 priority_recommendations.extend(industry_config['risk'][:1])
         
         # Financial health recommendations
-        if financial.customer_acquisition_cost > financial.lifetime_value / Decimal('2'):
+        if financial.customer_acquisition_cost > financial.lifetime_value / 2:
             priority_recommendations.append('Urgently optimize customer acquisition channels to improve LTV/CAC ratio')
-        elif financial.customer_acquisition_cost > financial.lifetime_value / Decimal('3'):
+        elif financial.customer_acquisition_cost > financial.lifetime_value / 3:
             priority_recommendations.append('Optimize customer acquisition channels to reduce CAC')
         
-        if financial.gross_margin < Decimal('30'):
+        if financial.gross_margin < 30:
             priority_recommendations.append('Critical: Improve operational efficiency to achieve sustainable margins')
-        elif financial.gross_margin < Decimal('40'):
+        elif financial.gross_margin < 40:
             priority_recommendations.append('Improve operational efficiency to increase margins')
         
         # Market opportunity recommendations
-        if market.growth_rate > Decimal('0.15'):
+        if market.growth_rate > 0.15:
             if industry_config.get('growth'):
                 priority_recommendations.extend(industry_config['growth'][:1])
             priority_recommendations.append('Accelerate market entry to capture exceptional growth opportunity')
-        elif market.growth_rate > Decimal('0.10'):
+        elif market.growth_rate > 0.10:
             priority_recommendations.append('Capitalize on strong market growth through focused expansion')
         
         # Competitive positioning
-        if competitive.differentiation_score < Decimal('5'):
+        if competitive.differentiation_score < 5:
             priority_recommendations.append('Urgently enhance product differentiation and competitive positioning')
-        elif competitive.differentiation_score < Decimal('7'):
+        elif competitive.differentiation_score < 7:
             priority_recommendations.append('Strengthen unique value proposition and competitive advantages')
         
         # Execution and operational recommendations
@@ -688,9 +688,10 @@ class AdvancedAnalyticsEngine:
             priority_recommendations.append('Implement phased approach with clear intermediate milestones')
         
         if investment:
-            if investment < Decimal('100000'):
+            investment_float = float(investment)
+            if investment_float < 100000:
                 priority_recommendations.append('Maximize ROI through lean startup methodology and MVP approach')
-            elif investment > Decimal('1000000'):
+            elif investment_float > 1000000:
                 priority_recommendations.append('Leverage significant investment for competitive advantages and market leadership')
         
         # Remove duplicates while preserving order
