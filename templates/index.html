@@ -389,11 +389,52 @@
             border-radius: 16px;
             padding: 1.5rem;
             transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
         }
 
         .analytics-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 40px rgba(0, 242, 254, 0.15);
+            border-color: var(--text-accent);
+        }
+
+        .analytics-card.expanded {
+            transform: scale(1.02);
+            z-index: 10;
+            border-color: var(--text-accent);
+        }
+
+        .analytics-details {
+            display: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .analytics-details.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .expand-icon {
+            transition: transform 0.3s ease;
+            color: var(--text-accent);
+        }
+
+        .analytics-card.expanded .expand-icon {
+            transform: rotate(180deg);
         }
 
         .analytics-content {
@@ -1025,46 +1066,88 @@
             <div class="analytics-section" id="analyticsSection" style="display: none;">
                 <h2><i class="fas fa-chart-bar"></i> Advanced Business Intelligence</h2>
                 
-                <!-- Market Analysis -->
+                <!-- Interactive Analytics Cards -->
                 <div class="analytics-grid">
-                    <div class="analytics-card">
-                        <h3><i class="fas fa-globe"></i> Market Analysis</h3>
+                    <div class="analytics-card" onclick="toggleAnalyticsCard(this, 'market')">
+                        <div class="analytics-header">
+                            <h3><i class="fas fa-globe"></i> Market Analysis</h3>
+                            <i class="fas fa-chevron-down expand-icon"></i>
+                        </div>
                         <div id="marketAnalysis" class="analytics-content"></div>
+                        <div class="analytics-details">
+                            <div id="marketDetails"></div>
+                        </div>
                     </div>
                     
-                    <div class="analytics-card">
-                        <h3><i class="fas fa-users-cog"></i> Competitive Intelligence</h3>
+                    <div class="analytics-card" onclick="toggleAnalyticsCard(this, 'competitive')">
+                        <div class="analytics-header">
+                            <h3><i class="fas fa-users-cog"></i> Competitive Intelligence</h3>
+                            <i class="fas fa-chevron-down expand-icon"></i>
+                        </div>
                         <div id="competitiveAnalysis" class="analytics-content"></div>
+                        <div class="analytics-details">
+                            <div id="competitiveDetails"></div>
+                        </div>
                     </div>
                     
-                    <div class="analytics-card">
-                        <h3><i class="fas fa-calculator"></i> Financial Metrics</h3>
+                    <div class="analytics-card" onclick="toggleAnalyticsCard(this, 'financial')">
+                        <div class="analytics-header">
+                            <h3><i class="fas fa-calculator"></i> Financial Metrics</h3>
+                            <i class="fas fa-chevron-down expand-icon"></i>
+                        </div>
                         <div id="financialMetrics" class="analytics-content"></div>
+                        <div class="analytics-details">
+                            <div id="financialDetails"></div>
+                        </div>
                     </div>
                     
-                    <div class="analytics-card">
-                        <h3><i class="fas fa-shield-alt"></i> Risk Analysis</h3>
+                    <div class="analytics-card" onclick="toggleAnalyticsCard(this, 'risk')">
+                        <div class="analytics-header">
+                            <h3><i class="fas fa-shield-alt"></i> Risk Analysis</h3>
+                            <i class="fas fa-chevron-down expand-icon"></i>
+                        </div>
                         <div id="riskAnalysis" class="analytics-content"></div>
+                        <div class="analytics-details">
+                            <div id="riskDetails"></div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Success Probability & KPIs -->
+                <!-- Interactive Success Probability & KPIs -->
                 <div class="kpi-section">
-                    <div class="success-card">
-                        <h3><i class="fas fa-target"></i> Success Probability</h3>
+                    <div class="success-card analytics-card" onclick="toggleAnalyticsCard(this, 'success')">
+                        <div class="analytics-header">
+                            <h3><i class="fas fa-target"></i> Success Probability</h3>
+                            <i class="fas fa-chevron-down expand-icon"></i>
+                        </div>
                         <div id="successProbability" class="probability-meter"></div>
+                        <div class="analytics-details">
+                            <div id="successDetails"></div>
+                        </div>
                     </div>
                     
-                    <div class="kpi-card">
-                        <h3><i class="fas fa-bullseye"></i> KPI Targets</h3>
+                    <div class="kpi-card analytics-card" onclick="toggleAnalyticsCard(this, 'kpi')">
+                        <div class="analytics-header">
+                            <h3><i class="fas fa-bullseye"></i> KPI Targets</h3>
+                            <i class="fas fa-chevron-down expand-icon"></i>
+                        </div>
                         <div id="kpiTargets" class="kpi-grid"></div>
+                        <div class="analytics-details">
+                            <div id="kpiDetails"></div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Milestones Timeline -->
-                <div class="milestones-section">
-                    <h3><i class="fas fa-road"></i> Project Milestones</h3>
+                <!-- Interactive Milestones Timeline -->
+                <div class="milestones-section analytics-card" onclick="toggleAnalyticsCard(this, 'milestones')">
+                    <div class="analytics-header">
+                        <h3><i class="fas fa-road"></i> Project Milestones</h3>
+                        <i class="fas fa-chevron-down expand-icon"></i>
+                    </div>
                     <div id="milestonesTimeline" class="timeline"></div>
+                    <div class="analytics-details">
+                        <div id="milestonesDetails"></div>
+                    </div>
                 </div>
             </div>
 
