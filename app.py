@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Business ROI Calculator - Enhanced Termux-Compatible Version
-Advanced web application with PDF reports, multi-currency, user auth, and more
+Business ROI Calculator - Mobile-Optimized Version
+Advanced web application with multi-currency, user auth, and HTML reports
 """
 
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_file
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import json
 import random
 import sqlite3
@@ -12,13 +12,6 @@ import hashlib
 import requests
 from datetime import datetime, timedelta
 from functools import wraps
-import io
-import base64
-from reportlab.lib.pagesizes import letter, A4
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
-from reportlab.lib import colors
 
 app = Flask(__name__)
 app.secret_key = 'business_roi_calculator_secret_key_2024'
@@ -657,10 +650,10 @@ def get_projects():
         })
     return jsonify(projects)
 
-@app.route('/api/generate-pdf/<int:project_id>')
+@app.route('/api/export-html/<int:project_id>')
 @login_required
-def generate_pdf_report(project_id):
-    """Generate PDF report for a project"""
+def export_html_report(project_id):
+    """Generate HTML report for a project"""
     try:
         # Get project data
         conn = sqlite3.connect('business_roi.db')
@@ -679,118 +672,97 @@ def generate_pdf_report(project_id):
         project_name, company_name, results_json, created_at, currency = project
         results = json.loads(results_json)
         
-        # Create PDF
-        buffer = io.BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4)
-        styles = getSampleStyleSheet()
-        story = []
-        
-        # Title
-        title_style = ParagraphStyle(
-            'CustomTitle',
-            parent=styles['Heading1'],
-            fontSize=24,
-            spaceAfter=30,
-            alignment=1,  # Center
-            textColor=colors.HexColor('#667eea')
-        )
-        story.append(Paragraph("Business ROI Analysis Report", title_style))
-        story.append(Spacer(1, 20))
-        
-        # Project info
-        info_data = [
-            ['Company:', company_name or 'N/A'],
-            ['Project:', project_name],
-            ['Generated:', datetime.now().strftime('%Y-%m-%d %H:%M')],
-            ['Currency:', currency]
-        ]
-        
-        info_table = Table(info_data, colWidths=[2*inch, 4*inch])
-        info_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f0f0f0')),
-            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black)
-        ]))
-        
-        story.append(info_table)
-        story.append(Spacer(1, 20))
-        
-        # Cost Analysis
-        story.append(Paragraph("Cost Analysis", styles['Heading2']))
-        cost_data = [
-            ['Component', 'Amount'],
-            ['Total Project Cost', f"{CURRENCIES[currency]['symbol']}{results['cost_analysis']['total_cost']:,}"],
-            ['Development', f"{CURRENCIES[currency]['symbol']}{results['cost_analysis']['breakdown']['development']:,}"],
-            ['Design', f"{CURRENCIES[currency]['symbol']}{results['cost_analysis']['breakdown']['design']:,}"],
-            ['Testing', f"{CURRENCIES[currency]['symbol']}{results['cost_analysis']['breakdown']['testing']:,}"],
-            ['Timeline', f"{results['cost_analysis']['timeline_months']} months"],
-            ['Complexity', results['cost_analysis']['complexity']]
-        ]
-        
-        cost_table = Table(cost_data, colWidths=[3*inch, 2*inch])
-        cost_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#667eea')),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black)
-        ]))
-        
-        story.append(cost_table)
-        story.append(Spacer(1, 20))
-        
-        # ROI Projections
-        story.append(Paragraph("ROI Projections", styles['Heading2']))
-        roi_data = [['Scenario', 'ROI %', 'Annual Return', 'Break-even']]
+        # Generate HTML report
+        html_report = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Business ROI Analysis Report</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }}
+                .container {{ background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+                h1 {{ color: #667eea; text-align: center; }}
+                .section {{ margin: 30px 0; }}
+                table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+                th, td {{ padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }}
+                th {{ background-color: #667eea; color: white; }}
+                .metric {{ display: inline-block; margin: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; }}
+                .risk-{results['risk_assessment']['risk_category'].lower()} {{ color: {results['risk_assessment']['risk_color']}; font-weight: bold; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Business ROI Analysis Report</h1>
+                
+                <div class="section">
+                    <h2>Project Information</h2>
+                    <table>
+                        <tr><td><strong>Company:</strong></td><td>{company_name or 'N/A'}</td></tr>
+                        <tr><td><strong>Project:</strong></td><td>{project_name}</td></tr>
+                        <tr><td><strong>Generated:</strong></td><td>{datetime.now().strftime('%Y-%m-%d %H:%M')}</td></tr>
+                        <tr><td><strong>Currency:</strong></td><td>{currency}</td></tr>
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h2>Cost Analysis</h2>
+                    <div class="metric">
+                        <h3>{CURRENCIES[currency]['symbol']}{results['cost_analysis']['total_cost']:,}</h3>
+                        <p>Total Project Cost</p>
+                    </div>
+                    <table>
+                        <tr><th>Component</th><th>Amount</th></tr>
+                        <tr><td>Development</td><td>{CURRENCIES[currency]['symbol']}{results['cost_analysis']['breakdown']['development']:,}</td></tr>
+                        <tr><td>Design</td><td>{CURRENCIES[currency]['symbol']}{results['cost_analysis']['breakdown']['design']:,}</td></tr>
+                        <tr><td>Testing</td><td>{CURRENCIES[currency]['symbol']}{results['cost_analysis']['breakdown']['testing']:,}</td></tr>
+                        <tr><td>Timeline</td><td>{results['cost_analysis']['timeline_months']} months</td></tr>
+                        <tr><td>Complexity</td><td>{results['cost_analysis']['complexity']}</td></tr>
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h2>ROI Projections</h2>
+                    <table>
+                        <tr><th>Scenario</th><th>ROI %</th><th>Annual Return</th><th>Break-even</th></tr>
+        """
         
         for scenario, data in results['roi_projections'].items():
-            roi_data.append([
-                scenario.title(),
-                f"{data['roi_percentage']}%",
-                f"{CURRENCIES[currency]['symbol']}{data['annual_return']:,}",
-                f"{data['break_even_months']} months"
-            ])
+            html_report += f"""
+                        <tr>
+                            <td>{scenario.title()}</td>
+                            <td>{data['roi_percentage']}%</td>
+                            <td>{CURRENCIES[currency]['symbol']}{data['annual_return']:,}</td>
+                            <td>{data['break_even_months']} months</td>
+                        </tr>
+            """
         
-        roi_table = Table(roi_data, colWidths=[1.5*inch, 1*inch, 1.5*inch, 1.5*inch])
-        roi_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#667eea')),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black)
-        ]))
+        html_report += f"""
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h2>Risk Assessment</h2>
+                    <p>Overall Risk Level: <span class="risk-{results['risk_assessment']['risk_category'].lower()}">{results['risk_assessment']['risk_category']}</span></p>
+                    <p>Risk Score: {results['risk_assessment']['overall_risk']:.3f}</p>
+                </div>
+                
+                <div class="section">
+                    <h2>Recommendations</h2>
+                    <ul>
+        """
         
-        story.append(roi_table)
-        story.append(Spacer(1, 20))
+        for rec in results['recommendations']:
+            html_report += f"<li>{rec}</li>"
         
-        # Risk Assessment
-        if 'risk_assessment' in results:
-            story.append(Paragraph("Risk Assessment", styles['Heading2']))
-            risk = results['risk_assessment']
-            story.append(Paragraph(f"Overall Risk Level: <b>{risk['risk_category']}</b>", styles['Normal']))
-            story.append(Paragraph(f"Risk Score: {risk['overall_risk']:.3f}", styles['Normal']))
-            story.append(Spacer(1, 10))
+        html_report += """
+                    </ul>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
         
-        # Build PDF
-        doc.build(story)
-        buffer.seek(0)
-        
-        return send_file(
-            buffer,
-            as_attachment=True,
-            download_name=f"{project_name.replace(' ', '_')}_ROI_Report.pdf",
-            mimetype='application/pdf'
-        )
+        return html_report, 200, {'Content-Type': 'text/html'}
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
