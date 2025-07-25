@@ -2097,32 +2097,54 @@
                     
                 case 'kpi':
                     detailsContainer.innerHTML = `
-                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">📊 KPI Benchmarks</h4>
-                        <div>
-                            <strong>Industry Benchmarks:</strong><br>
-                            • Customer acquisition target vs industry average<br>
-                            • Gross margin target vs competitors<br>
-                            • Market share goal vs market size<br>
-                            • ROI milestone vs investment timeline
+                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">📊 Dynamic KPI Targets</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <strong>Revenue Target:</strong> $${(bi.kpi_targets.monthly_revenue_target / 1000).toFixed(0)}K/month<br>
+                                <strong>Customer Acquisition:</strong> ${bi.kpi_targets.customer_acquisition_target} customers<br>
+                                <strong>Gross Margin Target:</strong> ${bi.kpi_targets.gross_margin_target.toFixed(1)}%<br>
+                                <strong>Cash Burn Target:</strong> $${(bi.kpi_targets.cash_burn_target / 1000).toFixed(0)}K/month
+                            </div>
+                            <div>
+                                <strong>Market Share Goal:</strong> ${bi.kpi_targets.market_share_target.toFixed(1)}%<br>
+                                <strong>ROI Milestone:</strong> ${bi.kpi_targets.roi_milestone.toFixed(1)}%<br>
+                                <strong>Industry Benchmark:</strong> ${bi.kpi_targets.industry_benchmark_margin}<br>
+                                <strong>Target Churn:</strong> ${bi.kpi_targets.target_customer_churn}%
+                            </div>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <strong style="color: var(--text-accent);">Primary Focus Areas:</strong><br>
+                            ${bi.kpi_targets.primary_focus_areas.map(area => `• ${area.replace('_', ' ').toUpperCase()}`).join('<br>')}
                         </div>
                         <div style="margin-top: 1rem; color: var(--text-secondary);">
-                            <em>💡 Tip: Click "Compare Scenarios" to benchmark against different strategies</em>
+                            <em>💡 These targets are customized for your industry, company size, and project type</em>
                         </div>
                     `;
                     break;
                     
                 case 'milestones':
-                    detailsContainer.innerHTML = `
-                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">🛣️ Critical Path Analysis</h4>
-                        <div>
-                            <strong>Success Criteria:</strong><br>
-                            ${bi.milestones.map(m => `• ${m.name}: ${m.success_criteria}`).join('<br>')}
+                    const milestonesHtml = bi.milestones.map(m => `
+                        <div style="border-left: 3px solid var(--text-accent); padding-left: 1rem; margin: 1rem 0;">
+                            <strong style="color: var(--text-accent);">Month ${m.month}: ${m.name}</strong><br>
+                            <em>${m.description}</em><br>
+                            <strong>Success Criteria:</strong> ${m.success_criteria}<br>
+                            <strong>Budget:</strong> $${(m.budget_allocated / 1000).toFixed(0)}K | 
+                            <strong>Risk Level:</strong> ${m.risk_level} | 
+                            <strong>Focus:</strong> ${m.focus_area}<br>
+                            <strong>Key Deliverables:</strong><br>
+                            ${m.deliverables.map(d => `&nbsp;&nbsp;• ${d}`).join('<br>')}
                         </div>
-                        <div style="margin-top: 1rem;">
-                            <strong style="color: var(--text-accent);">Risk Factors:</strong><br>
-                            • Timeline delays can impact ROI by 10-20%<br>
-                            • Budget overruns reduce net profit<br>
-                            • Market changes affect revenue projections
+                    `).join('');
+                    
+                    detailsContainer.innerHTML = `
+                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">🛣️ Dynamic Project Roadmap</h4>
+                        ${milestonesHtml}
+                        <div style="margin-top: 1rem; padding: 1rem; background: rgba(87, 201, 255, 0.1); border-radius: 8px;">
+                            <strong style="color: var(--text-accent);">🎯 Project Intelligence:</strong><br>
+                            • Milestones are customized for your industry and project type<br>
+                            • Budget allocation varies by company size and complexity<br>
+                            • Risk levels are calculated based on timeline and execution factors<br>
+                            • Deliverables are specific to your chosen focus areas
                         </div>
                     `;
                     break;

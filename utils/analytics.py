@@ -107,14 +107,16 @@ class AdvancedAnalyticsEngine:
         
         # Recommendations
         recommended_actions = self._generate_recommendations(
-            market_analysis, competitive_analysis, financial_metrics, risk_analysis
+            market_analysis, competitive_analysis, financial_metrics, risk_analysis,
+            industry, project_type, company_size, investment, timeline_months
         )
         
         # KPI Targets
-        kpi_targets = self._set_kpi_targets(investment, roi_result, timeline_months)
+        kpi_targets = self._set_kpi_targets(investment, roi_result, timeline_months,
+                        industry, project_type, company_size)
         
         # Milestones
-        milestones = self._create_milestone_plan(timeline_months, investment)
+        milestones = self._create_milestone_plan(timeline_months, investment, industry, project_type, company_size)
         
         return BusinessIntelligence(
             market_analysis=market_analysis,
@@ -558,73 +560,449 @@ class AdvancedAnalyticsEngine:
         ]
     
     def _generate_recommendations(self, market: MarketAnalysis, competitive: CompetitiveAnalysis,
-                                financial: FinancialMetrics, risk: RiskAnalysis) -> List[str]:
-        """Generate actionable recommendations"""
+                                financial: FinancialMetrics, risk: RiskAnalysis, industry: str = None,
+                                project_type: str = None, company_size: str = None, 
+                                investment: Decimal = None, timeline_months: int = None) -> List[str]:
+        """Generate dynamic, context-specific actionable recommendations"""
         recommendations = []
         
-        # Market-based recommendations
-        if market.growth_rate > Decimal('0.10'):
-            recommendations.append('Accelerate market entry to capture high growth opportunity')
+        # Industry-specific strategic recommendations
+        industry_strategies = {
+            'fintech': {
+                'high_priority': ['Ensure regulatory compliance from day one', 'Implement enterprise-grade security'],
+                'growth': ['Partner with traditional financial institutions', 'Focus on customer trust and transparency'],
+                'risk': ['Maintain regulatory buffer in budget', 'Establish compliance monitoring systems']
+            },
+            'healthtech': {
+                'high_priority': ['Prioritize patient data security', 'Obtain necessary medical certifications'],
+                'growth': ['Build relationships with healthcare providers', 'Focus on clinical validation'],
+                'risk': ['Plan for extended regulatory approval timelines', 'Maintain patient safety protocols']
+            },
+            'saas': {
+                'high_priority': ['Focus on product-market fit', 'Build scalable infrastructure'],
+                'growth': ['Implement strong customer success programs', 'Optimize for recurring revenue'],
+                'risk': ['Monitor customer churn closely', 'Maintain competitive feature development']
+            },
+            'ecommerce': {
+                'high_priority': ['Optimize conversion funnel', 'Build efficient logistics network'],
+                'growth': ['Implement personalization engines', 'Expand payment options'],
+                'risk': ['Monitor customer acquisition costs', 'Maintain inventory turnover efficiency']
+            }
+        }
         
-        if market.competition_level in ['High', 'Very High']:
-            recommendations.append('Focus on differentiation and unique value proposition')
+        # Project type specific tactical recommendations
+        project_tactics = {
+            'product_development': {
+                'execution': ['Implement agile development methodologies', 'Establish user feedback loops'],
+                'market': ['Validate features through customer interviews', 'Build minimum viable product first'],
+                'scaling': ['Plan for technical debt management', 'Design for scalability from start']
+            },
+            'digital_transformation': {
+                'execution': ['Ensure comprehensive staff training', 'Phase implementation to minimize disruption'],
+                'market': ['Communicate transformation benefits clearly', 'Measure efficiency gains continuously'],
+                'scaling': ['Build change management capabilities', 'Establish digital excellence centers']
+            },
+            'market_expansion': {
+                'execution': ['Conduct thorough market research', 'Adapt offerings to local preferences'],
+                'market': ['Build local partnerships strategically', 'Understand regulatory differences'],
+                'scaling': ['Develop scalable market entry processes', 'Create regional management structures']
+            }
+        }
         
-        # Financial recommendations
-        if financial.customer_acquisition_cost > financial.lifetime_value / Decimal('3'):
-            recommendations.append('Optimize customer acquisition channels to reduce CAC')
+        # Company size specific operational recommendations
+        size_operations = {
+            'startup': {
+                'resource': ['Prioritize revenue-generating activities', 'Maintain lean operations'],
+                'talent': ['Focus on multi-skilled team members', 'Establish advisor network'],
+                'funding': ['Prepare for multiple funding rounds', 'Maintain detailed financial tracking']
+            },
+            'small': {
+                'resource': ['Implement efficient project management systems', 'Automate routine processes'],
+                'talent': ['Invest in employee development', 'Build specialized roles gradually'],
+                'funding': ['Optimize cash flow management', 'Plan for sustainable growth']
+            },
+            'enterprise': {
+                'resource': ['Leverage existing infrastructure synergies', 'Implement enterprise governance'],
+                'talent': ['Utilize internal expertise networks', 'Establish cross-functional teams'],
+                'funding': ['Align with strategic portfolio objectives', 'Ensure adequate resource allocation']
+            }
+        }
         
-        if financial.gross_margin < Decimal('40'):
-            recommendations.append('Improve operational efficiency to increase margins')
+        # Get context-specific recommendations
+        industry_config = industry_strategies.get(industry, industry_strategies.get('saas', {}))
+        project_config = project_tactics.get(project_type, project_tactics.get('product_development', {}))
+        size_config = size_operations.get(company_size, size_operations.get('small', {}))
         
-        # Risk-based recommendations
-        if risk.overall_risk > Decimal('60'):
-            recommendations.append('Implement comprehensive risk management framework')
+        # Priority-based recommendation selection
+        priority_recommendations = []
         
-        if risk.execution_risk > Decimal('50'):
-            recommendations.append('Strengthen project management and execution capabilities')
+        # High-priority industry recommendations
+        if industry_config.get('high_priority'):
+            priority_recommendations.extend(industry_config['high_priority'][:2])
         
-        # Competitive recommendations
-        if competitive.differentiation_score < Decimal('6'):
-            recommendations.append('Enhance product differentiation and competitive positioning')
+        # Critical risk-based recommendations
+        if risk.overall_risk > Decimal('70'):
+            priority_recommendations.append('Implement comprehensive risk mitigation framework immediately')
+            if industry_config.get('risk'):
+                priority_recommendations.extend(industry_config['risk'][:1])
+        elif risk.overall_risk > Decimal('50'):
+            if industry_config.get('risk'):
+                priority_recommendations.extend(industry_config['risk'][:1])
         
-        # Default recommendations if none added
-        if not recommendations:
-            recommendations = [
-                'Monitor key performance indicators closely',
-                'Build strong customer relationships',
-                'Maintain financial discipline'
+        # Financial health recommendations
+        if financial.customer_acquisition_cost > financial.lifetime_value / Decimal('2'):
+            priority_recommendations.append('Urgently optimize customer acquisition channels to improve LTV/CAC ratio')
+        elif financial.customer_acquisition_cost > financial.lifetime_value / Decimal('3'):
+            priority_recommendations.append('Optimize customer acquisition channels to reduce CAC')
+        
+        if financial.gross_margin < Decimal('30'):
+            priority_recommendations.append('Critical: Improve operational efficiency to achieve sustainable margins')
+        elif financial.gross_margin < Decimal('40'):
+            priority_recommendations.append('Improve operational efficiency to increase margins')
+        
+        # Market opportunity recommendations
+        if market.growth_rate > Decimal('0.15'):
+            if industry_config.get('growth'):
+                priority_recommendations.extend(industry_config['growth'][:1])
+            priority_recommendations.append('Accelerate market entry to capture exceptional growth opportunity')
+        elif market.growth_rate > Decimal('0.10'):
+            priority_recommendations.append('Capitalize on strong market growth through focused expansion')
+        
+        # Competitive positioning
+        if competitive.differentiation_score < Decimal('5'):
+            priority_recommendations.append('Urgently enhance product differentiation and competitive positioning')
+        elif competitive.differentiation_score < Decimal('7'):
+            priority_recommendations.append('Strengthen unique value proposition and competitive advantages')
+        
+        # Execution and operational recommendations
+        if project_config.get('execution'):
+            priority_recommendations.extend(project_config['execution'][:1])
+        
+        if size_config.get('resource'):
+            priority_recommendations.extend(size_config['resource'][:1])
+        
+        # Timeline and investment specific recommendations
+        if timeline_months and timeline_months < 18:
+            priority_recommendations.append('Focus on rapid execution and quick wins given tight timeline')
+        elif timeline_months and timeline_months > 36:
+            priority_recommendations.append('Implement phased approach with clear intermediate milestones')
+        
+        if investment:
+            if investment < Decimal('100000'):
+                priority_recommendations.append('Maximize ROI through lean startup methodology and MVP approach')
+            elif investment > Decimal('1000000'):
+                priority_recommendations.append('Leverage significant investment for competitive advantages and market leadership')
+        
+        # Remove duplicates while preserving order
+        unique_recommendations = []
+        seen = set()
+        for rec in priority_recommendations:
+            if rec not in seen:
+                unique_recommendations.append(rec)
+                seen.add(rec)
+        
+        # Ensure we have enough recommendations
+        if len(unique_recommendations) < 3:
+            # Add context-appropriate fallback recommendations
+            fallback_recs = [
+                f'Focus on {industry} industry best practices and compliance',
+                f'Implement {project_type} specific methodologies and frameworks',
+                f'Leverage {company_size} company advantages for competitive positioning'
             ]
+            for rec in fallback_recs:
+                if rec not in seen and len(unique_recommendations) < 5:
+                    unique_recommendations.append(rec)
         
-        return recommendations[:5]  # Return top 5
+        return unique_recommendations[:5]  # Return top 5 recommendations
     
-    def _set_kpi_targets(self, investment: Decimal, roi_result: Any, timeline_months: int) -> Dict[str, Any]:
-        """Set realistic KPI targets"""
+    def _set_kpi_targets(self, investment: Decimal, roi_result: Any, timeline_months: int,
+                        industry: str = None, project_type: str = None, company_size: str = None) -> Dict[str, Any]:
+        """Set realistic, context-specific KPI targets"""
+        
+        # Industry benchmarks for key metrics
+        industry_benchmarks = {
+            'saas': {
+                'customer_acquisition_multiplier': 2.5, 'gross_margin_range': (60, 80),
+                'monthly_growth_rate': 0.15, 'churn_target': 5.0
+            },
+            'fintech': {
+                'customer_acquisition_multiplier': 1.8, 'gross_margin_range': (45, 65),
+                'monthly_growth_rate': 0.12, 'churn_target': 3.0
+            },
+            'healthtech': {
+                'customer_acquisition_multiplier': 1.2, 'gross_margin_range': (50, 70),
+                'monthly_growth_rate': 0.08, 'churn_target': 2.0
+            },
+            'ecommerce': {
+                'customer_acquisition_multiplier': 3.0, 'gross_margin_range': (25, 45),
+                'monthly_growth_rate': 0.20, 'churn_target': 8.0
+            }
+        }
+        
+        # Company size factors for scaling targets
+        size_factors = {
+            'startup': {'scale_factor': 0.5, 'growth_ambition': 1.5, 'risk_tolerance': 1.3},
+            'small': {'scale_factor': 0.8, 'growth_ambition': 1.2, 'risk_tolerance': 1.1},
+            'medium': {'scale_factor': 1.0, 'growth_ambition': 1.0, 'risk_tolerance': 1.0},
+            'large': {'scale_factor': 1.5, 'growth_ambition': 0.8, 'risk_tolerance': 0.8},
+            'enterprise': {'scale_factor': 2.0, 'growth_ambition': 0.6, 'risk_tolerance': 0.7}
+        }
+        
+        # Project type specific KPI focus
+        project_kpis = {
+            'product_development': {
+                'primary_kpis': ['user_adoption', 'feature_completion', 'customer_satisfaction'],
+                'revenue_timing': 0.6  # Revenue expected at 60% of timeline
+            },
+            'market_expansion': {
+                'primary_kpis': ['market_penetration', 'customer_acquisition', 'regional_revenue'],
+                'revenue_timing': 0.4  # Revenue expected at 40% of timeline
+            },
+            'digital_transformation': {
+                'primary_kpis': ['process_efficiency', 'cost_savings', 'user_adoption'],
+                'revenue_timing': 0.8  # Revenue expected at 80% of timeline (efficiency gains)
+            },
+            'ai_integration': {
+                'primary_kpis': ['model_accuracy', 'automation_rate', 'efficiency_gains'],
+                'revenue_timing': 0.7  # Revenue expected at 70% of timeline
+            }
+        }
+        
+        # Get context configurations
+        industry_config = industry_benchmarks.get(industry, industry_benchmarks['saas'])
+        size_config = size_factors.get(company_size, size_factors['medium'])
+        project_config = project_kpis.get(project_type, project_kpis['product_development'])
+        
+        # Calculate context-specific targets
+        monthly_revenue_target = float(roi_result.projected_revenue / Decimal(str(timeline_months)))
+        
+        # Customer acquisition target based on industry and size
+        base_customers = int(float(investment) / 1000 * industry_config['customer_acquisition_multiplier'])
+        customer_acquisition_target = int(base_customers * size_config['scale_factor'])
+        
+        # Gross margin target based on industry benchmarks
+        margin_range = industry_config['gross_margin_range']
+        gross_margin_target = margin_range[0] + (margin_range[1] - margin_range[0]) * size_config['growth_ambition']
+        
+        # Cash burn target based on company size and risk tolerance
+        optimal_burn_months = 18 * size_config['risk_tolerance']  # Runway consideration
+        cash_burn_target = float(investment / Decimal(str(optimal_burn_months)))
+        
+        # Market share target based on industry and company size
+        base_market_share = {
+            'startup': 0.1, 'small': 0.5, 'medium': 2.0, 'large': 5.0, 'enterprise': 10.0
+        }
+        market_share_target = base_market_share.get(company_size, 2.0) * industry_config['monthly_growth_rate'] * 10
+        
+        # ROI milestone based on project timing and risk
+        roi_milestone_timing = project_config['revenue_timing']
+        roi_milestone = float(roi_result.roi_percentage * Decimal(str(roi_milestone_timing)))
+        
         return {
-            'monthly_revenue_target': float(roi_result.projected_revenue / Decimal(str(timeline_months))),
-            'customer_acquisition_target': random.randint(50, 500),
-            'gross_margin_target': random.uniform(45, 75),
-            'cash_burn_target': float(investment / Decimal(str(timeline_months * 2))),
-            'market_share_target': random.uniform(0.5, 5.0),
-            'roi_milestone': float(roi_result.roi_percentage * Decimal('0.5'))  # 50% of projected ROI
+            'monthly_revenue_target': monthly_revenue_target,
+            'customer_acquisition_target': customer_acquisition_target,
+            'gross_margin_target': gross_margin_target,
+            'cash_burn_target': cash_burn_target,
+            'market_share_target': market_share_target,
+            'roi_milestone': roi_milestone,
+            'primary_focus_areas': project_config['primary_kpis'],
+            'industry_benchmark_margin': f"{margin_range[0]}-{margin_range[1]}%",
+            'target_customer_churn': industry_config['churn_target'],
+            'monthly_growth_rate_target': industry_config['monthly_growth_rate'] * 100
         }
     
-    def _create_milestone_plan(self, timeline_months: int, investment: Decimal) -> List[Dict[str, Any]]:
-        """Create realistic milestone plan"""
+    def _create_milestone_plan(self, timeline_months: int, investment: Decimal, industry: str = None, 
+                              project_type: str = None, company_size: str = None) -> List[Dict[str, Any]]:
+        """Create dynamic, project-specific milestone plan"""
         milestones = []
         
-        # Key milestones at different timeline points
-        milestone_points = [0.25, 0.5, 0.75, 1.0]  # 25%, 50%, 75%, 100%
-        milestone_names = ['MVP Launch', 'Market Validation', 'Scale Preparation', 'Full Launch']
+        # Industry-specific milestone frameworks
+        industry_milestones = {
+            'fintech': {
+                'phases': ['Regulatory Compliance', 'MVP Development', 'Security Audit', 'Market Launch'],
+                'focus': ['compliance', 'security', 'user_acquisition', 'scaling']
+            },
+            'healthtech': {
+                'phases': ['Research & Development', 'Clinical Validation', 'Regulatory Approval', 'Commercial Launch'],
+                'focus': ['research', 'validation', 'approval', 'adoption']
+            },
+            'saas': {
+                'phases': ['Product Development', 'Beta Testing', 'Customer Acquisition', 'Revenue Scaling'],
+                'focus': ['development', 'testing', 'growth', 'expansion']
+            },
+            'ecommerce': {
+                'phases': ['Platform Development', 'Inventory Setup', 'Marketing Launch', 'Customer Retention'],
+                'focus': ['platform', 'operations', 'marketing', 'loyalty']
+            },
+            'manufacturing': {
+                'phases': ['Production Setup', 'Quality Control', 'Distribution Network', 'Market Penetration'],
+                'focus': ['production', 'quality', 'logistics', 'sales']
+            }
+        }
         
-        for i, (point, name) in enumerate(zip(milestone_points, milestone_names)):
-            month = int(timeline_months * point)
+        # Project type specific success criteria
+        project_criteria = {
+            'product_development': {
+                'metrics': ['feature completion', 'user feedback score', 'market readiness', 'revenue generation'],
+                'kpis': ['development velocity', 'quality metrics', 'customer satisfaction', 'market penetration']
+            },
+            'digital_transformation': {
+                'metrics': ['system integration', 'user adoption', 'efficiency gains', 'cost savings'],
+                'kpis': ['automation rate', 'user training', 'process optimization', 'ROI achievement']
+            },
+            'market_expansion': {
+                'metrics': ['market research', 'local partnerships', 'customer acquisition', 'revenue growth'],
+                'kpis': ['market share', 'customer base', 'revenue per market', 'expansion efficiency']
+            },
+            'ai_integration': {
+                'metrics': ['AI model development', 'integration testing', 'performance optimization', 'deployment'],
+                'kpis': ['model accuracy', 'system performance', 'user adoption', 'efficiency gains']
+            }
+        }
+        
+        # Company size influences milestone complexity and budget allocation
+        size_factors = {
+            'startup': {'complexity': 0.7, 'budget_ratio': [0.4, 0.3, 0.2, 0.1], 'risk_buffer': 0.3},
+            'small': {'complexity': 0.8, 'budget_ratio': [0.3, 0.3, 0.25, 0.15], 'risk_buffer': 0.25},
+            'medium': {'complexity': 1.0, 'budget_ratio': [0.25, 0.3, 0.3, 0.15], 'risk_buffer': 0.2},
+            'large': {'complexity': 1.2, 'budget_ratio': [0.2, 0.3, 0.35, 0.15], 'risk_buffer': 0.15},
+            'enterprise': {'complexity': 1.5, 'budget_ratio': [0.15, 0.25, 0.4, 0.2], 'risk_buffer': 0.1}
+        }
+        
+        # Get context-specific configurations
+        industry_config = industry_milestones.get(industry, industry_milestones['saas'])
+        project_config = project_criteria.get(project_type, project_criteria['product_development'])
+        size_config = size_factors.get(company_size, size_factors['medium'])
+        
+        # Dynamic milestone timing based on project complexity
+        base_points = [0.25, 0.5, 0.75, 1.0]
+        if size_config['complexity'] > 1.0:
+            # More complex projects need earlier checkpoints
+            milestone_points = [0.2, 0.45, 0.7, 1.0]
+        else:
+            milestone_points = base_points
+        
+        milestone_names = industry_config['phases']
+        milestone_focus = industry_config['focus']
+        success_metrics = project_config['metrics']
+        kpi_areas = project_config['kpis']
+        
+        for i, (point, name, focus, metric, kpi) in enumerate(zip(
+            milestone_points, milestone_names, milestone_focus, success_metrics, kpi_areas)):
+            
+            month = max(1, int(timeline_months * point))
+            
+            # Dynamic success criteria based on context
+            success_criteria = self._generate_success_criteria(focus, metric, kpi, point, industry, project_type)
+            
+            # Dynamic budget allocation
+            budget_allocated = float(investment * Decimal(str(size_config['budget_ratio'][i])))
+            
+            # Context-specific descriptions
+            description = self._generate_milestone_description(name, focus, industry, project_type, company_size)
+            
             milestone = {
                 'month': month,
                 'name': name,
-                'description': f'{name} - Key project milestone',
-                'success_criteria': f'Achieve {int(point * 100)}% of project objectives',
-                'budget_allocated': float(investment * Decimal(str(point * 0.3)))  # 30% budget distribution
+                'description': description,
+                'success_criteria': success_criteria,
+                'budget_allocated': budget_allocated,
+                'focus_area': focus,
+                'key_metrics': [metric, kpi],
+                'risk_level': self._calculate_milestone_risk(point, size_config['risk_buffer']),
+                'deliverables': self._generate_deliverables(focus, project_type, industry)
             }
             milestones.append(milestone)
         
         return milestones
+    
+    def _generate_success_criteria(self, focus: str, metric: str, kpi: str, completion: float, 
+                                 industry: str, project_type: str) -> str:
+        """Generate specific success criteria for each milestone"""
+        completion_pct = int(completion * 100)
+        
+        criteria_templates = {
+            'development': f'Complete {completion_pct}% of {metric} with {kpi} meeting quality standards',
+            'testing': f'Achieve {completion_pct}% {metric} coverage with {kpi} validation',
+            'compliance': f'Obtain {completion_pct}% regulatory compliance for {metric}',
+            'marketing': f'Reach {completion_pct}% of target {metric} through {kpi} optimization',
+            'scaling': f'Scale {metric} to {completion_pct}% capacity with sustainable {kpi}',
+            'research': f'Complete {completion_pct}% of {metric} research with validated {kpi}',
+            'validation': f'Validate {completion_pct}% of {metric} hypotheses through {kpi} testing',
+            'security': f'Implement {completion_pct}% of {metric} security measures with {kpi} compliance'
+        }
+        
+        return criteria_templates.get(focus, f'Achieve {completion_pct}% completion of {metric} objectives')
+    
+    def _generate_milestone_description(self, name: str, focus: str, industry: str, 
+                                      project_type: str, company_size: str) -> str:
+        """Generate context-specific milestone descriptions"""
+        
+        # Industry-specific contexts
+        industry_contexts = {
+            'fintech': 'financial services compliance and security',
+            'healthtech': 'healthcare regulations and patient safety',
+            'saas': 'software scalability and user experience',
+            'ecommerce': 'customer journey and conversion optimization',
+            'manufacturing': 'production efficiency and quality control'
+        }
+        
+        # Project type specific activities
+        project_activities = {
+            'product_development': 'innovative product features and market fit',
+            'digital_transformation': 'digital process automation and efficiency',
+            'market_expansion': 'new market penetration and customer acquisition',
+            'ai_integration': 'AI capabilities and intelligent automation'
+        }
+        
+        context = industry_contexts.get(industry, 'business objectives')
+        activity = project_activities.get(project_type, 'strategic goals')
+        
+        return f'{name} milestone focusing on {context} while advancing {activity}'
+    
+    def _calculate_milestone_risk(self, completion: float, base_risk: float) -> str:
+        """Calculate risk level for each milestone"""
+        # Early milestones are typically higher risk
+        risk_multiplier = 1.5 - completion  # Higher risk for earlier milestones
+        total_risk = base_risk * risk_multiplier
+        
+        if total_risk < 0.2:
+            return 'Low'
+        elif total_risk < 0.4:
+            return 'Medium'
+        else:
+            return 'High'
+    
+    def _generate_deliverables(self, focus: str, project_type: str, industry: str) -> List[str]:
+        """Generate specific deliverables for each milestone"""
+        
+        deliverable_matrix = {
+            ('development', 'product_development', 'saas'): [
+                'Core feature implementation', 'API documentation', 'Testing framework'
+            ],
+            ('testing', 'product_development', 'saas'): [
+                'Beta user feedback', 'Performance benchmarks', 'Security audit results'
+            ],
+            ('compliance', 'fintech', 'product_development'): [
+                'Regulatory compliance documentation', 'Security certificates', 'Audit reports'
+            ],
+            ('marketing', 'market_expansion', 'ecommerce'): [
+                'Market research report', 'Customer acquisition strategy', 'Brand positioning'
+            ]
+        }
+        
+        # Try specific combination first, then fallback to generic
+        key = (focus, project_type, industry)
+        if key in deliverable_matrix:
+            return deliverable_matrix[key]
+        
+        # Generic deliverables based on focus
+        generic_deliverables = {
+            'development': ['Technical specifications', 'Development milestones', 'Quality metrics'],
+            'testing': ['Test results', 'User feedback', 'Performance data'],
+            'compliance': ['Compliance documentation', 'Certification status', 'Risk assessment'],
+            'marketing': ['Marketing materials', 'Customer insights', 'Campaign metrics'],
+            'scaling': ['Scalability plan', 'Resource allocation', 'Growth metrics']
+        }
+        
+        return generic_deliverables.get(focus, ['Project deliverables', 'Progress report', 'Next phase planning'])
