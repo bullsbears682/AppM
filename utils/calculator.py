@@ -274,42 +274,66 @@ class EnhancedROICalculator:
     
     def _generate_cash_flow_projections(self, investment: Decimal, total_revenue: Decimal,
                                       timeline_months: int, operating_costs: Decimal) -> List[Decimal]:
-        """Generate monthly cash flow projections"""
+        """Generate monthly cash flow projections with realistic timing"""
         cash_flows = [-investment]  # Initial investment as negative cash flow
         
-        # Distribute revenue over timeline with S-curve adoption
+        # More realistic revenue distribution - revenue grows gradually
         monthly_revenues = []
+        total_s_curve_factor = Decimal('0')
+        
+        # First calculate all S-curve factors to normalize them
+        s_curve_factors = []
         for month in range(1, timeline_months + 1):
-            # S-curve: slow start, rapid growth, then plateau
             progress = month / timeline_months
             if NUMPY_AVAILABLE:
-                s_curve_factor = Decimal(str(1 / (1 + np.exp(-10 * (progress - 0.5)))))
-            else:
-                # Simplified S-curve using math.exp for Termux compatibility
                 try:
-                    s_curve_factor = Decimal(str(1 / (1 + math.exp(-10 * (progress - 0.5)))))
+                    s_curve_factor = Decimal(str(1 / (1 + np.exp(-6 * (progress - 0.5)))))
                 except:
-                    # Fallback to linear progression if math.exp fails
-                    s_curve_factor = Decimal(str(progress))
-            monthly_revenue = total_revenue * s_curve_factor / timeline_months
-            monthly_revenues.append(monthly_revenue)
+                    s_curve_factor = Decimal(str(progress ** 0.5))  # Square root for gradual start
+            else:
+                try:
+                    s_curve_factor = Decimal(str(1 / (1 + math.exp(-6 * (progress - 0.5)))))
+                except:
+                    # More realistic fallback - square root growth
+                    s_curve_factor = Decimal(str(progress ** 0.5))
+            s_curve_factors.append(s_curve_factor)
+            total_s_curve_factor += s_curve_factor
         
-        # Calculate monthly cash flows
+        # Normalize and distribute revenue
         monthly_operating_cost = operating_costs / timeline_months
-        for monthly_revenue in monthly_revenues:
+        for s_curve_factor in s_curve_factors:
+            # Normalize the S-curve factor
+            normalized_factor = s_curve_factor / total_s_curve_factor if total_s_curve_factor > 0 else Decimal(str(1 / timeline_months))
+            monthly_revenue = total_revenue * normalized_factor
             net_monthly_flow = monthly_revenue - monthly_operating_cost
             cash_flows.append(net_monthly_flow)
         
         return cash_flows
     
     def _calculate_npv(self, cash_flows: List[Decimal], discount_rate: Decimal) -> Decimal:
-        """Calculate Net Present Value"""
+        """Calculate Net Present Value with timeline-appropriate discount rate"""
+        if len(cash_flows) <= 1:
+            return Decimal('0')
+            
         npv = Decimal('0')
-        monthly_discount_rate = discount_rate / Decimal('12')
+        # Adjust discount rate based on project timeline
+        timeline_months = len(cash_flows) - 1  # Subtract initial investment
+        
+        # For short-term projects (< 2 years), use lower discount rate
+        if timeline_months <= 24:
+            adjusted_discount_rate = discount_rate * Decimal('0.5')  # Use 4% instead of 8%
+        else:
+            adjusted_discount_rate = discount_rate
+            
+        monthly_discount_rate = adjusted_discount_rate / Decimal('12')
         
         for month, cash_flow in enumerate(cash_flows):
-            present_value = cash_flow / ((Decimal('1') + monthly_discount_rate) ** month)
-            npv += present_value
+            if month == 0:
+                # Initial investment doesn't need discounting
+                npv += cash_flow
+            else:
+                present_value = cash_flow / ((Decimal('1') + monthly_discount_rate) ** month)
+                npv += present_value
         
         return npv.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
     
@@ -361,15 +385,19 @@ class EnhancedROICalculator:
         project_config = Config.PROJECT_TYPES[project_type]
         industry_config = Config.INDUSTRIES[industry]
         
-        # Weight different risk factors
-        company_risk = Decimal(str(company_config.risk_factor)) * Decimal('30')
-        project_risk = Decimal(str(project_config.risk_level)) * Decimal('40')
-        industry_risk = Decimal(str(industry_config.risk_factor)) * Decimal('20')
-        market_volatility = Decimal(str(industry_config.volatility)) * Decimal('10')
+        # Risk factors should be between 0-1, then scaled to 100
+        company_risk = Decimal(str(company_config.risk_factor)) * Decimal('30')  # Max 30
+        project_risk = Decimal(str(project_config.risk_level)) * Decimal('40')   # Max 40
+        industry_risk = Decimal(str(industry_config.risk_factor)) * Decimal('20') # Max 20
+        market_volatility = Decimal(str(industry_config.volatility)) * Decimal('10') # Max 10
         
         total_risk_score = company_risk + project_risk + industry_risk + market_volatility
         
-        return (total_risk_score * Decimal('100')).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
+        # Ensure the score is within 0-100 range
+        total_risk_score = min(total_risk_score, Decimal('100'))
+        total_risk_score = max(total_risk_score, Decimal('0'))
+        
+        return total_risk_score.quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
     
     def _monte_carlo_simulation(self, investment: Decimal, industry: str, 
                                project_type: str, timeline_months: int,
