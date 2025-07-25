@@ -16,9 +16,11 @@ from dotenv import load_dotenv
 from config import get_config
 from utils.validators import (
     APIValidator, ValidationError, BusinessLogicError, 
-    BusinessValidator, handle_validation_errors
+    BusinessValidator, handle_validation_errors, DataSanitizer
 )
 from utils.calculator import EnhancedROICalculator
+from utils.cache import calculation_cache
+from utils.rate_limiter import rate_limit, calculation_limiter, api_limiter
 
 # Load environment variables
 load_dotenv()
@@ -57,7 +59,34 @@ def index():
     """Main application page"""
     return render_template('index.html')
 
+@app.route('/api/health')
+def health_check():
+    """Health check endpoint with system status"""
+    try:
+        cache_stats = calculation_cache.stats()
+        
+        return jsonify({
+            'status': 'healthy',
+            'version': '2.0.1',
+            'timestamp': datetime.utcnow().isoformat(),
+            'features': {
+                'caching': True,
+                'rate_limiting': True,
+                'numpy_available': 'NUMPY_AVAILABLE' in globals() and globals().get('NUMPY_AVAILABLE', False),
+                'enhanced_validation': True
+            },
+            'cache_stats': cache_stats,
+            'environment': config_class.ENV
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'degraded',
+            'error': str(e),
+            'timestamp': datetime.utcnow().isoformat()
+        }), 503
+
 @app.route('/api/calculate', methods=['POST'])
+@rate_limit(calculation_limiter, "Too many calculations. Please wait before trying again.")
 @handle_validation_errors
 def calculate_roi():
     """
@@ -84,6 +113,9 @@ def calculate_roi():
         # Comprehensive validation
         validated_data = APIValidator.validate_roi_calculation_request(data)
         
+        # Enhanced sanitization
+        validated_data['company_name'] = DataSanitizer.sanitize_company_name(validated_data['company_name'])
+        
         # Business logic validation
         custom_investment = validated_data.get('custom_investment')
         BusinessValidator.validate_business_logic(
@@ -93,24 +125,42 @@ def calculate_roi():
             custom_investment
         )
         
-        # Calculate project cost
-        cost_analysis = calculator.calculate_project_cost(
-            company_size=validated_data['company_size'],
-            project_type=validated_data['project_type'],
-            industry=validated_data['target_industry'],
-            currency=validated_data['currency'],
-            custom_investment=custom_investment,
-            custom_timeline=validated_data.get('custom_timeline')
-        )
+        # Use caching for expensive calculations
+        cache_key_data = {
+            'company_size': validated_data['company_size'],
+            'project_type': validated_data['project_type'],
+            'industry': validated_data['target_industry'],
+            'currency': validated_data['currency'],
+            'custom_investment': float(custom_investment) if custom_investment else None,
+            'custom_timeline': validated_data.get('custom_timeline')
+        }
         
-        # Calculate enhanced ROI projection
-        roi_result = calculator.calculate_enhanced_roi_projection(
-            investment=cost_analysis['total_cost'],
-            industry=validated_data['target_industry'],
-            project_type=validated_data['project_type'],
-            timeline_months=cost_analysis['timeline_months'],
-            currency=validated_data['currency'],
-            company_size=validated_data['company_size']
+        def perform_calculations():
+            # Calculate project cost
+            cost_analysis = calculator.calculate_project_cost(
+                company_size=validated_data['company_size'],
+                project_type=validated_data['project_type'],
+                industry=validated_data['target_industry'],
+                currency=validated_data['currency'],
+                custom_investment=custom_investment,
+                custom_timeline=validated_data.get('custom_timeline')
+            )
+            
+            # Calculate enhanced ROI projection
+            roi_result = calculator.calculate_enhanced_roi_projection(
+                investment=cost_analysis['total_cost'],
+                industry=validated_data['target_industry'],
+                project_type=validated_data['project_type'],
+                timeline_months=cost_analysis['timeline_months'],
+                currency=validated_data['currency'],
+                company_size=validated_data['company_size']
+            )
+            
+            return cost_analysis, roi_result
+        
+        # Get cached result or calculate
+        cost_analysis, roi_result = calculation_cache.get_or_set(
+            cache_key_data, perform_calculations, ttl=300  # Cache for 5 minutes
         )
         
         # Get market insights
@@ -178,6 +228,7 @@ def calculate_roi():
         raise ValidationError(f"Calculation failed: {str(e)}")
 
 @app.route('/api/currencies')
+@rate_limit(api_limiter, "Too many API requests. Please slow down.")
 @handle_validation_errors
 def get_currencies():
     """Get available currencies with enhanced information"""
@@ -202,6 +253,7 @@ def get_currencies():
         raise ValidationError(f"Failed to fetch currencies: {str(e)}")
 
 @app.route('/api/industries')
+@rate_limit(api_limiter, "Too many API requests. Please slow down.")
 @handle_validation_errors
 def get_industries():
     """Get available industries with enhanced information"""

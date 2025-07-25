@@ -329,6 +329,14 @@
             gap: 0.5rem;
         }
 
+        .success-message {
+            color: var(--success-color);
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         /* Enhanced Calculate Button */
         .calculate-btn {
             background: var(--accent-gradient);
@@ -1042,6 +1050,9 @@
                         showValidationError(results.validation_error);
                     } else if (results.business_error) {
                         showBusinessError(results.business_error);
+                    } else if (results.retry_after) {
+                        // Rate limiting error
+                        showError(`Rate limit exceeded. Please wait ${results.retry_after} seconds before trying again.`, true);
                     } else {
                         throw new Error(results.message || 'Unknown error occurred');
                     }
@@ -1307,10 +1318,27 @@
             return 'error';
         }
 
-        function showError(message) {
+        function showError(message, isTemporary = false) {
             const errorContainer = document.getElementById('validationErrors');
             errorContainer.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
             errorContainer.style.display = 'block';
+            
+            // Auto-hide temporary errors after 5 seconds
+            if (isTemporary) {
+                setTimeout(() => {
+                    errorContainer.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        function showSuccess(message) {
+            const errorContainer = document.getElementById('validationErrors');
+            errorContainer.innerHTML = `<div class="success-message"><i class="fas fa-check-circle"></i> ${message}</div>`;
+            errorContainer.style.display = 'block';
+            
+            setTimeout(() => {
+                errorContainer.style.display = 'none';
+            }, 3000);
         }
 
         function showValidationError(validationError) {

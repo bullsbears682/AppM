@@ -284,19 +284,46 @@ class DataSanitizer:
     """Data sanitization utilities"""
     
     @staticmethod
-    def sanitize_string(value: str, max_length: int = None) -> str:
-        """Sanitize string input"""
+    def sanitize_string(value: str, max_length: int = None, allow_special: bool = False) -> str:
+        """Enhanced string sanitization"""
         if not isinstance(value, str):
             return str(value)
         
-        # Remove potentially dangerous characters
-        sanitized = re.sub(r'[<>"\']', '', value)
+        # Remove control characters and normalize whitespace
+        sanitized = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', value)
+        sanitized = re.sub(r'\s+', ' ', sanitized)
         sanitized = sanitized.strip()
         
+        if not allow_special:
+            # Remove potentially dangerous characters
+            sanitized = re.sub(r'[<>"\']', '', sanitized)
+            # Remove SQL injection patterns
+            sanitized = re.sub(r'(union|select|insert|update|delete|drop|create|alter)\s', '', sanitized, flags=re.IGNORECASE)
+        
+        # Validate length
         if max_length and len(sanitized) > max_length:
             sanitized = sanitized[:max_length]
         
+        # Ensure minimum length for required fields
+        if len(sanitized) == 0:
+            raise ValidationError("Input cannot be empty after sanitization", "input", value, "EMPTY_AFTER_SANITIZATION")
+        
         return sanitized
+    
+    @staticmethod
+    def sanitize_company_name(value: str) -> str:
+        """Specialized company name sanitization"""
+        if not value:
+            raise ValidationError("Company name is required", "company_name", value, "REQUIRED")
+        
+        # Allow letters, numbers, spaces, and common business characters
+        sanitized = re.sub(r'[^a-zA-Z0-9\s\-\.\,\&\(\)]', '', value)
+        sanitized = re.sub(r'\s+', ' ', sanitized).strip()
+        
+        if len(sanitized) < 2:
+            raise ValidationError("Company name too short after sanitization", "company_name", value, "TOO_SHORT")
+        
+        return sanitized[:100]  # Cap at 100 characters
     
     @staticmethod
     def sanitize_number(value: Union[str, int, float]) -> Union[int, float]:
