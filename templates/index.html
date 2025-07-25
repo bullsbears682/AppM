@@ -401,8 +401,6 @@
         }
 
         .analytics-card.expanded {
-            transform: scale(1.02);
-            z-index: 10;
             border-color: var(--text-accent);
         }
 
@@ -889,25 +887,7 @@
             z-index: 1000;
         }
 
-        .analytics-card::after {
-            content: '🔍 Click to explore';
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            opacity: 0.7;
-            transition: opacity 0.3s ease;
-        }
 
-        .analytics-card.expanded::after {
-            content: '▲ Click to collapse';
-        }
-
-        .analytics-card:hover::after {
-            opacity: 1;
-            color: var(--text-accent);
-        }
     </style>
 </head>
 <body>
