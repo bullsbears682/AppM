@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics Cards Test</title>
+    <style>
+        .analytics-card {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .analytics-card:hover {
+            border-color: #57c9ff;
+            box-shadow: 0 5px 20px rgba(87, 201, 255, 0.2);
+        }
+        
+        .analytics-card.expanded {
+            border-color: #57c9ff;
+        }
+        
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .expand-icon {
+            transition: transform 0.3s ease;
+            color: #57c9ff;
+        }
+        
+        .analytics-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+        
+        .analytics-details {
+            display: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .analytics-details.show {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        body {
+            background: #0f0f23;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Analytics Cards Interactive Test</h1>
+    
+    <div class="analytics-card" onclick="toggleAnalyticsCard(this, 'financial')">
+        <div class="analytics-header">
+            <h3>💰 Financial Metrics</h3>
+            <span class="expand-icon">▼</span>
+        </div>
+        <div>Click to see financial details</div>
+        <div class="analytics-details">
+            <div id="financialDetails">
+                <h4>Financial Deep Dive</h4>
+                <p>This is the detailed financial information that appears when you click the card.</p>
+                <ul>
+                    <li>Revenue: $500K</li>
+                    <li>Profit Margin: 25%</li>
+                    <li>Growth Rate: 15%</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="analytics-card" onclick="toggleAnalyticsCard(this, 'success')">
+        <div class="analytics-header">
+            <h3>🎯 Success Probability</h3>
+            <span class="expand-icon">▼</span>
+        </div>
+        <div>Click to see success factors</div>
+        <div class="analytics-details">
+            <div id="successDetails">
+                <h4>Success Analysis</h4>
+                <p>This shows the success probability breakdown.</p>
+                <ul>
+                    <li>Market Fit: 85%</li>
+                    <li>Execution Risk: Low</li>
+                    <li>Financial Health: Strong</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleAnalyticsCard(card, type) {
+            console.log('Analytics card clicked:', type);
+            
+            const isExpanded = card.classList.contains('expanded');
+            
+            // Close all other expanded cards
+            document.querySelectorAll('.analytics-card.expanded').forEach(c => {
+                if (c !== card) {
+                    c.classList.remove('expanded');
+                    const otherDetails = c.querySelector('.analytics-details');
+                    if (otherDetails) {
+                        otherDetails.classList.remove('show');
+                    }
+                }
+            });
+            
+            // Toggle current card
+            if (isExpanded) {
+                card.classList.remove('expanded');
+                const details = card.querySelector('.analytics-details');
+                if (details) {
+                    details.classList.remove('show');
+                }
+            } else {
+                card.classList.add('expanded');
+                const details = card.querySelector('.analytics-details');
+                if (details) {
+                    details.classList.add('show');
+                    console.log('Details shown for:', type);
+                } else {
+                    console.error('Analytics details container not found for:', type);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -386,17 +386,18 @@
             background: var(--card-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
+            border-radius: 15px;
             padding: 1.5rem;
+            margin: 1rem 0;
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
         }
 
         .analytics-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 242, 254, 0.15);
+            transform: translateY(-2px);
             border-color: var(--text-accent);
+            box-shadow: 0 5px 20px rgba(87, 201, 255, 0.2);
         }
 
         .analytics-card.expanded {
@@ -426,11 +427,23 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .analytics-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .expand-icon {
             transition: transform 0.3s ease;
             color: var(--text-accent);
+            font-size: 1rem;
         }
 
         .analytics-card.expanded .expand-icon {
@@ -438,9 +451,14 @@
         }
 
         .analytics-content {
-            margin-top: 1rem;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .metric-highlight {
+            color: var(--text-accent);
+            font-weight: 600;
+            margin: 0.5rem 0;
         }
 
         .kpi-section {
@@ -454,8 +472,17 @@
             background: var(--card-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
+            border-radius: 15px;
             padding: 1.5rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .success-card:hover, .kpi-card:hover, .analytics-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--text-accent);
+            box-shadow: 0 5px 20px rgba(87, 201, 255, 0.2);
         }
 
         .probability-meter {
@@ -496,8 +523,10 @@
             background: var(--card-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 2rem;
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .milestone {
@@ -858,6 +887,26 @@
             white-space: nowrap;
             font-size: 0.8rem;
             z-index: 1000;
+        }
+
+        .analytics-card::after {
+            content: '🔍 Click to explore';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .analytics-card.expanded::after {
+            content: '▲ Click to collapse';
+        }
+
+        .analytics-card:hover::after {
+            opacity: 1;
+            color: var(--text-accent);
         }
     </style>
 </head>
@@ -1905,39 +1954,59 @@
 
         // Interactive Analytics Cards
         function toggleAnalyticsCard(card, type) {
+            console.log('Analytics card clicked:', type); // Debug log
+            
             const isExpanded = card.classList.contains('expanded');
             
             // Close all other expanded cards
             document.querySelectorAll('.analytics-card.expanded').forEach(c => {
                 if (c !== card) {
                     c.classList.remove('expanded');
-                    c.querySelector('.analytics-details').classList.remove('show');
+                    const otherDetails = c.querySelector('.analytics-details');
+                    if (otherDetails) {
+                        otherDetails.classList.remove('show');
+                    }
                 }
             });
             
             // Toggle current card
             if (isExpanded) {
                 card.classList.remove('expanded');
-                card.querySelector('.analytics-details').classList.remove('show');
+                const details = card.querySelector('.analytics-details');
+                if (details) {
+                    details.classList.remove('show');
+                }
             } else {
                 card.classList.add('expanded');
                 const details = card.querySelector('.analytics-details');
-                details.classList.add('show');
-                
-                // Load detailed content based on type
-                loadDetailedContent(type, card);
+                if (details) {
+                    details.classList.add('show');
+                    
+                    // Load detailed content based on type
+                    loadDetailedContent(type, card);
+                } else {
+                    console.error('Analytics details container not found for:', type);
+                }
             }
         }
 
         function loadDetailedContent(type, card) {
+            console.log('Loading detailed content for:', type); // Debug log
+            
             const detailsContainer = card.querySelector('.analytics-details > div');
             
+            if (!detailsContainer) {
+                console.error('Details container not found for type:', type);
+                return;
+            }
+            
             if (!currentResults || !currentResults.business_intelligence) {
-                detailsContainer.innerHTML = '<p style="color: var(--text-secondary);">No detailed data available</p>';
+                detailsContainer.innerHTML = '<p style="color: var(--text-secondary);">Please run a calculation first to see detailed analytics.</p>';
                 return;
             }
             
             const bi = currentResults.business_intelligence;
+            console.log('Business intelligence data:', bi); // Debug log
             
             switch (type) {
                 case 'market':
