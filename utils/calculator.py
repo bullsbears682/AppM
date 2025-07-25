@@ -25,6 +25,7 @@ import logging
 from dataclasses import dataclass
 from config import Config
 from utils.validators import ValidationError, BusinessLogicError
+from utils.analytics import AdvancedAnalyticsEngine
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +61,7 @@ class EnhancedROICalculator:
     def __init__(self):
         self.precision = Config.CALCULATION_PRECISION
         self.discount_rate = Decimal('0.08')  # 8% annual discount rate
+        self.analytics_engine = AdvancedAnalyticsEngine()
         
     def convert_currency(self, amount: Decimal, from_currency: str, to_currency: str) -> Decimal:
         """Convert amount between currencies with enhanced precision"""
@@ -232,6 +234,23 @@ class EnhancedROICalculator:
         except Exception as e:
             logger.error(f"Error calculating ROI projection: {str(e)}")
             raise ValidationError(f"Failed to calculate ROI projection: {str(e)}")
+    
+    def generate_business_intelligence(self, investment: Decimal, industry: str, project_type: str,
+                                     company_size: str, timeline_months: int, roi_result: ROIResult):
+        """Generate comprehensive business intelligence and analytics"""
+        try:
+            return self.analytics_engine.generate_comprehensive_analysis(
+                investment=investment,
+                industry=industry,
+                project_type=project_type,
+                company_size=company_size,
+                timeline_months=timeline_months,
+                roi_result=roi_result
+            )
+        except Exception as e:
+            logger.error(f"Error generating business intelligence: {str(e)}")
+            # Return a minimal analytics result if full analysis fails
+            return None
     
     def _get_complexity_multiplier(self, complexity: str) -> Decimal:
         """Get cost multiplier based on project complexity"""

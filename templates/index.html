@@ -369,6 +369,106 @@
             pointer-events: none;
         }
 
+        /* Advanced Analytics Styles */
+        .analytics-section {
+            margin: 3rem 0;
+            padding: 0;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .analytics-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 242, 254, 0.15);
+        }
+
+        .analytics-content {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .kpi-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .success-card, .kpi-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .probability-meter {
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .probability-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .kpi-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .milestones-section {
+            margin: 2rem 0;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .milestone {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 4px solid var(--text-accent);
+        }
+
         /* Loading Overlay */
         .loading-overlay {
             position: fixed;
@@ -815,6 +915,53 @@
                 <!-- Results will be populated here -->
             </div>
 
+            <!-- Advanced Analytics Section -->
+            <div class="analytics-section" id="analyticsSection" style="display: none;">
+                <h2><i class="fas fa-chart-bar"></i> Advanced Business Intelligence</h2>
+                
+                <!-- Market Analysis -->
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3><i class="fas fa-globe"></i> Market Analysis</h3>
+                        <div id="marketAnalysis" class="analytics-content"></div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3><i class="fas fa-users-cog"></i> Competitive Intelligence</h3>
+                        <div id="competitiveAnalysis" class="analytics-content"></div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3><i class="fas fa-calculator"></i> Financial Metrics</h3>
+                        <div id="financialMetrics" class="analytics-content"></div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3><i class="fas fa-shield-alt"></i> Risk Analysis</h3>
+                        <div id="riskAnalysis" class="analytics-content"></div>
+                    </div>
+                </div>
+                
+                <!-- Success Probability & KPIs -->
+                <div class="kpi-section">
+                    <div class="success-card">
+                        <h3><i class="fas fa-target"></i> Success Probability</h3>
+                        <div id="successProbability" class="probability-meter"></div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <h3><i class="fas fa-bullseye"></i> KPI Targets</h3>
+                        <div id="kpiTargets" class="kpi-grid"></div>
+                    </div>
+                </div>
+                
+                <!-- Milestones Timeline -->
+                <div class="milestones-section">
+                    <h3><i class="fas fa-road"></i> Project Milestones</h3>
+                    <div id="milestonesTimeline" class="timeline"></div>
+                </div>
+            </div>
+
             <!-- Enhanced Charts Section -->
             <div class="chart-container">
                 <h3 class="chart-title">Monte Carlo ROI Simulation</h3>
@@ -1070,6 +1217,7 @@
                 
                 currentResults = results;
                 displayResults(results);
+                displayAdvancedAnalytics(results);
                 
             } catch (error) {
                 console.error('Error calculating ROI:', error);
@@ -1329,6 +1477,159 @@
             if (riskScore <= 45) return 'success';
             if (riskScore <= 75) return 'warning';
             return 'error';
+        }
+
+        // Display Advanced Analytics
+        function displayAdvancedAnalytics(data) {
+            const analyticsSection = document.getElementById('analyticsSection');
+            const bi = data.business_intelligence;
+            
+            if (!bi) {
+                analyticsSection.style.display = 'none';
+                return;
+            }
+            
+            analyticsSection.style.display = 'block';
+            
+            // Market Analysis
+            displayMarketAnalysis(bi.market_analysis);
+            
+            // Competitive Analysis
+            displayCompetitiveAnalysis(bi.competitive_analysis);
+            
+            // Financial Metrics
+            displayFinancialMetrics(bi.financial_metrics);
+            
+            // Risk Analysis
+            displayRiskAnalysis(bi.risk_analysis);
+            
+            // Success Probability
+            displaySuccessProbability(bi.success_probability);
+            
+            // KPI Targets
+            displayKPITargets(bi.kpi_targets);
+            
+            // Milestones
+            displayMilestones(bi.milestones);
+        }
+
+        function displayMarketAnalysis(market) {
+            const container = document.getElementById('marketAnalysis');
+            container.innerHTML = `
+                <div class="metric-highlight">Market Size: $${(market.market_size / 1000000).toFixed(0)}M</div>
+                <div class="metric-highlight">Growth Rate: ${(market.growth_rate * 100).toFixed(1)}% annually</div>
+                <div>Competition: ${market.competition_level}</div>
+                <div>Maturity: ${market.market_maturity}</div>
+                <h4 style="margin-top: 1rem; color: var(--text-accent);">Key Trends:</h4>
+                ${market.key_trends.map(trend => `<div class="trend-item">• ${trend}</div>`).join('')}
+                <h4 style="margin-top: 1rem; color: var(--text-accent);">Opportunities:</h4>
+                ${market.opportunities.map(opp => `<div class="trend-item">• ${opp}</div>`).join('')}
+            `;
+        }
+
+        function displayCompetitiveAnalysis(competitive) {
+            const container = document.getElementById('competitiveAnalysis');
+            container.innerHTML = `
+                <div class="metric-highlight">Market Share Potential: ${competitive.market_share_potential}%</div>
+                <div class="metric-highlight">Differentiation Score: ${competitive.differentiation_score}/10</div>
+                <div>Pricing Power: ${competitive.pricing_power}</div>
+                <div>Advantage: ${competitive.competitive_advantage}</div>
+                <h4 style="margin-top: 1rem; color: var(--text-accent);">Entry Barriers:</h4>
+                ${competitive.barriers_to_entry.map(barrier => `<div class="trend-item">• ${barrier}</div>`).join('')}
+            `;
+        }
+
+        function displayFinancialMetrics(financial) {
+            const container = document.getElementById('financialMetrics');
+            container.innerHTML = `
+                <div class="metric-highlight">CAC: $${financial.customer_acquisition_cost}</div>
+                <div class="metric-highlight">LTV: $${financial.lifetime_value}</div>
+                <div class="metric-highlight">LTV/CAC Ratio: ${(financial.lifetime_value / financial.customer_acquisition_cost).toFixed(1)}x</div>
+                <div>Gross Margin: ${financial.gross_margin.toFixed(1)}%</div>
+                <div>Operating Margin: ${financial.operating_margin.toFixed(1)}%</div>
+                <div>Monthly Burn: $${(financial.burn_rate / 1000).toFixed(0)}K</div>
+                <div>Runway: ${financial.runway_months} months</div>
+                <div>Break-even Units: ${financial.break_even_units.toLocaleString()}</div>
+            `;
+        }
+
+        function displayRiskAnalysis(risk) {
+            const container = document.getElementById('riskAnalysis');
+            container.innerHTML = `
+                <div class="metric-highlight">Overall Risk: ${risk.overall_risk}%</div>
+                <div>Market Risk: ${risk.market_risk}%</div>
+                <div>Execution Risk: ${risk.execution_risk}%</div>
+                <div>Financial Risk: ${risk.financial_risk}%</div>
+                <div>Regulatory Risk: ${risk.regulatory_risk}%</div>
+                <div>Technology Risk: ${risk.technology_risk}%</div>
+                <h4 style="margin-top: 1rem; color: var(--text-accent);">Mitigation Strategies:</h4>
+                ${risk.risk_mitigation.map(strategy => `<div class="trend-item">• ${strategy}</div>`).join('')}
+            `;
+        }
+
+        function displaySuccessProbability(probability) {
+            const container = document.getElementById('successProbability');
+            const color = probability > 70 ? 'var(--success-color)' : 
+                         probability > 50 ? 'var(--warning-color)' : 'var(--error-color)';
+            
+            container.innerHTML = `
+                <div class="probability-circle" style="background: conic-gradient(${color} ${probability * 3.6}deg, rgba(255,255,255,0.1) 0deg)">
+                    <span style="color: ${color}">${probability}%</span>
+                </div>
+                <div style="color: var(--text-secondary);">Probability of Success</div>
+            `;
+        }
+
+        function displayKPITargets(kpis) {
+            const container = document.getElementById('kpiTargets');
+            container.innerHTML = `
+                <div class="kpi-grid">
+                    <div class="kpi-item">
+                        <div class="kpi-value">$${(kpis.monthly_revenue_target / 1000).toFixed(0)}K</div>
+                        <div class="kpi-label">Monthly Revenue</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">${kpis.customer_acquisition_target}</div>
+                        <div class="kpi-label">Customer Target</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">${kpis.gross_margin_target.toFixed(1)}%</div>
+                        <div class="kpi-label">Gross Margin</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">$${(kpis.cash_burn_target / 1000).toFixed(0)}K</div>
+                        <div class="kpi-label">Monthly Burn</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">${kpis.market_share_target.toFixed(1)}%</div>
+                        <div class="kpi-label">Market Share</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">${kpis.roi_milestone.toFixed(0)}%</div>
+                        <div class="kpi-label">ROI Milestone</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayMilestones(milestones) {
+            const container = document.getElementById('milestonesTimeline');
+            container.innerHTML = `
+                <div class="timeline">
+                    ${milestones.map(milestone => `
+                        <div class="milestone">
+                            <div class="milestone-month">Month ${milestone.month}</div>
+                            <div class="milestone-content">
+                                <div class="milestone-name">${milestone.name}</div>
+                                <div class="milestone-description">${milestone.description}</div>
+                                <div style="color: var(--text-accent); font-size: 0.85rem; margin-top: 0.25rem;">
+                                    Budget: $${(milestone.budget_allocated / 1000).toFixed(0)}K
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
         }
 
         function showError(message, isTemporary = false) {

@@ -166,6 +166,16 @@ def calculate_roi():
         # Get market insights
         market_insights = calculator.get_market_insights(validated_data['target_industry'])
         
+        # Generate comprehensive business intelligence
+        business_intelligence = calculator.generate_business_intelligence(
+            investment=cost_analysis['total_cost'],
+            industry=validated_data['target_industry'],
+            project_type=validated_data['project_type'],
+            company_size=validated_data['company_size'],
+            timeline_months=cost_analysis['timeline_months'],
+            roi_result=roi_result
+        )
+        
         # Generate recommendations
         recommendations = calculator.generate_recommendations(
             validated_data['company_size'],
@@ -206,11 +216,12 @@ def calculate_roi():
                 'sensitivity_analysis': roi_result.sensitivity_analysis
             },
             'market_insights': market_insights,
+            'business_intelligence': business_intelligence,
             'recommendations': recommendations,
             'calculation_metadata': {
                 'calculation_date': roi_result.calculation_date.isoformat(),
-                'calculator_version': '2.0.0',
-                'methodology': 'Enhanced Monte Carlo with NPV/IRR analysis'
+                'calculator_version': '2.1.0',
+                'methodology': 'Enhanced Monte Carlo with NPV/IRR analysis + Advanced Business Intelligence'
             }
         }
         
