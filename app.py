@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Business ROI Calculator - Enhanced Version
+Business ROI Calculator - Enhanced Termux-Compatible Version
 Advanced web application with PDF reports, multi-currency, user auth, and more
 """
 
@@ -15,17 +15,10 @@ from functools import wraps
 import io
 import base64
 from reportlab.lib.pagesizes import letter, A4
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.lib import colors
-from reportlab.graphics.shapes import Drawing
-from reportlab.graphics.charts.barcharts import VerticalBarChart
-from reportlab.graphics.charts.piecharts import Pie
-import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.use('Agg')
-import numpy as np
 
 app = Flask(__name__)
 app.secret_key = 'business_roi_calculator_secret_key_2024'
