@@ -846,7 +846,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadProjectTypes();
             setupEventListeners();
-            setupRealTimeValidation();
+            setupSmartValidation();
         });
 
         // Load project types from API
@@ -931,17 +931,20 @@
             document.getElementById('exportHtmlBtn').addEventListener('click', exportHTML);
         }
 
-        // Setup real-time validation
-        function setupRealTimeValidation() {
-            const inputs = ['companyName', 'companySize', 'targetIndustry'];
-            inputs.forEach(inputId => {
-                const element = document.getElementById(inputId);
-                element.addEventListener('input', validateInput);
-                element.addEventListener('change', validateInput);
+        // Setup smart validation - clears errors when fields are completed
+        function setupSmartValidation() {
+            // Clear errors when user types or selects
+            document.getElementById('companyName').addEventListener('input', clearValidationErrors);
+            document.getElementById('companySize').addEventListener('change', clearValidationErrors);
+            document.getElementById('targetIndustry').addEventListener('change', clearValidationErrors);
+            
+            // Clear errors when project type is selected
+            document.querySelectorAll('.project-card').forEach(card => {
+                card.addEventListener('click', clearValidationErrors);
             });
         }
 
-        // Enhanced input validation with real-time feedback
+        // Enhanced input validation - only shows errors when submitting
         function validateInput() {
             const errors = [];
             const companyName = document.getElementById('companyName').value.trim();
@@ -980,7 +983,7 @@
                 errors.push('Custom timeline must be between 1 and 120 months');
             }
             
-            // Display validation errors
+            // Only show errors when specifically requested (during calculation)
             const errorContainer = document.getElementById('validationErrors');
             if (errors.length > 0) {
                 errorContainer.innerHTML = errors.map(error => 
@@ -992,6 +995,12 @@
                 errorContainer.style.display = 'none';
                 return true;
             }
+        }
+
+        // Clear validation errors when user makes changes
+        function clearValidationErrors() {
+            const errorContainer = document.getElementById('validationErrors');
+            errorContainer.style.display = 'none';
         }
 
         // Calculate ROI with enhanced features and validation
@@ -1303,18 +1312,22 @@
 
         // Helper functions
         function getRiskDescription(riskScore) {
-            if (riskScore <= 30) {
-                return 'Low risk investment with stable returns expected';
-            } else if (riskScore <= 60) {
-                return 'Moderate risk with balanced risk-reward profile';
+            if (riskScore <= 25) {
+                return 'Low risk - Conservative investment with predictable outcomes';
+            } else if (riskScore <= 45) {
+                return 'Low-Moderate risk - Generally stable with some variability';
+            } else if (riskScore <= 65) {
+                return 'Moderate risk - Balanced approach with reasonable upside';
+            } else if (riskScore <= 80) {
+                return 'Moderate-High risk - Good potential but requires monitoring';
             } else {
-                return 'High risk investment requiring careful monitoring';
+                return 'High risk - Significant potential but needs careful management';
             }
         }
 
         function getRiskCardType(riskScore) {
-            if (riskScore <= 30) return 'success';
-            if (riskScore <= 60) return 'warning';
+            if (riskScore <= 45) return 'success';
+            if (riskScore <= 75) return 'warning';
             return 'error';
         }
 
