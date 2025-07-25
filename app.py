@@ -437,72 +437,186 @@ def get_projects():
 def export_html_report():
     """Generate HTML report for current calculation"""
     try:
-        # Get the last calculation data from request args or use sample data
+        # Get calculation parameters from URL
         company_name = request.args.get('company', 'Sample Company')
+        company_size = request.args.get('company_size', 'medium')
+        current_industry = request.args.get('current_industry', 'saas')
+        project_type = request.args.get('project_type', 'product_development')
+        target_industry = request.args.get('target_industry', 'saas')
         currency = request.args.get('currency', 'USD')
         
-        # For demo purposes, create a sample report
+        # Perform actual calculations
+        cost_analysis = calculator.calculate_project_cost(
+            company_size, project_type, target_industry, currency
+        )
+        
+        roi_projections = calculator.calculate_roi_projection(
+            cost_analysis['total_cost'], 
+            target_industry, 
+            project_type, 
+            cost_analysis['timeline_months'],
+            currency
+        )
+        
+        market_insights = calculator.get_market_insights(target_industry)
+        risk_assessment = calculator.calculate_risk_assessment(company_size, project_type, target_industry)
+        recommendations = calculator._get_recommendations(company_size, project_type, target_industry)
+        
+        # Generate HTML report with actual data
         html_report = f"""
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Business ROI Analysis Report</title>
+            <title>Business ROI Analysis Report - {company_name}</title>
             <style>
-                body {{ font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }}
-                .container {{ background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
-                h1 {{ color: #667eea; text-align: center; }}
+                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background: #f8f9fa; }}
+                .container {{ background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 1000px; margin: 0 auto; }}
+                h1 {{ color: #667eea; text-align: center; font-size: 2.5rem; margin-bottom: 2rem; }}
+                h2 {{ color: #4a5568; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin-top: 2rem; }}
+                .header-info {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; }}
                 .section {{ margin: 30px 0; }}
-                table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-                th, td {{ padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }}
-                th {{ background-color: #667eea; color: white; }}
-                .metric {{ display: inline-block; margin: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; }}
-                .download-note {{ background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0; }}
+                table {{ width: 100%; border-collapse: collapse; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
+                th, td {{ padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }}
+                th {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; }}
+                tr:nth-child(even) {{ background-color: #f7fafc; }}
+                .metric-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }}
+                .metric {{ background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; }}
+                .metric-value {{ font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; }}
+                .metric-label {{ font-size: 0.9rem; opacity: 0.9; }}
+                .risk-{risk_assessment['risk_category'].lower()} {{ 
+                    color: {risk_assessment['risk_color']}; 
+                    font-weight: bold; 
+                    padding: 5px 15px; 
+                    border-radius: 20px; 
+                    background: rgba(255,255,255,0.1); 
+                    display: inline-block; 
+                }}
+                .recommendations {{ background: #e6fffa; padding: 20px; border-radius: 10px; border-left: 4px solid #38b2ac; }}
+                .recommendations ul {{ margin: 0; padding-left: 20px; }}
+                .recommendations li {{ margin: 10px 0; line-height: 1.6; }}
+                .footer {{ text-align: center; margin-top: 40px; padding: 20px; background: #f7fafc; border-radius: 10px; }}
+                @media print {{ body {{ margin: 0; }} .container {{ box-shadow: none; }} }}
             </style>
         </head>
         <body>
             <div class="container">
-                <h1>Business ROI Analysis Report</h1>
+                <h1>📊 Business ROI Analysis Report</h1>
                 
-                <div class="download-note">
-                    <strong>📄 Professional Report Generation</strong><br>
-                    This is a sample HTML report. In the full version, your actual calculation results would appear here with:
-                    <ul>
-                        <li>Complete cost breakdown</li>
-                        <li>Detailed ROI projections</li>
-                        <li>Risk assessment analysis</li>
-                        <li>Market insights and recommendations</li>
-                    </ul>
-                    <p><strong>💡 Tip:</strong> Use Ctrl+P to save this as a PDF!</p>
+                <div class="header-info">
+                    <h2 style="color: white; border: none; margin: 0;">Project Overview</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 15px;">
+                        <div><strong>Company:</strong> {company_name}</div>
+                        <div><strong>Project:</strong> {PROJECT_TYPES[project_type]['description']}</div>
+                        <div><strong>Industry:</strong> {target_industry.replace('_', ' ').title()}</div>
+                        <div><strong>Generated:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M')}</div>
+                        <div><strong>Currency:</strong> {CURRENCIES[currency]['symbol']} {currency}</div>
+                        <div><strong>Timeline:</strong> {cost_analysis['timeline_months']} months</div>
+                    </div>
                 </div>
                 
                 <div class="section">
-                    <h2>Project Information</h2>
+                    <h2>💰 Cost Analysis</h2>
+                    <div class="metric-grid">
+                        <div class="metric">
+                            <div class="metric-value">{CURRENCIES[currency]['symbol']}{cost_analysis['total_cost']:,}</div>
+                            <div class="metric-label">Total Project Cost</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">{cost_analysis['timeline_months']}</div>
+                            <div class="metric-label">Months Timeline</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">{cost_analysis['complexity']}</div>
+                            <div class="metric-label">Complexity Level</div>
+                        </div>
+                    </div>
+                    
                     <table>
-                        <tr><td><strong>Company:</strong></td><td>{company_name}</td></tr>
-                        <tr><td><strong>Generated:</strong></td><td>{datetime.now().strftime('%Y-%m-%d %H:%M')}</td></tr>
-                        <tr><td><strong>Currency:</strong></td><td>{currency}</td></tr>
-                        <tr><td><strong>Status:</strong></td><td>Demo Report</td></tr>
+                        <tr><th>Cost Component</th><th>Amount</th><th>Percentage</th></tr>
+                        <tr><td>Development</td><td>{CURRENCIES[currency]['symbol']}{cost_analysis['breakdown']['development']:,}</td><td>60%</td></tr>
+                        <tr><td>Design</td><td>{CURRENCIES[currency]['symbol']}{cost_analysis['breakdown']['design']:,}</td><td>15%</td></tr>
+                        <tr><td>Testing & QA</td><td>{CURRENCIES[currency]['symbol']}{cost_analysis['breakdown']['testing']:,}</td><td>10%</td></tr>
+                        <tr><td>Deployment</td><td>{CURRENCIES[currency]['symbol']}{cost_analysis['breakdown']['deployment']:,}</td><td>5%</td></tr>
+                        <tr><td>Project Management</td><td>{CURRENCIES[currency]['symbol']}{cost_analysis['breakdown']['project_management']:,}</td><td>10%</td></tr>
                     </table>
                 </div>
                 
                 <div class="section">
-                    <h2>Your Enhanced ROI Calculator Features</h2>
-                    <ul>
-                        <li>✅ Multi-currency support (10 currencies)</li>
-                        <li>✅ Risk assessment (4 factors)</li>
-                        <li>✅ 15 project types & industries</li>
-                        <li>✅ Beautiful Chart.js visualizations</li>
-                        <li>✅ Enhanced Infinex UI/UX</li>
-                        <li>✅ Professional HTML reports</li>
-                        <li>✅ Zero dependency issues</li>
-                        <li>✅ Mobile-optimized</li>
-                    </ul>
+                    <h2>📈 ROI Projections (3-Year Outlook)</h2>
+                    <table>
+                        <tr><th>Scenario</th><th>ROI %</th><th>Annual Return</th><th>Total 3-Year ROI</th><th>Break-even</th><th>Probability</th></tr>
+        """
+        
+        for scenario, data in roi_projections.items():
+            html_report += f"""
+                        <tr>
+                            <td><strong>{scenario.title()}</strong><br><small>{data['description']}</small></td>
+                            <td><strong>{data['roi_percentage']}%</strong></td>
+                            <td>{CURRENCIES[currency]['symbol']}{data['annual_return']:,}</td>
+                            <td>{CURRENCIES[currency]['symbol']}{data['total_roi']:,}</td>
+                            <td>{data['break_even_months']} months</td>
+                            <td>{int(data['probability'] * 100)}%</td>
+                        </tr>
+            """
+        
+        html_report += f"""
+                    </table>
                 </div>
                 
                 <div class="section">
-                    <h2>Commercial Value</h2>
-                    <p><strong>Your calculator is worth $25,000 - $250,000!</strong></p>
-                    <p>This professional-grade business tool provides comprehensive ROI analysis that companies pay thousands for.</p>
+                    <h2>⚖️ Risk Assessment</h2>
+                    <p>Overall Risk Level: <span class="risk-{risk_assessment['risk_category'].lower()}">{risk_assessment['risk_category']}</span></p>
+                    <p><strong>Risk Score:</strong> {risk_assessment['overall_risk']:.3f} out of 1.0</p>
+                    
+                    <div class="metric-grid">
+                        <div class="metric">
+                            <div class="metric-value">{risk_assessment['risk_factors']['company_size_risk']:.1%}</div>
+                            <div class="metric-label">Company Size Risk</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">{risk_assessment['risk_factors']['project_complexity_risk']:.1%}</div>
+                            <div class="metric-label">Project Complexity</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">{risk_assessment['risk_factors']['industry_risk']:.1%}</div>
+                            <div class="metric-label">Industry Risk</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">{risk_assessment['risk_factors']['market_volatility']:.1%}</div>
+                            <div class="metric-label">Market Volatility</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>🌍 Market Insights</h2>
+                    <table>
+                        <tr><th>Market Factor</th><th>Value</th></tr>
+                        <tr><td>Market Size</td><td>{market_insights['market_size']}</td></tr>
+                        <tr><td>Growth Rate</td><td>{market_insights['growth_rate']}</td></tr>
+                        <tr><td>Risk Level</td><td>{market_insights['risk_level']}</td></tr>
+                        <tr><td>Volatility</td><td>{market_insights['volatility']}</td></tr>
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h2>💡 Strategic Recommendations</h2>
+                    <div class="recommendations">
+                        <ul>
+        """
+        
+        for rec in recommendations:
+            html_report += f"<li>{rec}</li>"
+        
+        html_report += f"""
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <p><strong>📄 Professional Business ROI Analysis</strong></p>
+                    <p>Generated by Enhanced ROI Calculator • {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+                    <p><small>💡 Tip: Use Ctrl+P (Cmd+P on Mac) to save this report as a PDF</small></p>
                 </div>
             </div>
         </body>

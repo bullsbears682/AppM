@@ -1283,9 +1283,26 @@
         // Export HTML functionality
         function exportHTML() {
             const companyName = document.getElementById('companyName').value || 'Sample Company';
+            const companySize = document.getElementById('companySize').value || 'medium';
+            const currentIndustry = document.getElementById('currentIndustry').value || 'saas';
+            const targetIndustry = document.getElementById('targetIndustry').value || 'saas';
             const currency = document.getElementById('currency').value || 'USD';
             
-            window.open(`/api/export-html?company=${encodeURIComponent(companyName)}&currency=${currency}`, '_blank');
+            if (!selectedProjectType) {
+                alert('Please select a project type first, then calculate ROI before exporting');
+                return;
+            }
+            
+            const params = new URLSearchParams({
+                company: companyName,
+                company_size: companySize,
+                current_industry: currentIndustry,
+                project_type: selectedProjectType,
+                target_industry: targetIndustry,
+                currency: currency
+            });
+            
+            window.open(`/api/export-html?${params.toString()}`, '_blank');
         }
     </script>
 </body>
