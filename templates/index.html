@@ -1337,7 +1337,7 @@
             
             // Validate custom investment if provided
             const customInvestment = document.getElementById('customInvestment').value;
-            if (customInvestment && (customInvestment < 1000 || customInvestment > 500000000)) {
+            if (customInvestment && parseFloat(customInvestment) > 0 && (parseFloat(customInvestment) < 1000 || parseFloat(customInvestment) > 500000000)) {
                 errors.push('Custom investment must be between $1,000 and $500,000,000');
             }
             
@@ -1394,10 +1394,10 @@
                 };
                 
                 // Add optional fields if provided
-                const customInvestment = document.getElementById('customInvestment').value;
-                if (customInvestment) {
-                    formData.custom_investment = parseFloat(customInvestment);
-                }
+                            const customInvestment = document.getElementById('customInvestment').value;
+            if (customInvestment && parseFloat(customInvestment) > 0) {
+                formData.custom_investment = parseFloat(customInvestment);
+            }
                 
                 const customTimeline = document.getElementById('customTimeline').value;
                 if (customTimeline) {
