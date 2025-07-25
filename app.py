@@ -21,6 +21,8 @@ from utils.validators import (
 from utils.calculator import EnhancedROICalculator
 from utils.cache import calculation_cache
 from utils.rate_limiter import rate_limit, calculation_limiter, api_limiter
+from utils.export import ReportGenerator
+from utils.interactive import ScenarioManager, WhatIfAnalyzer, RealTimeCalculator
 
 # Load environment variables
 load_dotenv()
@@ -43,8 +45,12 @@ app.config.from_object(config_class)
 if config_class.ENABLE_CORS:
     CORS(app)
 
-# Initialize calculator
+# Initialize calculator and enhanced tools
 calculator = EnhancedROICalculator()
+report_generator = ReportGenerator()
+scenario_manager = ScenarioManager()
+what_if_analyzer = WhatIfAnalyzer()
+realtime_calculator = RealTimeCalculator()
 
 # Validate configuration on startup
 try:
@@ -719,6 +725,113 @@ def export_html_report():
     except Exception as e:
         logger.error(f"Error generating HTML report: {str(e)}")
         raise ValidationError(f"Failed to generate report: {str(e)}")
+
+# Advanced Interactive Features
+@app.route('/api/scenarios', methods=['POST'])
+@rate_limit(calculation_limiter, "Too many scenario calculations.")
+@handle_validation_errors  
+def create_scenario():
+    """Create a new ROI scenario"""
+    
+    data = request.get_json()
+    scenario_name = data.get('scenario_name')
+    parameters = data.get('parameters', {})
+    
+    if not scenario_name:
+        raise ValidationError("Scenario name is required")
+    
+    # Validate parameters
+    validated_params = APIValidator.validate_roi_calculation_request(parameters)
+    
+    # Create scenario
+    scenario_data = scenario_manager.create_scenario(scenario_name, validated_params)
+    
+    return jsonify({
+        'success': True,
+        'scenario': scenario_data,
+        'message': f'Scenario "{scenario_name}" created successfully'
+    })
+
+@app.route('/api/scenarios/compare', methods=['POST'])
+@rate_limit(api_limiter, "Too many comparison requests.")
+@handle_validation_errors
+def compare_scenarios():
+    """Compare multiple scenarios"""
+    
+    data = request.get_json()
+    scenario_names = data.get('scenario_names', [])
+    
+    if len(scenario_names) < 2:
+        raise ValidationError("At least 2 scenarios required for comparison")
+    
+    comparison = scenario_manager.compare_scenarios(scenario_names)
+    
+    return jsonify({
+        'success': True,
+        'comparison': comparison
+    })
+
+@app.route('/api/what-if/investment', methods=['POST'])
+@rate_limit(calculation_limiter, "Too many what-if analyses.")
+@handle_validation_errors
+def what_if_investment():
+    """Perform what-if analysis on investment amounts"""
+    
+    data = request.get_json()
+    base_parameters = data.get('base_parameters', {})
+    investment_range = data.get('investment_range', [10000, 1000000])
+    steps = data.get('steps', 10)
+    
+    # Validate parameters
+    validated_params = APIValidator.validate_roi_calculation_request(base_parameters)
+    
+    analysis = what_if_analyzer.analyze_investment_sensitivity(
+        validated_params, 
+        tuple(investment_range), 
+        steps
+    )
+    
+    return jsonify({
+        'success': True,
+        'analysis': analysis
+    })
+
+@app.route('/api/export/<format_type>', methods=['POST'])
+@rate_limit(api_limiter, "Too many export requests.")
+@handle_validation_errors
+def export_advanced_report(format_type):
+    """Export calculation results in professional formats"""
+    
+    data = request.get_json()
+    if not data:
+        raise ValidationError("No calculation data provided for export")
+    
+    if format_type == 'executive':
+        html_report = report_generator.generate_executive_summary(data)
+        return app.response_class(html_report, mimetype='text/html')
+    
+    elif format_type == 'detailed':
+        html_report = report_generator.generate_detailed_report(data)
+        return app.response_class(html_report, mimetype='text/html')
+    
+    elif format_type == 'json':
+        json_export = report_generator.generate_json_export(data)
+        return app.response_class(
+            json_export,
+            mimetype='application/json',
+            headers={'Content-Disposition': 'attachment; filename=roi_analysis.json'}
+        )
+    
+    elif format_type == 'csv':
+        csv_export = report_generator.generate_csv_export(data)
+        return app.response_class(
+            csv_export,
+            mimetype='text/csv',
+            headers={'Content-Disposition': 'attachment; filename=roi_analysis.csv'}
+        )
+    
+    else:
+        raise ValidationError(f"Unsupported export format: {format_type}")
 
 @app.errorhandler(404)
 def not_found(error):

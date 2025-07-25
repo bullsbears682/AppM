@@ -469,6 +469,112 @@
             border-left: 4px solid var(--text-accent);
         }
 
+        /* Enhanced Export Styles */
+        .export-section, .scenario-section {
+            margin: 2rem 0;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .export-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .export-btn {
+            background: var(--secondary-gradient);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
+        }
+
+        .export-btn.executive {
+            background: var(--primary-gradient);
+        }
+
+        .export-btn.detailed {
+            background: var(--accent-gradient);
+        }
+
+        .export-btn.json {
+            background: var(--success-gradient);
+        }
+
+        .export-btn.csv {
+            background: var(--warning-gradient);
+        }
+
+        .scenario-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+
+        .scenario-input {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-size: 1rem;
+            min-width: 200px;
+        }
+
+        .scenario-input:focus {
+            outline: none;
+            border-color: var(--text-accent);
+            box-shadow: 0 0 0 2px rgba(0, 242, 254, 0.2);
+        }
+
+        .scenarios-list {
+            margin-top: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .scenario-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .scenario-name {
+            font-weight: bold;
+            color: var(--text-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .scenario-metrics {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
         /* Loading Overlay */
         .loading-overlay {
             position: fixed;
@@ -973,11 +1079,38 @@
                 <canvas id="costChart"></canvas>
             </div>
 
-            <!-- HTML Export Button -->
-            <div style="text-align: center; margin-top: 2rem;">
-                <button class="calculate-btn" id="exportHtmlBtn" style="display: none;">
-                    <i class="fas fa-file-code"></i> Export Comprehensive Report
-                </button>
+            <!-- Enhanced Export Section -->
+            <div class="export-section" id="exportSection" style="display: none;">
+                <h3><i class="fas fa-download"></i> Export Professional Reports</h3>
+                <div class="export-buttons">
+                    <button class="export-btn executive" onclick="exportReport('executive')">
+                        <i class="fas fa-chart-pie"></i> Executive Summary
+                    </button>
+                    <button class="export-btn detailed" onclick="exportReport('detailed')">
+                        <i class="fas fa-file-alt"></i> Detailed Report
+                    </button>
+                    <button class="export-btn json" onclick="exportReport('json')">
+                        <i class="fas fa-code"></i> JSON Data
+                    </button>
+                    <button class="export-btn csv" onclick="exportReport('csv')">
+                        <i class="fas fa-table"></i> CSV Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scenario Management Section -->
+            <div class="scenario-section" id="scenarioSection" style="display: none;">
+                <h3><i class="fas fa-layer-group"></i> Scenario Management</h3>
+                <div class="scenario-controls">
+                    <input type="text" id="scenarioName" placeholder="Scenario name..." class="scenario-input">
+                    <button class="calculate-btn" onclick="saveScenario()">
+                        <i class="fas fa-save"></i> Save Scenario
+                    </button>
+                    <button class="calculate-btn" onclick="showScenarioComparison()">
+                        <i class="fas fa-balance-scale"></i> Compare Scenarios
+                    </button>
+                </div>
+                <div id="scenariosList" class="scenarios-list"></div>
             </div>
         </section>
     </div>
@@ -1075,7 +1208,7 @@
         // Setup event listeners
         function setupEventListeners() {
             document.getElementById('calculateBtn').addEventListener('click', calculateROI);
-            document.getElementById('exportHtmlBtn').addEventListener('click', exportHTML);
+            // Export and scenario management will be handled by onclick events
         }
 
         // Setup smart validation - clears errors when fields are completed
@@ -1219,6 +1352,10 @@
                 displayResults(results);
                 displayAdvancedAnalytics(results);
                 
+                // Show export and scenario sections
+                document.getElementById('exportSection').style.display = 'block';
+                document.getElementById('scenarioSection').style.display = 'block';
+                
             } catch (error) {
                 console.error('Error calculating ROI:', error);
                 showError(`Error calculating ROI: ${error.message}`);
@@ -1314,7 +1451,7 @@
             createCostChart(data.cost_analysis.cost_breakdown);
             
             // Show export button
-            document.getElementById('exportHtmlBtn').style.display = 'block';
+                            // Export sections will be shown after successful calculation
             
             // Show results with animation
             container.style.display = 'block';
@@ -1680,6 +1817,175 @@
             });
             
             window.open(`/api/export-html?${params.toString()}`, '_blank');
+        }
+
+        // Enhanced Export Functions
+        async function exportReport(format) {
+            if (!currentResults) {
+                showError('No calculation results available for export');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/export/${format}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(currentResults)
+                });
+
+                if (format === 'executive' || format === 'detailed') {
+                    const html = await response.text();
+                    const newWindow = window.open('', '_blank');
+                    newWindow.document.write(html);
+                    newWindow.document.close();
+                } else {
+                    // Download file for JSON/CSV
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `roi_analysis.${format}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }
+
+                showSuccess(`${format.toUpperCase()} report exported successfully!`);
+            } catch (error) {
+                showError(`Export failed: ${error.message}`);
+            }
+        }
+
+        // Scenario Management Functions
+        let savedScenarios = [];
+
+        async function saveScenario() {
+            const scenarioName = document.getElementById('scenarioName').value.trim();
+            
+            if (!scenarioName) {
+                showError('Please enter a scenario name');
+                return;
+            }
+
+            if (!currentResults) {
+                showError('No calculation results to save');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/scenarios', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        scenario_name: scenarioName,
+                        parameters: currentResults.input_parameters
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    savedScenarios.push({
+                        name: scenarioName,
+                        roi: currentResults.roi_projection.roi_percentage,
+                        investment: currentResults.cost_analysis.total_cost,
+                        risk: currentResults.roi_projection.risk_score
+                    });
+                    
+                    updateScenariosList();
+                    document.getElementById('scenarioName').value = '';
+                    showSuccess(`Scenario "${scenarioName}" saved successfully!`);
+                } else {
+                    showError('Failed to save scenario');
+                }
+            } catch (error) {
+                showError(`Save failed: ${error.message}`);
+            }
+        }
+
+        function updateScenariosList() {
+            const container = document.getElementById('scenariosList');
+            
+            if (savedScenarios.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-secondary);">No scenarios saved yet</p>';
+                return;
+            }
+
+            container.innerHTML = savedScenarios.map(scenario => `
+                <div class="scenario-item">
+                    <div class="scenario-name">${scenario.name}</div>
+                    <div class="scenario-metrics">
+                        ROI: ${scenario.roi.toFixed(1)}% | 
+                        Investment: $${scenario.investment.toLocaleString()} | 
+                        Risk: ${scenario.risk.toFixed(1)}%
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function showScenarioComparison() {
+            if (savedScenarios.length < 2) {
+                showError('Need at least 2 scenarios for comparison');
+                return;
+            }
+
+            try {
+                const scenarioNames = savedScenarios.map(s => s.name);
+                const response = await fetch('/api/scenarios/compare', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        scenario_names: scenarioNames
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayScenarioComparison(result.comparison);
+                } else {
+                    showError('Comparison failed');
+                }
+            } catch (error) {
+                showError(`Comparison failed: ${error.message}`);
+            }
+        }
+
+        function displayScenarioComparison(comparison) {
+            const modal = document.createElement('div');
+            modal.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 16px; padding: 2rem; max-width: 800px; max-height: 80vh; overflow-y: auto;">
+                        <h2 style="color: var(--text-accent); margin-bottom: 1rem;">📊 Scenario Comparison</h2>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                            ${comparison.scenarios.map(scenario => `
+                                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                                    <h4 style="color: var(--text-accent);">${scenario.name}</h4>
+                                    <div>ROI: ${scenario.roi_percentage.toFixed(1)}%</div>
+                                    <div>Risk: ${scenario.risk_score.toFixed(1)}%</div>
+                                    <div>Investment: $${scenario.total_investment.toLocaleString()}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <h3 style="color: var(--text-accent); margin: 1rem 0;">💡 Recommendations:</h3>
+                        <ul style="color: var(--text-secondary);">
+                            ${comparison.recommendations.map(rec => `<li style="margin: 0.5rem 0;">${rec}</li>`).join('')}
+                        </ul>
+                        
+                        <button onclick="this.closest('div').parentElement.remove()" style="background: var(--accent-gradient); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; margin-top: 1rem; cursor: pointer;">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
     </script>
 </body>
