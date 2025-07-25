@@ -671,12 +671,7 @@
                 <i class="fas fa-chart-line"></i> ROI Calculator Pro
             </div>
             <div class="nav-links">
-                <a href="#" class="nav-btn" onclick="showLoginModal()">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </a>
-                <a href="#" class="nav-btn" onclick="showRegisterModal()">
-                    <i class="fas fa-user-plus"></i> Register
-                </a>
+                <span class="text-secondary">Calculate Your Business Success</span>
             </div>
         </div>
     </header>
@@ -885,10 +880,10 @@
                 <canvas id="costChart"></canvas>
             </div>
 
-            <!-- PDF Export Button -->
+            <!-- HTML Export Button -->
             <div style="text-align: center; margin-top: 2rem;">
-                <button class="calculate-btn" id="exportPdfBtn" style="display: none;">
-                    <i class="fas fa-file-pdf"></i> Export PDF Report
+                <button class="calculate-btn" id="exportHtmlBtn" style="display: none;">
+                    <i class="fas fa-file-code"></i> Export HTML Report
                 </button>
             </div>
         </section>
@@ -978,7 +973,7 @@
         // Setup event listeners
         function setupEventListeners() {
             document.getElementById('calculateBtn').addEventListener('click', calculateROI);
-            document.getElementById('exportPdfBtn').addEventListener('click', exportPDF);
+            document.getElementById('exportHtmlBtn').addEventListener('click', exportHTML);
         }
 
         // Setup currency converter
@@ -1087,8 +1082,8 @@
             createEnhancedROIChart(data.roi_projections);
             createEnhancedCostChart(data.cost_analysis.breakdown);
             
-            // Show export button if user is logged in or for demo
-            document.getElementById('exportPdfBtn').style.display = 'block';
+            // Show export button for demo
+            document.getElementById('exportHtmlBtn').style.display = 'block';
             
             // Show results with animation
             container.style.display = 'block';
@@ -1285,25 +1280,12 @@
             });
         }
 
-        // Export PDF functionality
-        function exportPDF() {
-            if (!currentResults || !currentResults.project_id) {
-                alert('Please save your project first by logging in');
-                return;
-            }
+        // Export HTML functionality
+        function exportHTML() {
+            const companyName = document.getElementById('companyName').value || 'Sample Company';
+            const currency = document.getElementById('currency').value || 'USD';
             
-            window.open(`/api/generate-pdf/${currentResults.project_id}`, '_blank');
-        }
-
-        // Modal functions (placeholder for login/register)
-        function showLoginModal() {
-            alert('Login functionality - redirect to login page');
-            // In a real implementation, this would show a modal or redirect
-        }
-
-        function showRegisterModal() {
-            alert('Register functionality - redirect to register page');
-            // In a real implementation, this would show a modal or redirect
+            window.open(`/api/export-html?company=${encodeURIComponent(companyName)}&currency=${currency}`, '_blank');
         }
     </script>
 </body>
