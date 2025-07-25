@@ -94,7 +94,8 @@ class Config:
         'startup': CompanySizeConfig(0.7, 5000, 100000, 0.3, 5),
         'small': CompanySizeConfig(1.0, 25000, 500000, 0.2, 15),
         'medium': CompanySizeConfig(1.5, 100000, 2000000, 0.15, 50),
-        'enterprise': CompanySizeConfig(2.5, 500000, 10000000, 0.1, 200)
+        'large': CompanySizeConfig(2.0, 1000000, 25000000, 0.12, 100),
+        'enterprise': CompanySizeConfig(2.5, 5000000, 100000000, 0.1, 200)
     }
     
     # Industry configurations with enhanced validation
@@ -184,7 +185,7 @@ class Config:
     CALCULATION_PRECISION = 4
     DEFAULT_CURRENCY = 'USD'
     MIN_INVESTMENT = 1000
-    MAX_INVESTMENT = 50000000
+    MAX_INVESTMENT = 500000000  # $500M max investment
     
     # Validation settings
     ENABLE_STRICT_VALIDATION = True

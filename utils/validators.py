@@ -391,13 +391,14 @@ class BusinessValidator:
                     }
                 )
             
-            if investment_amount > company_config.max_budget * 2:  # Allow some flexibility
+            if investment_amount > company_config.max_budget * 5:  # More flexibility for large investments
                 raise BusinessLogicError(
                     f"Investment amount is significantly above typical budget range for {company_size} companies",
                     {
                         'min_budget': company_config.min_budget,
                         'max_budget': company_config.max_budget,
-                        'investment': float(investment_amount)
+                        'investment': float(investment_amount),
+                        'note': 'Consider selecting a larger company size or breaking into phases'
                     }
                 )
         
