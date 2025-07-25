@@ -119,11 +119,11 @@ class Config:
     # Project type configurations
     PROJECT_TYPES = {
         'product_development': ProjectTypeConfig(
-            150000, 12, 2.5, 'New Product Development', 'High', 0.2,
+            150000, 12, 1.5, 'New Product Development', 'High', 0.2,
             ['Product Manager', 'Software Engineer', 'Designer', 'QA Engineer']
         ),
         'digital_transformation': ProjectTypeConfig(
-            200000, 18, 3.0, 'Digital Transformation', 'Very High', 0.15,
+            200000, 18, 1.8, 'Digital Transformation', 'Very High', 0.15,
             ['Solution Architect', 'Change Manager', 'Software Engineer', 'Business Analyst']
         ),
         'market_expansion': ProjectTypeConfig(
@@ -147,11 +147,11 @@ class Config:
             ['Mobile Developer', 'UI/UX Designer', 'Backend Developer']
         ),
         'ai_integration': ProjectTypeConfig(
-            180000, 14, 2.8, 'AI Integration', 'Very High', 0.22,
+            180000, 14, 2.0, 'AI Integration', 'Very High', 0.22,
             ['AI Engineer', 'Data Scientist', 'ML Engineer', 'Software Architect']
         ),
         'blockchain_platform': ProjectTypeConfig(
-            250000, 16, 3.5, 'Blockchain Platform', 'Very High', 0.35,
+            250000, 16, 2.2, 'Blockchain Platform', 'Very High', 0.35,
             ['Blockchain Developer', 'Smart Contract Engineer', 'Security Auditor']
         ),
         'iot_solution': ProjectTypeConfig(

@@ -167,13 +167,20 @@ class EnhancedROICalculator:
             base_roi_multiplier = Decimal(str(project_config.roi_potential))
             growth_rate = Decimal(str(industry_config.growth_rate))
             
-            # Enhanced revenue calculation
+            # Realistic revenue calculation
             base_revenue = investment * base_roi_multiplier
             
-            # Apply growth compounding over timeline
-            monthly_growth_rate = growth_rate / Decimal('12')
-            compounded_multiplier = (Decimal('1') + monthly_growth_rate) ** timeline_months
-            projected_revenue = base_revenue * compounded_multiplier
+            # Apply realistic growth over timeline (max 5 years of growth)
+            max_growth_years = min(timeline_months / 12, 5)  # Cap at 5 years
+            annual_growth_rate = min(growth_rate, 0.5)  # Cap growth at 50% annually
+            
+            # Use simple compound growth instead of exponential
+            growth_multiplier = Decimal('1') + (Decimal(str(annual_growth_rate)) * Decimal(str(max_growth_years)))
+            projected_revenue = base_revenue * growth_multiplier
+            
+            # Cap revenue at reasonable multiples of investment
+            max_reasonable_revenue = investment * Decimal('10')  # Max 10x investment
+            projected_revenue = min(projected_revenue, max_reasonable_revenue)
             
             # Calculate costs and profits
             operating_costs = projected_revenue * Decimal('0.30')  # 30% operating costs
@@ -381,11 +388,18 @@ class EnhancedROICalculator:
             random_roi = max(0.5, random_roi)
             random_timeline = max(6, random_timeline)
             
-            # Calculate ROI for this simulation
+            # Calculate realistic ROI for this simulation
             base_revenue = investment * Decimal(str(random_roi))
-            monthly_growth = Decimal(str(random_growth)) / Decimal('12')
-            compounded = (Decimal('1') + monthly_growth) ** int(random_timeline)
-            projected_revenue = base_revenue * compounded
+            
+            # Apply realistic growth (capped at 5 years and 50% annually)
+            max_growth_years = min(random_timeline / 12, 5)
+            capped_growth = min(random_growth, 0.5)
+            growth_multiplier = Decimal('1') + (Decimal(str(capped_growth)) * Decimal(str(max_growth_years)))
+            projected_revenue = base_revenue * growth_multiplier
+            
+            # Cap at reasonable multiples
+            max_revenue = investment * Decimal('8')  # Max 8x investment for simulations
+            projected_revenue = min(projected_revenue, max_revenue)
             
             operating_costs = projected_revenue * Decimal('0.30')
             net_profit = projected_revenue - operating_costs - investment
@@ -448,11 +462,18 @@ class EnhancedROICalculator:
         return sensitivity
     
     def _calculate_base_roi(self, investment: Decimal, industry_config, project_config, timeline_months: int) -> Decimal:
-        """Calculate base ROI for sensitivity analysis"""
+        """Calculate realistic base ROI for sensitivity analysis"""
         base_revenue = investment * Decimal(str(project_config.roi_potential))
-        monthly_growth = Decimal(str(industry_config.growth_rate)) / Decimal('12')
-        compounded = (Decimal('1') + monthly_growth) ** timeline_months
-        projected_revenue = base_revenue * compounded
+        
+        # Apply realistic growth caps
+        max_growth_years = min(timeline_months / 12, 5)
+        capped_growth = min(industry_config.growth_rate, 0.5)
+        growth_multiplier = Decimal('1') + (Decimal(str(capped_growth)) * Decimal(str(max_growth_years)))
+        projected_revenue = base_revenue * growth_multiplier
+        
+        # Cap at reasonable multiples
+        max_revenue = investment * Decimal('10')
+        projected_revenue = min(projected_revenue, max_revenue)
         
         operating_costs = projected_revenue * Decimal('0.30')
         net_profit = projected_revenue - operating_costs - investment
