@@ -1902,6 +1902,163 @@
             window.open(`/api/export-html?${params.toString()}`, '_blank');
         }
 
+        // Interactive Analytics Cards
+        function toggleAnalyticsCard(card, type) {
+            const isExpanded = card.classList.contains('expanded');
+            
+            // Close all other expanded cards
+            document.querySelectorAll('.analytics-card.expanded').forEach(c => {
+                if (c !== card) {
+                    c.classList.remove('expanded');
+                    c.querySelector('.analytics-details').classList.remove('show');
+                }
+            });
+            
+            // Toggle current card
+            if (isExpanded) {
+                card.classList.remove('expanded');
+                card.querySelector('.analytics-details').classList.remove('show');
+            } else {
+                card.classList.add('expanded');
+                const details = card.querySelector('.analytics-details');
+                details.classList.add('show');
+                
+                // Load detailed content based on type
+                loadDetailedContent(type, card);
+            }
+        }
+
+        function loadDetailedContent(type, card) {
+            const detailsContainer = card.querySelector('.analytics-details > div');
+            
+            if (!currentResults || !currentResults.business_intelligence) {
+                detailsContainer.innerHTML = '<p style="color: var(--text-secondary);">No detailed data available</p>';
+                return;
+            }
+            
+            const bi = currentResults.business_intelligence;
+            
+            switch (type) {
+                case 'market':
+                    detailsContainer.innerHTML = `
+                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">📈 Detailed Market Insights</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <strong>Market Maturity:</strong> ${bi.market_analysis.market_maturity}<br>
+                                <strong>Competition:</strong> ${bi.market_analysis.competition_level}<br>
+                                <strong>Growth Potential:</strong> High
+                            </div>
+                            <div>
+                                <strong>Market Threats:</strong><br>
+                                ${bi.market_analysis.threats.map(t => `• ${t}`).join('<br>')}
+                            </div>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <strong style="color: var(--text-accent);">Seasonal Factors:</strong><br>
+                            ${Object.entries(bi.market_analysis.seasonal_factors).map(([period, factor]) => 
+                                `${period}: ${(parseFloat(factor) * 100).toFixed(0)}%`).join(' | ')}
+                        </div>
+                    `;
+                    break;
+                    
+                case 'competitive':
+                    detailsContainer.innerHTML = `
+                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">⚔️ Competitive Analysis</h4>
+                        <div>
+                            <strong>Competitive Advantage:</strong> ${bi.competitive_analysis.competitive_advantage}<br>
+                            <strong>Pricing Power:</strong> ${bi.competitive_analysis.pricing_power}<br>
+                            <strong>Differentiation Score:</strong> ${bi.competitive_analysis.differentiation_score}/10
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <strong style="color: var(--text-accent);">Competitive Threats:</strong><br>
+                            ${bi.competitive_analysis.competitive_threats.map(t => `• ${t}`).join('<br>')}
+                        </div>
+                    `;
+                    break;
+                    
+                case 'financial':
+                    detailsContainer.innerHTML = `
+                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">💰 Financial Deep Dive</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <strong>Working Capital:</strong> $${(bi.financial_metrics.working_capital_needs / 1000).toFixed(0)}K<br>
+                                <strong>LTV/CAC Ratio:</strong> ${(bi.financial_metrics.lifetime_value / bi.financial_metrics.customer_acquisition_cost).toFixed(1)}x<br>
+                                <strong>Break-even Units:</strong> ${bi.financial_metrics.break_even_units.toLocaleString()}
+                            </div>
+                            <div>
+                                <strong>Cash Runway:</strong> ${bi.financial_metrics.runway_months} months<br>
+                                <strong>Operating Margin:</strong> ${bi.financial_metrics.operating_margin.toFixed(1)}%<br>
+                                <strong>Monthly Burn:</strong> $${(bi.financial_metrics.burn_rate / 1000).toFixed(0)}K
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'risk':
+                    detailsContainer.innerHTML = `
+                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">🛡️ Risk Mitigation</h4>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Risk Mitigation Strategies:</strong><br>
+                            ${bi.risk_analysis.risk_mitigation.map(r => `• ${r}`).join('<br>')}
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-accent);">Contingency Plans:</strong><br>
+                            ${bi.risk_analysis.contingency_plans.map(c => `• ${c}`).join('<br>')}
+                        </div>
+                    `;
+                    break;
+                    
+                case 'success':
+                    detailsContainer.innerHTML = `
+                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">🎯 Success Factors</h4>
+                        <div>
+                            <strong>Key Success Drivers:</strong><br>
+                            • Market growth rate: ${(bi.market_analysis.growth_rate * 100).toFixed(1)}%<br>
+                            • Competitive position: Strong differentiation<br>
+                            • Financial health: Positive unit economics<br>
+                            • Risk profile: ${bi.risk_analysis.overall_risk.toFixed(1)}% overall risk
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <strong style="color: var(--text-accent);">Recommended Actions:</strong><br>
+                            ${bi.recommended_actions.map(a => `• ${a}`).join('<br>')}
+                        </div>
+                    `;
+                    break;
+                    
+                case 'kpi':
+                    detailsContainer.innerHTML = `
+                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">📊 KPI Benchmarks</h4>
+                        <div>
+                            <strong>Industry Benchmarks:</strong><br>
+                            • Customer acquisition target vs industry average<br>
+                            • Gross margin target vs competitors<br>
+                            • Market share goal vs market size<br>
+                            • ROI milestone vs investment timeline
+                        </div>
+                        <div style="margin-top: 1rem; color: var(--text-secondary);">
+                            <em>💡 Tip: Click "Compare Scenarios" to benchmark against different strategies</em>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'milestones':
+                    detailsContainer.innerHTML = `
+                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">🛣️ Critical Path Analysis</h4>
+                        <div>
+                            <strong>Success Criteria:</strong><br>
+                            ${bi.milestones.map(m => `• ${m.name}: ${m.success_criteria}`).join('<br>')}
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <strong style="color: var(--text-accent);">Risk Factors:</strong><br>
+                            • Timeline delays can impact ROI by 10-20%<br>
+                            • Budget overruns reduce net profit<br>
+                            • Market changes affect revenue projections
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
         // Enhanced Export Functions
         async function exportReport(format) {
             if (!currentResults) {
