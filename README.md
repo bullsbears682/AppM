@@ -1,267 +1,391 @@
-# 🚀 Business ROI Calculator
+# Business ROI Calculator - Enhanced Edition v2.0
 
-**A stunning, modern web application that helps companies calculate costs and ROI for their business projects with Infinex-style UI/UX.**
+## 🚀 Advanced financial modeling with Monte Carlo simulations, NPV/IRR analysis, and comprehensive risk assessment
 
-![Business ROI Calculator](https://img.shields.io/badge/Status-Live-brightgreen) ![Python](https://img.shields.io/badge/Python-3.7+-blue) ![Flask](https://img.shields.io/badge/Flask-2.3+-red) ![UI](https://img.shields.io/badge/UI-Infinex%20Style-purple)
+### 📊 Key Features
 
-## ✨ Features
+- **🎯 Advanced Financial Modeling**: Monte Carlo simulations with 1,000+ iterations for confidence intervals
+- **💰 Enhanced Calculations**: NPV, IRR, payback period, break-even analysis with precision calculations
+- **⚖️ Comprehensive Risk Assessment**: Multi-factor risk scoring with sensitivity analysis
+- **🌐 Multi-Currency Support**: 10 major currencies with real-time conversion capabilities
+- **📱 Responsive Design**: Mobile-first UI with glassmorphism effects and modern styling
+- **🛡️ Robust Validation**: Input validation, business logic checks, and comprehensive error handling
+- **📈 Interactive Charts**: Dynamic Chart.js visualizations for ROI projections and cost breakdowns
+- **📄 Professional Reports**: Exportable HTML reports with complete analysis details
+- **🏗️ Modular Architecture**: Clean separation of concerns with enhanced maintainability
 
-### 🎨 **Stunning Infinex-Style UI/UX**
-- **Dark theme** with neon accents and gradients
-- **Glassmorphism effects** with backdrop blur
-- **Smooth animations** and micro-interactions  
-- **Responsive design** for all devices
-- **Interactive cards** with hover effects
-- **Modern typography** and spacing
+### 🆕 What's New in v2.0
 
-### 💼 **Business Intelligence**
-- **Company profiling** (Startup to Enterprise)
-- **Industry selection** (10+ industries covered)
-- **Project type selection** (8 project categories)
-- **Real-time cost calculations**
-- **ROI projections** with 3 scenarios
-- **Market insights** and trends
+#### **Enhanced Calculations**
+- Monte Carlo simulations for confidence intervals
+- Net Present Value (NPV) calculations with configurable discount rates
+- Internal Rate of Return (IRR) using Newton-Raphson method
+- Advanced sensitivity analysis for key parameters
+- S-curve cash flow projections for realistic revenue modeling
 
-### 📊 **Advanced Analytics**
-- **Interactive charts** with Chart.js
-- **Cost breakdown** visualizations
-- **ROI scenario comparisons**
-- **Market size analysis**
-- **Risk assessment**
-- **Timeline projections**
+#### **Improved Error Handling & Validation**
+- Comprehensive input validation with real-time feedback
+- Business logic validation for investment-company size compatibility
+- Custom exception classes with detailed error information
+- Structured error responses with validation codes
+- Graceful error handling with user-friendly messages
 
-## 🏢 **Perfect For**
+#### **Better Code Organization**
+- Modular architecture with separate concerns
+- Configuration management with environment-based settings
+- Enhanced utilities for validation and calculations
+- Type hints and dataclasses for better code quality
+- Comprehensive logging and monitoring
 
-### **Existing Companies**
-- **Netflix** expanding into gaming
-- **Local restaurants** building delivery apps
-- **SaaS companies** adding AI features
-- **Retail stores** going online
+#### **Enhanced UI & UX**
+- Modern glassmorphism design with animated backgrounds
+- Responsive grid layouts optimized for all devices
+- Real-time input validation with instant feedback
+- Loading overlays with progress indicators
+- Interactive tooltips and help text
+- Improved accessibility and keyboard navigation
 
-### **New Ventures**
-- Startups calculating project costs
-- Entrepreneurs planning investments
-- Investors evaluating opportunities
-- Consultants providing estimates
+#### **Advanced Configuration Management**
+- Environment-based configuration with .env support
+- Dataclass-based configuration with validation
+- Production/development/testing environment profiles
+- Configurable calculation parameters and limits
+- Security settings and CORS configuration
 
-## 🎯 **Project Types Supported**
+### 🏗️ Architecture
 
-| Project Type | Base Cost | Timeline | Complexity |
-|--------------|-----------|----------|------------|
-| 🚀 Product Development | $150K | 12 months | High |
-| 🔄 Digital Transformation | $200K | 18 months | Very High |
-| 🌍 Market Expansion | $100K | 8 months | Medium |
-| 💻 Technology Upgrade | $80K | 6 months | Medium |
-| 📢 Marketing Campaign | $50K | 4 months | Low |
-| 🛒 E-commerce Platform | $120K | 10 months | High |
-| 📱 Mobile Application | $90K | 8 months | High |
-| 🧠 AI Integration | $180K | 14 months | Very High |
-
-## 🏭 **Industries Covered**
-
-- **FinTech** (25% growth rate)
-- **HealthTech** (30% growth rate) 
-- **EdTech** (22% growth rate)
-- **E-commerce** (18% growth rate)
-- **SaaS** (35% growth rate)
-- **Gaming** (20% growth rate)
-- **Real Estate** (15% growth rate)
-- **Food & Beverage** (12% growth rate)
-- **Manufacturing** (10% growth rate)
-- **Logistics** (16% growth rate)
-
-## 🚀 **Quick Start**
-
-### **Option 1: One-Click Start**
-```bash
-python run.py
+```
+business-roi-calculator/
+├── app.py                 # Main Flask application with enhanced routes
+├── config.py              # Centralized configuration management
+├── requirements.txt       # Updated dependencies
+├── .env.example          # Environment configuration template
+├── utils/
+│   ├── __init__.py       # Package initialization
+│   ├── validators.py     # Comprehensive input validation
+│   └── calculator.py     # Enhanced ROI calculations
+└── templates/
+    └── index.html        # Responsive UI with modern design
 ```
 
-### **Option 2: Manual Setup**
-```bash
-# Install dependencies
-pip install -r requirements.txt
+### 🚀 Quick Start
 
-# Run the application
-python app.py
-```
+#### Prerequisites
+- Python 3.8 or higher
+- pip package manager
 
-### **Option 3: Termux (Android)**
-```bash
-pkg install python git
-git clone <your-repo-url>
-cd business-roi-calculator
-python run.py
-```
+#### Installation
 
-## 🌐 **Access the Application**
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd business-roi-calculator
+   ```
 
-Once running, open your browser and go to:
-- **Local:** http://localhost:5000
-- **Network:** http://YOUR_IP:5000
+2. **Set up virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-## 📱 **How to Use**
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### **Step 1: Company Information**
-1. Enter your company name
-2. Select company size (Startup to Enterprise)
-3. Choose your current industry
+4. **Configure environment (optional)**
+   ```bash
+   cp .env.example .env
+   # Edit .env file with your preferred settings
+   ```
 
-### **Step 2: Project Details**
-1. Select what you want to build
-2. Choose your target market/industry
-3. Click "Calculate ROI"
+5. **Run the application**
+   ```bash
+   python app.py
+   ```
 
-### **Step 3: View Results**
-- See total project cost
-- Compare ROI scenarios (Conservative, Realistic, Optimistic)
-- Analyze market insights
-- View interactive charts
+6. **Open in browser**
+   ```
+   http://localhost:5000
+   ```
 
-## 💡 **Example Use Cases**
+### 📖 Usage Guide
 
-### **🎬 Netflix Gaming Expansion**
-- **Company:** Enterprise
-- **Current Industry:** Entertainment
-- **Project:** Product Development
-- **Target:** Gaming
-- **Result:** $375K investment, 150% ROI potential
+#### Basic Workflow
 
-### **🍕 Local Restaurant App**
-- **Company:** Small Business
-- **Current Industry:** Food & Beverage  
-- **Project:** Mobile App
-- **Target:** Food Delivery
-- **Result:** $90K investment, 100% ROI potential
+1. **Company Information**
+   - Enter your company name (2-100 characters)
+   - Select company size (startup, small, medium, enterprise)
+   - Choose current industry (optional, defaults to target industry)
 
-### **💼 SaaS AI Integration**
-- **Company:** Medium
-- **Current Industry:** SaaS
-- **Project:** AI Integration
-- **Target:** FinTech
-- **Result:** $270K investment, 180% ROI potential
+2. **Project Selection**
+   - Select from 15+ project types with detailed information
+   - View complexity, timeline, and cost estimates
+   - See required skills and ROI potential
 
-## 🛠 **Technical Stack**
+3. **Target Market Configuration**
+   - Choose target industry for market analysis
+   - Select preferred currency (10 supported currencies)
+   - Optional: Override investment amount or timeline
 
-- **Backend:** Python Flask
-- **Frontend:** HTML5, CSS3, JavaScript
-- **Charts:** Chart.js
-- **Icons:** Font Awesome
-- **Design:** Custom CSS with Infinex-style aesthetics
+4. **Analysis & Results**
+   - View comprehensive financial metrics
+   - Analyze risk assessment and confidence intervals
+   - Explore interactive charts and sensitivity analysis
+   - Export detailed HTML reports
 
-## 🎨 **Design Philosophy**
+#### Advanced Features
 
-### **Infinex-Inspired Elements**
-- Dark background with subtle gradients
-- Glassmorphism cards with backdrop blur
-- Neon accent colors (#00f2fe)
-- Smooth hover animations
-- Gradient text effects
-- Glowing button effects
+**Custom Investment Amounts**
+- Override default cost estimates with your specific budget
+- Validation ensures amounts are within reasonable ranges ($1K - $50M)
 
-### **User Experience**
-- Intuitive two-step form
-- Real-time validation
-- Smooth transitions
-- Loading states
-- Responsive design
-- Accessibility focused
+**Timeline Customization**
+- Adjust project duration from 1-120 months
+- See how timeline affects ROI and payback period
 
-## 📊 **Calculation Methodology**
+**Multi-Currency Analysis**
+- Perform calculations in your preferred currency
+- Automatic precision handling (JPY has 0 decimals, others have 2)
 
-### **Cost Factors**
-- **Company Size Multiplier:** Startup (0.7x) to Enterprise (2.5x)
-- **Industry Complexity:** Risk factor adjustment
-- **Project Scope:** Base cost by project type
-- **Market Variance:** ±15% realistic range
+**Risk Assessment**
+- Comprehensive risk scoring (0-100 scale)
+- Risk mitigation strategy recommendations
+- Industry-specific risk factors
 
-### **ROI Scenarios**
-- **Conservative:** 70% of base ROI (80% probability)
-- **Realistic:** 100% of base ROI (60% probability)  
-- **Optimistic:** 140% of base ROI (30% probability)
+### 🎯 API Endpoints
 
-## 🔧 **Customization**
+#### Core Calculation
+```http
+POST /api/calculate
+Content-Type: application/json
 
-### **Adding New Industries**
-Edit the `INDUSTRIES` dictionary in `app.py`:
-```python
-'your_industry': {
-    'growth_rate': 0.20, 
-    'risk_factor': 0.15, 
-    'market_size': 'Large'
+{
+  "company_name": "Your Company",
+  "company_size": "medium",
+  "current_industry": "saas",
+  "project_type": "product_development",
+  "target_industry": "fintech",
+  "currency": "USD",
+  "custom_investment": 150000,  // optional
+  "custom_timeline": 12         // optional
 }
 ```
 
-### **Adding New Project Types**
-Edit the `PROJECT_TYPES` dictionary in `app.py`:
-```python
-'your_project': {
-    'base_cost': 100000,
-    'timeline': 8,
-    'roi_potential': 2.0,
-    'description': 'Your Project',
-    'complexity': 'Medium'
+#### Data Endpoints
+- `GET /api/currencies` - Available currencies with rates
+- `GET /api/industries` - Industry data with growth rates
+- `GET /api/projects` - Project types with complexity info
+- `GET /api/company-sizes` - Company size categories
+- `GET /api/market-insights/<industry>` - Detailed market data
+
+#### Validation & Export
+- `POST /api/validate` - Validate input without calculation
+- `GET /api/export-html` - Generate comprehensive HTML report
+
+### 🔧 Configuration Options
+
+#### Environment Variables
+```bash
+# Flask Configuration
+FLASK_ENV=development|production|testing
+DEBUG=True|False
+SECRET_KEY=your-secret-key
+
+# Server Settings
+HOST=0.0.0.0
+PORT=5000
+
+# API Configuration
+API_RATE_LIMIT=100 per hour
+ENABLE_CORS=True|False
+
+# Calculation Settings
+CALCULATION_PRECISION=4
+DEFAULT_CURRENCY=USD
+MIN_INVESTMENT=1000
+MAX_INVESTMENT=50000000
+```
+
+#### Application Limits
+- **Company name**: 2-100 characters
+- **Investment amount**: $1,000 - $50,000,000
+- **Timeline**: 1-120 months
+- **API rate limit**: 100 requests per hour (configurable)
+
+### 📊 Calculation Methodology
+
+#### ROI Calculation
+```
+Enhanced ROI = ((Projected Revenue - Operating Costs - Investment) / Investment) × 100
+```
+
+#### Monte Carlo Simulation
+- 1,000 iterations with parameter variations
+- Growth rate, ROI potential, and timeline randomization
+- 95% confidence interval calculation
+- Normal distribution with industry-specific volatility
+
+#### NPV Calculation
+```
+NPV = Σ(Cash Flow_t / (1 + r)^t) - Initial Investment
+```
+Where:
+- `r` = discount rate (default 8% annually)
+- `t` = time period (months)
+- Cash flows follow S-curve adoption pattern
+
+#### IRR Calculation
+Uses Newton-Raphson method to find the discount rate where NPV = 0
+
+#### Risk Assessment
+```
+Risk Score = (Company Risk × 30%) + (Project Risk × 40%) + (Industry Risk × 20%) + (Market Volatility × 10%)
+```
+
+### 🎨 UI Components
+
+#### Design System
+- **Colors**: Gradient-based design with glassmorphism effects
+- **Typography**: Inter font family with responsive sizing
+- **Spacing**: 8px base unit with consistent margins/padding
+- **Animations**: Smooth transitions and hover effects
+
+#### Responsive Breakpoints
+- **Mobile**: < 480px (single column, simplified layout)
+- **Tablet**: 480px - 768px (condensed grid)
+- **Desktop**: > 768px (full multi-column layout)
+
+#### Accessibility Features
+- Semantic HTML structure
+- ARIA labels and descriptions
+- Keyboard navigation support
+- High contrast color ratios
+- Screen reader compatible
+
+### 🧪 Testing
+
+#### Manual Testing Scenarios
+1. **Input Validation**
+   - Empty fields, invalid formats, out-of-range values
+   - Special characters in company names
+   - Extreme investment amounts and timelines
+
+2. **Business Logic**
+   - Startup companies with enterprise-level investments
+   - High-risk projects in volatile industries
+   - Currency conversion accuracy
+
+3. **UI/UX**
+   - Mobile responsiveness across devices
+   - Chart rendering and interactions
+   - Loading states and error handling
+
+#### Test Data Examples
+```json
+{
+  "company_name": "Test Startup",
+  "company_size": "startup",
+  "project_type": "ai_integration",
+  "target_industry": "crypto",
+  "currency": "EUR",
+  "custom_investment": 500000
 }
 ```
 
-## 🌟 **Why This App is Special**
+### 🚀 Deployment
 
-### **🎯 Unique Value Proposition**
-- First ROI calculator with Infinex-style design
-- Real-time calculations for any company size
-- Industry-specific insights and trends
-- Beautiful, modern interface that impresses clients
+#### Development
+```bash
+FLASK_ENV=development python app.py
+```
 
-### **💼 Commercial Potential**
-- **SaaS Model:** Charge companies for calculations
-- **Consulting Tool:** Use for client presentations
-- **White Label:** Customize for agencies
-- **API Service:** Integrate with other platforms
+#### Production
+```bash
+pip install gunicorn
+gunicorn --bind 0.0.0.0:5000 app:app
+```
 
-### **🚀 Technical Excellence**
-- Clean, maintainable code
-- Responsive design
-- Fast performance
-- Easy to deploy
-- Extensible architecture
+#### Docker (Future Enhancement)
+```dockerfile
+FROM python:3.9-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+EXPOSE 5000
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+```
 
-## 📈 **Future Enhancements**
+### 🔒 Security Considerations
 
-- [ ] User accounts and saved calculations
+#### Input Validation
+- SQL injection prevention through parameterized queries
+- XSS protection via input sanitization
+- CSRF protection with secure tokens
+- Rate limiting to prevent abuse
+
+#### Configuration Security
+- Environment variables for sensitive data
+- Secure session cookie settings in production
+- HTTPS enforcement for production deployments
+- CORS configuration for API access control
+
+### 📈 Performance Optimizations
+
+#### Backend
+- Decimal precision for financial calculations
+- Efficient Monte Carlo algorithms
+- Cached configuration validation
+- Optimized chart data generation
+
+#### Frontend
+- Lazy loading for large datasets
+- Debounced input validation
+- Efficient chart rendering with Chart.js
+- Responsive image and asset optimization
+
+### 🛠️ Development
+
+#### Code Quality
+- Type hints throughout the codebase
+- Comprehensive docstrings
+- Consistent naming conventions
+- Error handling best practices
+
+#### Future Enhancements
+- [ ] Database persistence for calculations
+- [ ] User authentication and saved projects
+- [ ] Real-time currency exchange rates
 - [ ] PDF report generation
-- [ ] Email sharing functionality
-- [ ] More chart types and visualizations
-- [ ] Integration with business APIs
+- [ ] Advanced scenario modeling
+- [ ] Integration with external financial APIs
 - [ ] Multi-language support
-- [ ] Advanced filtering options
-- [ ] Comparison tools
+- [ ] A/B testing framework
 
-## 🤝 **Contributing**
+### 🤝 Contributing
 
-This is a complete, working application ready for:
-- **Commercial use**
-- **Client presentations** 
-- **Portfolio showcasing**
-- **Further development**
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 📄 **License**
+### 📝 License
 
-This project is ready for commercial use and can be:
-- Deployed for clients
-- Used in business presentations
-- Customized for specific needs
-- Integrated into larger systems
+This project is licensed under the MIT License - see the LICENSE file for details.
 
----
+### 📞 Support
 
-## 🎯 **Get Started Now**
+For support, email [your-email] or create an issue in the repository.
 
-```bash
-python run.py
-```
+### 🙏 Acknowledgments
 
-**Visit http://localhost:5000 and start calculating ROI for any business project!**
+- Chart.js for beautiful chart visualizations
+- Font Awesome for comprehensive icon library
+- NumPy for advanced mathematical calculations
+- Flask ecosystem for robust web framework
 
 ---
 
-*Built with ❤️ using modern web technologies and Infinex-inspired design*
+**Built with ❤️ for accurate business ROI analysis**

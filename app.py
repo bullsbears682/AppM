@@ -1,441 +1,352 @@
 #!/usr/bin/env python3
 """
-Business ROI Calculator - Simplified Mobile Version
-Advanced web application with multi-currency and HTML reports
+Business ROI Calculator - Enhanced Edition
+Advanced web application with comprehensive validation, enhanced calculations, and modular architecture
 """
 
+import os
+import logging
+from decimal import Decimal
+from datetime import datetime
 from flask import Flask, render_template, request, jsonify
-import json
-import random
-from datetime import datetime, timedelta
+from flask_cors import CORS
+from dotenv import load_dotenv
 
+# Import our enhanced modules
+from config import get_config
+from utils.validators import (
+    APIValidator, ValidationError, BusinessLogicError, 
+    BusinessValidator, handle_validation_errors
+)
+from utils.calculator import EnhancedROICalculator
+
+# Load environment variables
+load_dotenv()
+
+# Get configuration based on environment
+config_class = get_config()
+
+# Setup logging
+logging.basicConfig(
+    level=getattr(logging, config_class.LOG_LEVEL),
+    format=config_class.LOG_FORMAT
+)
+logger = logging.getLogger(__name__)
+
+# Initialize Flask app
 app = Flask(__name__)
+app.config.from_object(config_class)
 
-# Enhanced business data and calculations
-COMPANY_SIZES = {
-    'startup': {'multiplier': 0.7, 'min_budget': 5000, 'max_budget': 100000, 'risk_factor': 0.3},
-    'small': {'multiplier': 1.0, 'min_budget': 25000, 'max_budget': 500000, 'risk_factor': 0.2},
-    'medium': {'multiplier': 1.5, 'min_budget': 100000, 'max_budget': 2000000, 'risk_factor': 0.15},
-    'enterprise': {'multiplier': 2.5, 'min_budget': 500000, 'max_budget': 10000000, 'risk_factor': 0.1}
-}
-
-INDUSTRIES = {
-    'fintech': {'growth_rate': 0.25, 'risk_factor': 0.15, 'market_size': 'Large', 'volatility': 0.2},
-    'healthtech': {'growth_rate': 0.30, 'risk_factor': 0.20, 'market_size': 'Huge', 'volatility': 0.15},
-    'edtech': {'growth_rate': 0.22, 'risk_factor': 0.12, 'market_size': 'Large', 'volatility': 0.18},
-    'ecommerce': {'growth_rate': 0.18, 'risk_factor': 0.08, 'market_size': 'Massive', 'volatility': 0.12},
-    'saas': {'growth_rate': 0.35, 'risk_factor': 0.18, 'market_size': 'Large', 'volatility': 0.22},
-    'gaming': {'growth_rate': 0.20, 'risk_factor': 0.25, 'market_size': 'Medium', 'volatility': 0.3},
-    'realEstate': {'growth_rate': 0.15, 'risk_factor': 0.10, 'market_size': 'Stable', 'volatility': 0.08},
-    'foodBeverage': {'growth_rate': 0.12, 'risk_factor': 0.15, 'market_size': 'Medium', 'volatility': 0.1},
-    'manufacturing': {'growth_rate': 0.10, 'risk_factor': 0.08, 'market_size': 'Large', 'volatility': 0.06},
-    'logistics': {'growth_rate': 0.16, 'risk_factor': 0.12, 'market_size': 'Large', 'volatility': 0.14},
-    'crypto': {'growth_rate': 0.45, 'risk_factor': 0.40, 'market_size': 'Volatile', 'volatility': 0.5},
-    'nft': {'growth_rate': 0.35, 'risk_factor': 0.45, 'market_size': 'Emerging', 'volatility': 0.6},
-    'web3': {'growth_rate': 0.40, 'risk_factor': 0.35, 'market_size': 'Growing', 'volatility': 0.4},
-    'sustainability': {'growth_rate': 0.28, 'risk_factor': 0.18, 'market_size': 'Expanding', 'volatility': 0.16},
-    'biotech': {'growth_rate': 0.32, 'risk_factor': 0.25, 'market_size': 'Specialized', 'volatility': 0.28}
-}
-
-# Enhanced project types
-PROJECT_TYPES = {
-    'product_development': {
-        'base_cost': 150000, 'timeline': 12, 'roi_potential': 2.5,
-        'description': 'New Product Development', 'complexity': 'High', 'risk_level': 0.2
-    },
-    'digital_transformation': {
-        'base_cost': 200000, 'timeline': 18, 'roi_potential': 3.0,
-        'description': 'Digital Transformation', 'complexity': 'Very High', 'risk_level': 0.15
-    },
-    'market_expansion': {
-        'base_cost': 100000, 'timeline': 8, 'roi_potential': 2.0,
-        'description': 'Market Expansion', 'complexity': 'Medium', 'risk_level': 0.18
-    },
-    'tech_upgrade': {
-        'base_cost': 80000, 'timeline': 6, 'roi_potential': 1.8,
-        'description': 'Technology Upgrade', 'complexity': 'Medium', 'risk_level': 0.12
-    },
-    'marketing_campaign': {
-        'base_cost': 50000, 'timeline': 4, 'roi_potential': 1.5,
-        'description': 'Marketing Campaign', 'complexity': 'Low', 'risk_level': 0.15
-    },
-    'ecommerce_platform': {
-        'base_cost': 120000, 'timeline': 10, 'roi_potential': 2.2,
-        'description': 'E-commerce Platform', 'complexity': 'High', 'risk_level': 0.16
-    },
-    'mobile_app': {
-        'base_cost': 90000, 'timeline': 8, 'roi_potential': 2.0,
-        'description': 'Mobile Application', 'complexity': 'High', 'risk_level': 0.18
-    },
-    'ai_integration': {
-        'base_cost': 180000, 'timeline': 14, 'roi_potential': 2.8,
-        'description': 'AI Integration', 'complexity': 'Very High', 'risk_level': 0.22
-    },
-    'blockchain_platform': {
-        'base_cost': 250000, 'timeline': 16, 'roi_potential': 3.5,
-        'description': 'Blockchain Platform', 'complexity': 'Very High', 'risk_level': 0.35
-    },
-    'iot_solution': {
-        'base_cost': 160000, 'timeline': 12, 'roi_potential': 2.3,
-        'description': 'IoT Solution', 'complexity': 'High', 'risk_level': 0.20
-    },
-    'data_analytics': {
-        'base_cost': 140000, 'timeline': 10, 'roi_potential': 2.4,
-        'description': 'Data Analytics Platform', 'complexity': 'High', 'risk_level': 0.17
-    },
-    'subscription_service': {
-        'base_cost': 75000, 'timeline': 6, 'roi_potential': 2.1,
-        'description': 'Subscription Service', 'complexity': 'Medium', 'risk_level': 0.14
-    },
-    'automation_system': {
-        'base_cost': 110000, 'timeline': 9, 'roi_potential': 2.6,
-        'description': 'Automation System', 'complexity': 'High', 'risk_level': 0.13
-    },
-    'cybersecurity_upgrade': {
-        'base_cost': 95000, 'timeline': 7, 'roi_potential': 1.9,
-        'description': 'Cybersecurity Upgrade', 'complexity': 'Medium', 'risk_level': 0.08
-    },
-    'cloud_migration': {
-        'base_cost': 130000, 'timeline': 11, 'roi_potential': 2.2,
-        'description': 'Cloud Migration', 'complexity': 'High', 'risk_level': 0.11
-    }
-}
-
-# Currency exchange rates (simplified - in production, use real-time API)
-CURRENCIES = {
-    'USD': {'symbol': '$', 'rate': 1.0, 'name': 'US Dollar'},
-    'EUR': {'symbol': '€', 'rate': 0.85, 'name': 'Euro'},
-    'GBP': {'symbol': '£', 'rate': 0.73, 'name': 'British Pound'},
-    'JPY': {'symbol': '¥', 'rate': 110.0, 'name': 'Japanese Yen'},
-    'CAD': {'symbol': 'C$', 'rate': 1.25, 'name': 'Canadian Dollar'},
-    'AUD': {'symbol': 'A$', 'rate': 1.35, 'name': 'Australian Dollar'},
-    'CHF': {'symbol': 'CHF', 'rate': 0.92, 'name': 'Swiss Franc'},
-    'CNY': {'symbol': '¥', 'rate': 6.45, 'name': 'Chinese Yuan'},
-    'INR': {'symbol': '₹', 'rate': 74.5, 'name': 'Indian Rupee'},
-    'BRL': {'symbol': 'R$', 'rate': 5.2, 'name': 'Brazilian Real'}
-}
-
-class EnhancedROICalculator:
-    def __init__(self):
-        pass
-    
-    def convert_currency(self, amount, from_currency, to_currency):
-        """Convert amount between currencies"""
-        if from_currency == to_currency:
-            return amount
-        
-        # Convert to USD first, then to target currency
-        usd_amount = amount / CURRENCIES[from_currency]['rate']
-        converted_amount = usd_amount * CURRENCIES[to_currency]['rate']
-        
-        return converted_amount
-    
-    def calculate_risk_assessment(self, company_size, project_type, industry):
-        """Calculate comprehensive risk assessment"""
-        size_data = COMPANY_SIZES.get(company_size, COMPANY_SIZES['small'])
-        project_data = PROJECT_TYPES.get(project_type, PROJECT_TYPES['product_development'])
-        industry_data = INDUSTRIES.get(industry, INDUSTRIES['saas'])
-        
-        # Base risk factors
-        company_risk = size_data['risk_factor']
-        project_risk = project_data['risk_level']
-        industry_risk = industry_data['risk_factor']
-        market_volatility = industry_data['volatility']
-        
-        # Calculate composite risk score
-        overall_risk = (company_risk * 0.3 + project_risk * 0.4 + industry_risk * 0.2 + market_volatility * 0.1)
-        
-        # Risk categories
-        if overall_risk <= 0.15:
-            risk_category = 'Low'
-            risk_color = '#00ff88'
-        elif overall_risk <= 0.25:
-            risk_category = 'Medium'
-            risk_color = '#ffaa00'
-        else:
-            risk_category = 'High'
-            risk_color = '#ff4757'
-        
-        return {
-            'overall_risk': round(overall_risk, 3),
-            'risk_category': risk_category,
-            'risk_color': risk_color,
-            'risk_factors': {
-                'company_size_risk': round(company_risk, 3),
-                'project_complexity_risk': round(project_risk, 3),
-                'industry_risk': round(industry_risk, 3),
-                'market_volatility': round(market_volatility, 3)
-            },
-            'risk_mitigation': self._get_risk_mitigation_strategies(overall_risk, project_type, industry)
-        }
-    
-    def _get_risk_mitigation_strategies(self, risk_level, project_type, industry):
-        """Get risk mitigation strategies"""
-        strategies = []
-        
-        if risk_level > 0.25:
-            strategies.append("Consider phased implementation to reduce upfront investment")
-            strategies.append("Establish clear success metrics and exit criteria")
-            strategies.append("Allocate 20-30% contingency budget")
-        
-        if project_type in ['blockchain_platform', 'ai_integration', 'crypto']:
-            strategies.append("Invest in specialized expertise and training")
-            strategies.append("Stay updated with regulatory changes")
-        
-        if industry in ['crypto', 'nft', 'gaming']:
-            strategies.append("Diversify market exposure")
-            strategies.append("Monitor market trends closely")
-        
-        strategies.append("Regular progress reviews and milestone assessments")
-        strategies.append("Maintain flexible project scope and timeline")
-        
-        return strategies
-    
-    def calculate_project_cost(self, company_size, project_type, industry, currency='USD', custom_requirements=None):
-        """Enhanced cost calculation with currency support"""
-        
-        # Base calculations
-        size_data = COMPANY_SIZES.get(company_size, COMPANY_SIZES['small'])
-        project_data = PROJECT_TYPES.get(project_type, PROJECT_TYPES['product_development'])
-        industry_data = INDUSTRIES.get(industry, INDUSTRIES['saas'])
-        
-        # Calculate base cost with size multiplier
-        base_cost = project_data['base_cost'] * size_data['multiplier']
-        
-        # Industry complexity adjustment
-        industry_multiplier = 1.0 + (industry_data['risk_factor'] * 0.5)
-        adjusted_cost = base_cost * industry_multiplier
-        
-        # Add some realistic variance
-        variance = random.uniform(0.85, 1.15)
-        final_cost_usd = int(adjusted_cost * variance)
-        
-        # Convert to requested currency
-        final_cost = self.convert_currency(final_cost_usd, 'USD', currency)
-        
-        return {
-            'total_cost': int(final_cost),
-            'total_cost_usd': final_cost_usd,
-            'currency': currency,
-            'currency_symbol': CURRENCIES[currency]['symbol'],
-            'breakdown': {
-                'development': int(final_cost * 0.6),
-                'design': int(final_cost * 0.15),
-                'testing': int(final_cost * 0.1),
-                'deployment': int(final_cost * 0.05),
-                'project_management': int(final_cost * 0.1)
-            },
-            'timeline_months': project_data['timeline'],
-            'complexity': project_data['complexity']
-        }
-    
-    def calculate_roi_projection(self, investment, industry, project_type, timeline_months, currency='USD'):
-        """Enhanced ROI projections with risk-adjusted scenarios"""
-        
-        industry_data = INDUSTRIES.get(industry, INDUSTRIES['saas'])
-        project_data = PROJECT_TYPES.get(project_type, PROJECT_TYPES['product_development'])
-        
-        # Base ROI calculation
-        base_roi = project_data['roi_potential']
-        growth_rate = industry_data['growth_rate']
-        volatility = industry_data['volatility']
-        
-        # Enhanced scenarios with risk adjustment
-        scenarios = {
-            'pessimistic': {
-                'multiplier': 0.6 - (volatility * 0.2),
-                'probability': 0.2,
-                'description': 'Worst case with significant market challenges'
-            },
-            'conservative': {
-                'multiplier': 0.8 - (volatility * 0.1),
-                'probability': 0.3,
-                'description': 'Conservative estimate with market challenges'
-            },
-            'realistic': {
-                'multiplier': 1.0,
-                'probability': 0.4,
-                'description': 'Most likely scenario based on market data'
-            },
-            'optimistic': {
-                'multiplier': 1.3 + (growth_rate * 0.2),
-                'probability': 0.1,
-                'description': 'Best case with optimal market conditions'
-            }
-        }
-        
-        projections = {}
-        investment_usd = investment if currency == 'USD' else self.convert_currency(investment, currency, 'USD')
-        
-        for scenario, data in scenarios.items():
-            roi_multiplier = max(0.1, base_roi * data['multiplier'])  # Ensure positive ROI
-            annual_return_usd = investment_usd * roi_multiplier * growth_rate
-            
-            # Convert back to requested currency
-            annual_return = self.convert_currency(annual_return_usd, 'USD', currency)
-            total_roi = annual_return * 3  # 3-year projection
-            
-            projections[scenario] = {
-                'annual_return': int(annual_return),
-                'total_roi': int(total_roi),
-                'roi_percentage': int((roi_multiplier - 1) * 100),
-                'break_even_months': max(3, int(timeline_months / roi_multiplier)),
-                'probability': data['probability'],
-                'description': data['description'],
-                'net_present_value': int(total_roi - investment)
-            }
-        
-        return projections
-    
-    def get_market_insights(self, industry):
-        """Enhanced market insights"""
-        industry_data = INDUSTRIES.get(industry, INDUSTRIES['saas'])
-        
-        insights = {
-            'market_size': industry_data['market_size'],
-            'growth_rate': f"{industry_data['growth_rate']*100:.0f}%",
-            'risk_level': 'Low' if industry_data['risk_factor'] < 0.1 else 'Medium' if industry_data['risk_factor'] < 0.2 else 'High',
-            'volatility': f"{industry_data['volatility']*100:.0f}%",
-            'trends': self._get_industry_trends(industry),
-            'opportunities': self._get_industry_opportunities(industry),
-            'challenges': self._get_industry_challenges(industry)
-        }
-        
-        return insights
-    
-    def _get_industry_trends(self, industry):
-        trends = {
-            'fintech': ['Digital payments growth', 'Blockchain adoption', 'RegTech expansion', 'Open banking APIs'],
-            'healthtech': ['Telemedicine boom', 'AI diagnostics', 'Wearable health devices', 'Personalized medicine'],
-            'edtech': ['Remote learning', 'Personalized education', 'VR/AR in education', 'Microlearning platforms'],
-            'ecommerce': ['Mobile commerce', 'Social selling', 'Same-day delivery', 'Voice commerce'],
-            'saas': ['AI-powered tools', 'Industry-specific solutions', 'Integration platforms', 'No-code/low-code'],
-            'gaming': ['Mobile gaming', 'Cloud gaming', 'NFT integration', 'Metaverse development'],
-            'crypto': ['DeFi protocols', 'NFT marketplaces', 'Layer 2 solutions', 'Central bank digital currencies'],
-            'web3': ['Decentralized apps', 'DAOs', 'Metaverse platforms', 'Blockchain interoperability'],
-            'sustainability': ['Carbon tracking', 'Renewable energy tech', 'Circular economy', 'ESG reporting']
-        }
-        return trends.get(industry, ['Market digitization', 'Customer experience focus', 'Operational efficiency'])
-    
-    def _get_industry_opportunities(self, industry):
-        opportunities = {
-            'fintech': ['Emerging markets', 'SME banking', 'Crypto services', 'Embedded finance'],
-            'healthtech': ['Remote monitoring', 'Mental health apps', 'Elderly care tech', 'Precision medicine'],
-            'crypto': ['Institutional adoption', 'DeFi yield farming', 'NFT utilities', 'Cross-chain bridges'],
-            'web3': ['Creator economy', 'Decentralized identity', 'Web3 gaming', 'Social tokens']
-        }
-        return opportunities.get(industry, ['Digital innovation', 'Market expansion', 'Efficiency improvements'])
-    
-    def _get_industry_challenges(self, industry):
-        challenges = {
-            'fintech': ['Regulatory compliance', 'Security concerns', 'Competition from big tech'],
-            'crypto': ['Regulatory uncertainty', 'Market volatility', 'Scalability issues'],
-            'web3': ['User adoption', 'Technical complexity', 'Environmental concerns'],
-            'gaming': ['Market saturation', 'Platform dependencies', 'User acquisition costs']
-        }
-        return challenges.get(industry, ['Market competition', 'Technology changes', 'Economic uncertainty'])
+# Enable CORS if configured
+if config_class.ENABLE_CORS:
+    CORS(app)
 
 # Initialize calculator
 calculator = EnhancedROICalculator()
 
+# Validate configuration on startup
+try:
+    config_class.validate_config()
+    logger.info("Configuration validation successful")
+except Exception as e:
+    logger.error(f"Configuration validation failed: {e}")
+    raise
+
 @app.route('/')
 def index():
     """Main application page"""
-    return render_template('index.html', currencies=CURRENCIES)
+    return render_template('index.html')
 
 @app.route('/api/calculate', methods=['POST'])
+@handle_validation_errors
 def calculate_roi():
-    """Enhanced ROI calculation API"""
+    """
+    Enhanced ROI calculation endpoint with comprehensive validation
+    
+    Expected JSON payload:
+    {
+        "company_name": "Your Company",
+        "company_size": "medium",
+        "current_industry": "saas",
+        "project_type": "product_development", 
+        "target_industry": "saas",
+        "currency": "USD",
+        "custom_investment": 100000,  // optional
+        "custom_timeline": 12         // optional
+    }
+    """
     try:
-        data = request.json
+        # Get and validate request data
+        data = request.get_json()
+        if not data:
+            raise ValidationError("No JSON data provided", code="NO_DATA")
         
-        company_name = data.get('company_name', 'Your Company')
-        company_size = data.get('company_size', 'small')
-        current_industry = data.get('current_industry', 'saas')
-        project_type = data.get('project_type', 'product_development')
-        target_industry = data.get('target_industry', current_industry)
-        currency = data.get('currency', 'USD')
+        # Comprehensive validation
+        validated_data = APIValidator.validate_roi_calculation_request(data)
         
-        # Calculate project costs
-        cost_analysis = calculator.calculate_project_cost(
-            company_size, project_type, target_industry, currency
+        # Business logic validation
+        custom_investment = validated_data.get('custom_investment')
+        BusinessValidator.validate_business_logic(
+            validated_data['company_size'],
+            validated_data['project_type'], 
+            validated_data['target_industry'],
+            custom_investment
         )
         
-        # Calculate ROI projections
-        roi_projections = calculator.calculate_roi_projection(
-            cost_analysis['total_cost'], 
-            target_industry, 
-            project_type, 
-            cost_analysis['timeline_months'],
-            currency
+        # Calculate project cost
+        cost_analysis = calculator.calculate_project_cost(
+            company_size=validated_data['company_size'],
+            project_type=validated_data['project_type'],
+            industry=validated_data['target_industry'],
+            currency=validated_data['currency'],
+            custom_investment=custom_investment,
+            custom_timeline=validated_data.get('custom_timeline')
+        )
+        
+        # Calculate enhanced ROI projection
+        roi_result = calculator.calculate_enhanced_roi_projection(
+            investment=cost_analysis['total_cost'],
+            industry=validated_data['target_industry'],
+            project_type=validated_data['project_type'],
+            timeline_months=cost_analysis['timeline_months'],
+            currency=validated_data['currency'],
+            company_size=validated_data['company_size']
         )
         
         # Get market insights
-        market_insights = calculator.get_market_insights(target_industry)
+        market_insights = calculator.get_market_insights(validated_data['target_industry'])
         
-        # Calculate risk assessment
-        risk_assessment = calculator.calculate_risk_assessment(
-            company_size, project_type, target_industry
+        # Generate recommendations
+        recommendations = calculator.generate_recommendations(
+            validated_data['company_size'],
+            validated_data['project_type'],
+            validated_data['target_industry'],
+            roi_result
         )
         
-        # Compile response
+        # Format response
+        currency_config = config_class.CURRENCIES[validated_data['currency']]
+        
         response = {
-            'company_name': company_name,
-            'project_summary': {
-                'type': PROJECT_TYPES[project_type]['description'],
-                'industry': target_industry.replace('_', ' ').title(),
-                'timeline': f"{cost_analysis['timeline_months']} months",
-                'complexity': cost_analysis['complexity']
+            'success': True,
+            'calculation_id': f"calc_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
+            'input_parameters': validated_data,
+            'cost_analysis': {
+                'total_cost': float(cost_analysis['total_cost']),
+                'cost_breakdown': {k: float(v) for k, v in cost_analysis['cost_breakdown'].items()},
+                'timeline_months': cost_analysis['timeline_months'],
+                'currency': cost_analysis['currency'],
+                'currency_symbol': currency_config.symbol,
+                'multipliers': cost_analysis['multipliers']
             },
-            'cost_analysis': cost_analysis,
-            'roi_projections': roi_projections,
+            'roi_projection': {
+                'total_investment': float(roi_result.total_investment),
+                'projected_revenue': float(roi_result.projected_revenue),
+                'net_profit': float(roi_result.net_profit),
+                'roi_percentage': float(roi_result.roi_percentage),
+                'payback_period_months': roi_result.payback_period_months,
+                'break_even_point': float(roi_result.break_even_point),
+                'npv': float(roi_result.npv),
+                'irr': float(roi_result.irr),
+                'risk_score': float(roi_result.risk_score),
+                'confidence_interval': {
+                    'lower': float(roi_result.confidence_interval[0]),
+                    'upper': float(roi_result.confidence_interval[1])
+                },
+                'sensitivity_analysis': roi_result.sensitivity_analysis
+            },
             'market_insights': market_insights,
-            'risk_assessment': risk_assessment,
-            'recommendations': calculator._get_recommendations(company_size, project_type, target_industry),
-            'timestamp': datetime.now().isoformat()
+            'recommendations': recommendations,
+            'calculation_metadata': {
+                'calculation_date': roi_result.calculation_date.isoformat(),
+                'calculator_version': '2.0.0',
+                'methodology': 'Enhanced Monte Carlo with NPV/IRR analysis'
+            }
         }
+        
+        logger.info(f"ROI calculation completed for {validated_data['company_name']} - "
+                   f"ROI: {roi_result.roi_percentage}%, Risk: {roi_result.risk_score}")
         
         return jsonify(response)
         
+    except ValidationError:
+        raise  # Re-raise validation errors to be handled by decorator
+    except BusinessLogicError:
+        raise  # Re-raise business logic errors to be handled by decorator
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Unexpected error in calculate_roi: {str(e)}")
+        raise ValidationError(f"Calculation failed: {str(e)}")
 
 @app.route('/api/currencies')
+@handle_validation_errors
 def get_currencies():
-    """Get available currencies"""
-    return jsonify(CURRENCIES)
+    """Get available currencies with enhanced information"""
+    try:
+        currencies = {}
+        for code, config in config_class.CURRENCIES.items():
+            currencies[code] = {
+                'symbol': config.symbol,
+                'name': config.name,
+                'rate': config.rate,
+                'precision': config.precision
+            }
+        
+        return jsonify({
+            'success': True,
+            'currencies': currencies,
+            'default_currency': config_class.DEFAULT_CURRENCY
+        })
+        
+    except Exception as e:
+        logger.error(f"Error fetching currencies: {str(e)}")
+        raise ValidationError(f"Failed to fetch currencies: {str(e)}")
 
 @app.route('/api/industries')
+@handle_validation_errors
 def get_industries():
-    """Get available industries"""
-    industries = []
-    for key, value in INDUSTRIES.items():
-        industries.append({
-            'id': key,
-            'name': key.replace('_', ' ').title(),
-            'growth_rate': f"{value['growth_rate']*100:.0f}%",
-            'market_size': value['market_size'],
-            'risk_level': 'Low' if value['risk_factor'] < 0.1 else 'Medium' if value['risk_factor'] < 0.2 else 'High'
+    """Get available industries with enhanced information"""
+    try:
+        industries = []
+        for key, config in config_class.INDUSTRIES.items():
+            industries.append({
+                'id': key,
+                'name': key.replace('_', ' ').title(),
+                'growth_rate': f"{config.growth_rate * 100:.1f}%",
+                'market_size': config.market_size,
+                'risk_level': calculator._get_risk_level_description(config.risk_factor),
+                'volatility': f"{config.volatility * 100:.1f}%",
+                'regulatory_complexity': config.regulatory_complexity
+            })
+        
+        return jsonify({
+            'success': True,
+            'industries': industries
         })
-    return jsonify(industries)
+        
+    except Exception as e:
+        logger.error(f"Error fetching industries: {str(e)}")
+        raise ValidationError(f"Failed to fetch industries: {str(e)}")
 
 @app.route('/api/projects')
+@handle_validation_errors
 def get_projects():
-    """Get available project types"""
-    projects = []
-    for key, value in PROJECT_TYPES.items():
-        projects.append({
-            'id': key,
-            'name': value['description'],
-            'complexity': value['complexity'],
-            'timeline': f"{value['timeline']} months",
-            'base_cost': f"${value['base_cost']:,}"
+    """Get available project types with enhanced information"""
+    try:
+        projects = []
+        for key, config in config_class.PROJECT_TYPES.items():
+            projects.append({
+                'id': key,
+                'name': config.description,
+                'complexity': config.complexity,
+                'timeline': f"{config.timeline} months",
+                'base_cost': f"${config.base_cost:,}",
+                'roi_potential': f"{config.roi_potential:.1f}x",
+                'risk_level': f"{config.risk_level * 100:.1f}%",
+                'required_skills': config.required_skills
+            })
+        
+        return jsonify({
+            'success': True,
+            'projects': projects
         })
-    return jsonify(projects)
+        
+    except Exception as e:
+        logger.error(f"Error fetching projects: {str(e)}")
+        raise ValidationError(f"Failed to fetch projects: {str(e)}")
+
+@app.route('/api/company-sizes')
+@handle_validation_errors
+def get_company_sizes():
+    """Get available company sizes with enhanced information"""
+    try:
+        company_sizes = []
+        for key, config in config_class.COMPANY_SIZES.items():
+            company_sizes.append({
+                'id': key,
+                'name': key.title(),
+                'multiplier': config.multiplier,
+                'budget_range': {
+                    'min': config.min_budget,
+                    'max': config.max_budget
+                },
+                'typical_team_size': config.typical_team_size,
+                'risk_factor': f"{config.risk_factor * 100:.1f}%"
+            })
+        
+        return jsonify({
+            'success': True,
+            'company_sizes': company_sizes
+        })
+        
+    except Exception as e:
+        logger.error(f"Error fetching company sizes: {str(e)}")
+        raise ValidationError(f"Failed to fetch company sizes: {str(e)}")
+
+@app.route('/api/market-insights/<industry>')
+@handle_validation_errors
+def get_market_insights_api(industry):
+    """Get detailed market insights for a specific industry"""
+    try:
+        # Validate industry
+        validated_industry = APIValidator.validate_industry(industry)
+        
+        # Get market insights
+        insights = calculator.get_market_insights(validated_industry)
+        
+        return jsonify({
+            'success': True,
+            'industry': validated_industry,
+            'insights': insights
+        })
+        
+    except ValidationError:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching market insights: {str(e)}")
+        raise ValidationError(f"Failed to fetch market insights: {str(e)}")
+
+@app.route('/api/validate', methods=['POST'])
+@handle_validation_errors
+def validate_input():
+    """Validate user input without performing calculations"""
+    try:
+        data = request.get_json()
+        if not data:
+            raise ValidationError("No JSON data provided", code="NO_DATA")
+        
+        # Validate the request
+        validated_data = APIValidator.validate_roi_calculation_request(data)
+        
+        # Perform business logic validation
+        custom_investment = validated_data.get('custom_investment')
+        BusinessValidator.validate_business_logic(
+            validated_data['company_size'],
+            validated_data['project_type'],
+            validated_data['target_industry'],
+            custom_investment
+        )
+        
+        return jsonify({
+            'success': True,
+            'message': 'Input validation successful',
+            'validated_data': {
+                k: str(v) if isinstance(v, Decimal) else v 
+                for k, v in validated_data.items()
+            }
+        })
+        
+    except ValidationError:
+        raise
+    except BusinessLogicError:
+        raise
+    except Exception as e:
+        logger.error(f"Error in input validation: {str(e)}")
+        raise ValidationError(f"Validation failed: {str(e)}")
 
 @app.route('/api/export-html')
+@handle_validation_errors 
 def export_html_report():
-    """Generate HTML report for current calculation"""
+    """Generate comprehensive HTML report"""
     try:
         # Get calculation parameters from URL
         company_name = request.args.get('company', 'Sample Company')
@@ -445,229 +356,333 @@ def export_html_report():
         target_industry = request.args.get('target_industry', 'saas')
         currency = request.args.get('currency', 'USD')
         
-        # Perform actual calculations
+        # Validate parameters
+        validated_data = {
+            'company_name': APIValidator.validate_company_name(company_name),
+            'company_size': APIValidator.validate_company_size(company_size),
+            'current_industry': APIValidator.validate_industry(current_industry),
+            'project_type': APIValidator.validate_project_type(project_type),
+            'target_industry': APIValidator.validate_industry(target_industry),
+            'currency': APIValidator.validate_currency(currency)
+        }
+        
+        # Perform calculations
         cost_analysis = calculator.calculate_project_cost(
-            company_size, project_type, target_industry, currency
+            validated_data['company_size'], 
+            validated_data['project_type'], 
+            validated_data['target_industry'], 
+            validated_data['currency']
         )
         
-        roi_projections = calculator.calculate_roi_projection(
+        roi_result = calculator.calculate_enhanced_roi_projection(
             cost_analysis['total_cost'], 
-            target_industry, 
-            project_type, 
+            validated_data['target_industry'], 
+            validated_data['project_type'], 
             cost_analysis['timeline_months'],
-            currency
+            validated_data['currency'],
+            validated_data['company_size']
         )
         
-        market_insights = calculator.get_market_insights(target_industry)
-        risk_assessment = calculator.calculate_risk_assessment(company_size, project_type, target_industry)
-        recommendations = calculator._get_recommendations(company_size, project_type, target_industry)
+        market_insights = calculator.get_market_insights(validated_data['target_industry'])
+        recommendations = calculator.generate_recommendations(
+            validated_data['company_size'], 
+            validated_data['project_type'], 
+            validated_data['target_industry'],
+            roi_result
+        )
         
-        # Generate HTML report with actual data
+        # Generate enhanced HTML report
+        currency_config = config_class.CURRENCIES[validated_data['currency']]
+        
         html_report = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Business ROI Analysis Report - {company_name}</title>
-            <style>
-                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background: #f8f9fa; }}
-                .container {{ background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 1000px; margin: 0 auto; }}
-                h1 {{ color: #667eea; text-align: center; font-size: 2.5rem; margin-bottom: 2rem; }}
-                h2 {{ color: #4a5568; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; margin-top: 2rem; }}
-                .header-info {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; }}
-                .section {{ margin: 30px 0; }}
-                table {{ width: 100%; border-collapse: collapse; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
-                th, td {{ padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }}
-                th {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; }}
-                tr:nth-child(even) {{ background-color: #f7fafc; }}
-                .metric-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }}
-                .metric {{ background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; }}
-                .metric-value {{ font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; }}
-                .metric-label {{ font-size: 0.9rem; opacity: 0.9; }}
-                .risk-{risk_assessment['risk_category'].lower()} {{ 
-                    color: {risk_assessment['risk_color']}; 
-                    font-weight: bold; 
-                    padding: 5px 15px; 
-                    border-radius: 20px; 
-                    background: rgba(255,255,255,0.1); 
-                    display: inline-block; 
-                }}
-                .recommendations {{ background: #e6fffa; padding: 20px; border-radius: 10px; border-left: 4px solid #38b2ac; }}
-                .recommendations ul {{ margin: 0; padding-left: 20px; }}
-                .recommendations li {{ margin: 10px 0; line-height: 1.6; }}
-                .footer {{ text-align: center; margin-top: 40px; padding: 20px; background: #f7fafc; border-radius: 10px; }}
-                @media print {{ body {{ margin: 0; }} .container {{ box-shadow: none; }} }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>📊 Business ROI Analysis Report</h1>
-                
-                <div class="header-info">
-                    <h2 style="color: white; border: none; margin: 0;">Project Overview</h2>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 15px;">
-                        <div><strong>Company:</strong> {company_name}</div>
-                        <div><strong>Project:</strong> {PROJECT_TYPES[project_type]['description']}</div>
-                        <div><strong>Industry:</strong> {target_industry.replace('_', ' ').title()}</div>
-                        <div><strong>Generated:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M')}</div>
-                        <div><strong>Currency:</strong> {CURRENCIES[currency]['symbol']} {currency}</div>
-                        <div><strong>Timeline:</strong> {cost_analysis['timeline_months']} months</div>
-                    </div>
-                </div>
-                
-                <div class="section">
-                    <h2>💰 Cost Analysis</h2>
-                    <div class="metric-grid">
-                        <div class="metric">
-                            <div class="metric-value">{CURRENCIES[currency]['symbol']}{cost_analysis['total_cost']:,}</div>
-                            <div class="metric-label">Total Project Cost</div>
-                        </div>
-                        <div class="metric">
-                            <div class="metric-value">{cost_analysis['timeline_months']}</div>
-                            <div class="metric-label">Months Timeline</div>
-                        </div>
-                        <div class="metric">
-                            <div class="metric-value">{cost_analysis['complexity']}</div>
-                            <div class="metric-label">Complexity Level</div>
-                        </div>
-                    </div>
-                    
-                    <table>
-                        <tr><th>Cost Component</th><th>Amount</th><th>Percentage</th></tr>
-                        <tr><td>Development</td><td>{CURRENCIES[currency]['symbol']}{cost_analysis['breakdown']['development']:,}</td><td>60%</td></tr>
-                        <tr><td>Design</td><td>{CURRENCIES[currency]['symbol']}{cost_analysis['breakdown']['design']:,}</td><td>15%</td></tr>
-                        <tr><td>Testing & QA</td><td>{CURRENCIES[currency]['symbol']}{cost_analysis['breakdown']['testing']:,}</td><td>10%</td></tr>
-                        <tr><td>Deployment</td><td>{CURRENCIES[currency]['symbol']}{cost_analysis['breakdown']['deployment']:,}</td><td>5%</td></tr>
-                        <tr><td>Project Management</td><td>{CURRENCIES[currency]['symbol']}{cost_analysis['breakdown']['project_management']:,}</td><td>10%</td></tr>
-                    </table>
-                </div>
-                
-                <div class="section">
-                    <h2>📈 ROI Projections (3-Year Outlook)</h2>
-                    <table>
-                        <tr><th>Scenario</th><th>ROI %</th><th>Annual Return</th><th>Total 3-Year ROI</th><th>Break-even</th><th>Probability</th></tr>
-        """
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Business ROI Analysis Report - {validated_data['company_name']}</title>
+    <style>
+        body {{ 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 40px; 
+            background: #f8f9fa; 
+            line-height: 1.6;
+        }}
+        .container {{ 
+            background: white; 
+            padding: 40px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
+            max-width: 1000px; 
+            margin: 0 auto; 
+        }}
+        h1 {{ 
+            color: #667eea; 
+            text-align: center; 
+            font-size: 2.5rem; 
+            margin-bottom: 2rem; 
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 1rem;
+        }}
+        h2 {{ 
+            color: #4a5568; 
+            border-bottom: 2px solid #667eea; 
+            padding-bottom: 0.5rem; 
+            margin-top: 2rem; 
+        }}
+        .header-info {{ 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 30px; 
+        }}
+        .metric-grid {{ 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px; 
+            margin: 20px 0; 
+        }}
+        .metric {{ 
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
+            color: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            text-align: center; 
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }}
+        .metric-value {{ 
+            font-size: 2rem; 
+            font-weight: bold; 
+            margin-bottom: 0.5rem; 
+        }}
+        .metric-label {{ 
+            font-size: 0.9rem; 
+            opacity: 0.9; 
+        }}
+        .risk-indicator {{
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 5px 0;
+        }}
+        .risk-low {{ background: #48bb78; color: white; }}
+        .risk-medium {{ background: #ed8936; color: white; }}
+        .risk-high {{ background: #e53e3e; color: white; }}
+        .recommendations {{ 
+            background: #e6fffa; 
+            padding: 20px; 
+            border-radius: 10px; 
+            border-left: 4px solid #38b2ac; 
+        }}
+        .cost-breakdown {{
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }}
+        .confidence-interval {{
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #e53e3e;
+            margin: 15px 0;
+        }}
+        table {{ 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 20px 0; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+        }}
+        th, td {{ 
+            padding: 15px; 
+            text-align: left; 
+            border-bottom: 1px solid #e2e8f0; 
+        }}
+        th {{ 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            font-weight: 600; 
+        }}
+        tr:nth-child(even) {{ background-color: #f7fafc; }}
+        .footer {{ 
+            text-align: center; 
+            margin-top: 40px; 
+            padding: 20px; 
+            background: #f7fafc; 
+            border-radius: 10px; 
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Business ROI Analysis Report</h1>
         
-        for scenario, data in roi_projections.items():
-            html_report += f"""
-                        <tr>
-                            <td><strong>{scenario.title()}</strong><br><small>{data['description']}</small></td>
-                            <td><strong>{data['roi_percentage']}%</strong></td>
-                            <td>{CURRENCIES[currency]['symbol']}{data['annual_return']:,}</td>
-                            <td>{CURRENCIES[currency]['symbol']}{data['total_roi']:,}</td>
-                            <td>{data['break_even_months']} months</td>
-                            <td>{int(data['probability'] * 100)}%</td>
-                        </tr>
-            """
+        <div class="header-info">
+            <h3>🏢 {validated_data['company_name']}</h3>
+            <p><strong>Company Size:</strong> {validated_data['company_size'].title()}</p>
+            <p><strong>Industry:</strong> {validated_data['target_industry'].replace('_', ' ').title()}</p>
+            <p><strong>Project Type:</strong> {config_class.PROJECT_TYPES[validated_data['project_type']].description}</p>
+            <p><strong>Currency:</strong> {currency_config.name} ({currency_config.symbol})</p>
+            <p><strong>Report Generated:</strong> {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
+        </div>
         
-        html_report += f"""
-                    </table>
+        <div class="section">
+            <h2>💰 Financial Summary</h2>
+            <div class="metric-grid">
+                <div class="metric">
+                    <div class="metric-value">{currency_config.symbol}{roi_result.total_investment:,.0f}</div>
+                    <div class="metric-label">Total Investment</div>
                 </div>
-                
-                <div class="section">
-                    <h2>⚖️ Risk Assessment</h2>
-                    <p>Overall Risk Level: <span class="risk-{risk_assessment['risk_category'].lower()}">{risk_assessment['risk_category']}</span></p>
-                    <p><strong>Risk Score:</strong> {risk_assessment['overall_risk']:.3f} out of 1.0</p>
-                    
-                    <div class="metric-grid">
-                        <div class="metric">
-                            <div class="metric-value">{risk_assessment['risk_factors']['company_size_risk']:.1%}</div>
-                            <div class="metric-label">Company Size Risk</div>
-                        </div>
-                        <div class="metric">
-                            <div class="metric-value">{risk_assessment['risk_factors']['project_complexity_risk']:.1%}</div>
-                            <div class="metric-label">Project Complexity</div>
-                        </div>
-                        <div class="metric">
-                            <div class="metric-value">{risk_assessment['risk_factors']['industry_risk']:.1%}</div>
-                            <div class="metric-label">Industry Risk</div>
-                        </div>
-                        <div class="metric">
-                            <div class="metric-value">{risk_assessment['risk_factors']['market_volatility']:.1%}</div>
-                            <div class="metric-label">Market Volatility</div>
-                        </div>
-                    </div>
+                <div class="metric">
+                    <div class="metric-value">{currency_config.symbol}{roi_result.projected_revenue:,.0f}</div>
+                    <div class="metric-label">Projected Revenue</div>
                 </div>
-                
-                <div class="section">
-                    <h2>🌍 Market Insights</h2>
-                    <table>
-                        <tr><th>Market Factor</th><th>Value</th></tr>
-                        <tr><td>Market Size</td><td>{market_insights['market_size']}</td></tr>
-                        <tr><td>Growth Rate</td><td>{market_insights['growth_rate']}</td></tr>
-                        <tr><td>Risk Level</td><td>{market_insights['risk_level']}</td></tr>
-                        <tr><td>Volatility</td><td>{market_insights['volatility']}</td></tr>
-                    </table>
+                <div class="metric">
+                    <div class="metric-value">{roi_result.roi_percentage:.1f}%</div>
+                    <div class="metric-label">ROI Percentage</div>
                 </div>
-                
-                <div class="section">
-                    <h2>💡 Strategic Recommendations</h2>
-                    <div class="recommendations">
-                        <ul>
-        """
-        
-        for rec in recommendations:
-            html_report += f"<li>{rec}</li>"
-        
-        html_report += f"""
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="footer">
-                    <p><strong>📄 Professional Business ROI Analysis</strong></p>
-                    <p>Generated by Enhanced ROI Calculator • {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
-                    <p><small>💡 Tip: Use Ctrl+P (Cmd+P on Mac) to save this report as a PDF</small></p>
+                <div class="metric">
+                    <div class="metric-value">{roi_result.payback_period_months}</div>
+                    <div class="metric-label">Payback (Months)</div>
                 </div>
             </div>
-        </body>
-        </html>
-        """
+        </div>
+        
+        <div class="section">
+            <h2>🎯 Advanced Financial Metrics</h2>
+            <div class="metric-grid">
+                <div class="metric">
+                    <div class="metric-value">{currency_config.symbol}{roi_result.npv:,.0f}</div>
+                    <div class="metric-label">Net Present Value</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">{roi_result.irr:.2f}%</div>
+                    <div class="metric-label">Internal Rate of Return</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">{roi_result.risk_score:.1f}/100</div>
+                    <div class="metric-label">Risk Score</div>
+                </div>
+            </div>
+            
+            <div class="confidence-interval">
+                <h4>📈 95% Confidence Interval</h4>
+                <p>Expected ROI range: <strong>{roi_result.confidence_interval[0]:.1f}% - {roi_result.confidence_interval[1]:.1f}%</strong></p>
+                <p><em>Based on Monte Carlo simulation with 1,000 iterations</em></p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>💸 Cost Breakdown</h2>
+            <div class="cost-breakdown">
+                <table>
+                    <tr>
+                        <th>Cost Category</th>
+                        <th>Amount</th>
+                        <th>Percentage</th>
+                    </tr>
+                    <tr>
+                        <td>Development</td>
+                        <td>{currency_config.symbol}{cost_analysis['cost_breakdown']['development']:,.0f}</td>
+                        <td>{(cost_analysis['cost_breakdown']['development'] / cost_analysis['total_cost'] * 100):.1f}%</td>
+                    </tr>
+                    <tr>
+                        <td>Infrastructure</td>
+                        <td>{currency_config.symbol}{cost_analysis['cost_breakdown']['infrastructure']:,.0f}</td>
+                        <td>{(cost_analysis['cost_breakdown']['infrastructure'] / cost_analysis['total_cost'] * 100):.1f}%</td>
+                    </tr>
+                    <tr>
+                        <td>Annual Maintenance</td>
+                        <td>{currency_config.symbol}{cost_analysis['cost_breakdown']['maintenance_annual']:,.0f}</td>
+                        <td>{(cost_analysis['cost_breakdown']['maintenance_annual'] / cost_analysis['total_cost'] * 100):.1f}%</td>
+                    </tr>
+                    <tr>
+                        <td>Regulatory Compliance</td>
+                        <td>{currency_config.symbol}{cost_analysis['cost_breakdown']['regulatory_compliance']:,.0f}</td>
+                        <td>{(cost_analysis['cost_breakdown']['regulatory_compliance'] / cost_analysis['total_cost'] * 100):.1f}%</td>
+                    </tr>
+                    <tr>
+                        <td>Risk Buffer</td>
+                        <td>{currency_config.symbol}{cost_analysis['cost_breakdown']['risk_buffer']:,.0f}</td>
+                        <td>{(cost_analysis['cost_breakdown']['risk_buffer'] / cost_analysis['total_cost'] * 100):.1f}%</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🌍 Market Insights</h2>
+            <table>
+                <tr><th>Metric</th><th>Value</th></tr>
+                <tr><td>Market Size</td><td>${market_insights['market_size_usd']:,}</td></tr>
+                <tr><td>Annual Growth Rate</td><td>{market_insights['annual_growth_rate']}</td></tr>
+                <tr><td>Risk Level</td><td><span class="risk-indicator risk-{market_insights['risk_level'].lower()}">{market_insights['risk_level']}</span></td></tr>
+                <tr><td>Market Volatility</td><td>{market_insights['volatility']}</td></tr>
+                <tr><td>Regulatory Complexity</td><td>{market_insights['regulatory_complexity']}</td></tr>
+                <tr><td>Investment Attractiveness</td><td>{market_insights['investment_attractiveness']}</td></tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>💡 Strategic Recommendations</h2>
+            <div class="recommendations">
+                <ul>
+"""
+        
+        for rec in recommendations:
+            html_report += f"                    <li>{rec}</li>\n"
+        
+        html_report += f"""
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>📄 Professional Business ROI Analysis</strong></p>
+            <p>Generated by Enhanced ROI Calculator v2.0 • {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
+            <p><strong>Methodology:</strong> Monte Carlo Simulation, NPV/IRR Analysis, Sensitivity Testing</p>
+            <p><small>💡 Tip: Use Ctrl+P (Cmd+P on Mac) to save this report as a PDF</small></p>
+        </div>
+    </div>
+</body>
+</html>
+"""
         
         return html_report, 200, {'Content-Type': 'text/html'}
         
+    except ValidationError:
+        raise
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Error generating HTML report: {str(e)}")
+        raise ValidationError(f"Failed to generate report: {str(e)}")
 
-# Add recommendations method to calculator
-def _get_recommendations(self, company_size, project_type, industry):
-    """Generate enhanced personalized recommendations"""
-    recommendations = []
-    
-    if company_size == 'startup':
-        recommendations.append("Consider MVP approach to minimize initial investment")
-        recommendations.append("Focus on core features first, expand later")
-        recommendations.append("Seek angel investors or venture capital for funding")
-    elif company_size == 'enterprise':
-        recommendations.append("Leverage existing infrastructure for cost savings")
-        recommendations.append("Consider phased rollout across departments")
-        recommendations.append("Implement comprehensive change management")
-    
-    if industry in ['fintech', 'healthtech']:
-        recommendations.append("Budget extra for compliance and security requirements")
-        recommendations.append("Engage with regulatory bodies early in the process")
-    
-    if industry in ['crypto', 'nft', 'web3']:
-        recommendations.append("Stay updated with rapidly changing regulations")
-        recommendations.append("Consider market volatility in financial planning")
-        recommendations.append("Build strong community engagement strategies")
-    
-    if project_type == 'ai_integration':
-        recommendations.append("Start with pilot program to validate AI use cases")
-        recommendations.append("Ensure data quality before implementation")
-        recommendations.append("Invest in AI ethics and bias mitigation")
-    
-    if project_type == 'blockchain_platform':
-        recommendations.append("Choose the right blockchain network for your needs")
-        recommendations.append("Plan for scalability from the beginning")
-        recommendations.append("Consider environmental impact and sustainability")
-    
-    recommendations.append("Establish clear KPIs and success metrics")
-    recommendations.append("Plan for ongoing maintenance and updates")
-    
-    return recommendations
+@app.errorhandler(404)
+def not_found(error):
+    """Handle 404 errors"""
+    return jsonify({
+        'error': True,
+        'message': 'Resource not found',
+        'code': 404
+    }), 404
 
-# Bind the method to the calculator instance
-calculator._get_recommendations = _get_recommendations.__get__(calculator, EnhancedROICalculator)
+@app.errorhandler(500)
+def internal_error(error):
+    """Handle 500 errors"""
+    logger.error(f"Internal server error: {str(error)}")
+    return jsonify({
+        'error': True,
+        'message': 'Internal server error',
+        'code': 500,
+        'details': str(error) if app.config['DEBUG'] else None
+    }), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    logger.info(f"Starting Business ROI Calculator v2.0 in {config_class.ENV} mode")
+    logger.info(f"Debug mode: {config_class.DEBUG}")
+    
+    app.run(
+        debug=config_class.DEBUG,
+        host=config_class.HOST,
+        port=config_class.PORT
+    )

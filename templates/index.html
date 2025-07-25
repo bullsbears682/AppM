@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business ROI Calculator - Enhanced Edition</title>
+    <title>Business ROI Calculator - Enhanced Edition v2.0</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -17,7 +17,9 @@
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --crypto-gradient: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --error-gradient: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
             --dark-bg: #0a0a0a;
             --card-bg: rgba(255, 255, 255, 0.05);
             --card-border: rgba(255, 255, 255, 0.1);
@@ -28,9 +30,6 @@
             --success-color: #00ff88;
             --warning-color: #ffaa00;
             --error-color: #ff4757;
-            --risk-low: #00ff88;
-            --risk-medium: #ffaa00;
-            --risk-high: #ff4757;
         }
 
         body {
@@ -39,6 +38,7 @@
             color: var(--text-primary);
             overflow-x: hidden;
             position: relative;
+            line-height: 1.6;
         }
 
         /* Enhanced Animated Background */
@@ -98,17 +98,16 @@
             top: 0;
             left: 0;
             right: 0;
-            z-index: 1000;
-            background: rgba(10, 10, 10, 0.9);
+            background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--card-border);
-            padding: 1rem 0;
+            padding: 1rem 2rem;
+            z-index: 1000;
         }
 
-        .nav-container {
-            max-width: 1400px;
+        .header-content {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -123,90 +122,60 @@
             background-clip: text;
         }
 
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .nav-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--card-border);
-            color: var(--text-primary);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .nav-btn:hover {
+        .version-tag {
             background: var(--accent-gradient);
             color: var(--dark-bg);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
         /* Main Container */
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 6rem 2rem 2rem;
+            padding: 8rem 2rem 4rem;
             min-height: 100vh;
         }
 
-        /* Enhanced Hero Section */
+        /* Hero Section */
         .hero {
             text-align: center;
             margin-bottom: 4rem;
         }
 
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 700;
             margin-bottom: 1rem;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            line-height: 1.2;
         }
 
         .hero p {
             font-size: 1.2rem;
             color: var(--text-secondary);
-            max-width: 700px;
-            margin: 0 auto 2rem;
-            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .hero-features {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 2rem;
-            flex-wrap: wrap;
+        /* Enhanced Form Section */
+        .form-section {
+            margin-bottom: 3rem;
         }
 
-        .hero-feature {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-accent);
-            font-size: 0.9rem;
-        }
-
-        /* Enhanced Form Steps */
-        .form-container {
+        .form-steps {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 2rem;
             margin-bottom: 3rem;
         }
 
         .form-step {
             transition: all 0.3s ease;
-        }
-
-        .form-step.active {
-            transform: scale(1.02);
         }
 
         .step-header {
@@ -276,7 +245,7 @@
         /* Enhanced Selection Cards */
         .selection-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
             margin-top: 1rem;
         }
@@ -342,6 +311,24 @@
             line-height: 1.4;
         }
 
+        /* Validation Errors */
+        .validation-errors {
+            display: none;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.2);
+            border-radius: 12px;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         /* Enhanced Calculate Button */
         .calculate-btn {
             background: var(--accent-gradient);
@@ -358,6 +345,7 @@
             margin: 2rem auto;
             display: block;
             box-shadow: 0 10px 30px rgba(0, 242, 254, 0.3);
+            min-width: 200px;
         }
 
         .calculate-btn:hover {
@@ -373,16 +361,34 @@
             pointer-events: none;
         }
 
-        .calculate-btn.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            margin: auto;
-            border: 2px solid transparent;
-            border-top-color: var(--dark-bg);
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--card-border);
+            border-top: 3px solid var(--text-accent);
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
         }
 
         @keyframes spin {
@@ -394,6 +400,12 @@
         .results-container {
             display: none;
             margin-top: 3rem;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .results-header {
@@ -405,7 +417,7 @@
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 1rem;
-            background: var(--secondary-gradient);
+            background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -413,13 +425,13 @@
 
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
             margin-bottom: 3rem;
         }
 
         .result-card {
-            position: relative;
+            text-align: center;
             transition: transform 0.3s ease;
         }
 
@@ -428,7 +440,7 @@
         }
 
         .metric-value {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
             background: var(--accent-gradient);
@@ -438,68 +450,81 @@
         }
 
         .metric-label {
-            font-size: 1rem;
-            color: var(--text-secondary);
+            font-size: 1.2rem;
+            font-weight: 600;
             margin-bottom: 1rem;
         }
 
         .metric-description {
-            font-size: 0.9rem;
             color: var(--text-secondary);
             line-height: 1.5;
         }
 
-        /* Risk Assessment Styles */
-        .risk-assessment {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
+        /* Chart Containers */
+        .chart-container {
+            margin: 3rem 0;
             padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+        }
+
+        .chart-title {
+            text-align: center;
             margin-bottom: 2rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        /* Risk Assessment */
+        .risk-assessment {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
         }
 
         .risk-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 1.5rem;
+            align-items: center;
+            margin-bottom: 2rem;
         }
 
         .risk-level {
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-weight: 600;
-            font-size: 0.9rem;
         }
 
         .risk-level.low {
-            background: rgba(0, 255, 136, 0.2);
-            color: var(--risk-low);
+            background: var(--success-color);
+            color: var(--dark-bg);
         }
 
         .risk-level.medium {
-            background: rgba(255, 170, 0, 0.2);
-            color: var(--risk-medium);
+            background: var(--warning-color);
+            color: var(--dark-bg);
         }
 
         .risk-level.high {
-            background: rgba(255, 71, 87, 0.2);
-            color: var(--risk-high);
+            background: var(--error-color);
+            color: white;
         }
 
         .risk-factors {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .risk-factor {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 1rem;
-            border-radius: 10px;
             text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
         }
 
         .risk-factor-value {
@@ -509,345 +534,258 @@
         }
 
         .risk-factor-label {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
             margin-top: 0.5rem;
         }
 
-        /* Charts */
-        .chart-container {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            height: 400px;
-            position: relative;
-        }
-
-        .chart-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        /* Currency Display */
-        .currency-display {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            margin-left: 0.5rem;
-        }
-
-        /* Enhanced Responsive Design */
-        @media (max-width: 1024px) {
-            .form-container {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
+            .container {
+                padding: 6rem 1rem 2rem;
             }
-            
-            .form-container {
-                grid-template-columns: 1fr;
+
+            .header-content {
+                padding: 0 1rem;
             }
-            
-            .results-grid {
-                grid-template-columns: 1fr;
-            }
-            
+
             .selection-grid {
                 grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             }
 
-            .hero-features {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .metric-value {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .step-header {
                 flex-direction: column;
+                align-items: flex-start;
                 gap: 1rem;
             }
 
-            .nav-container {
-                flex-direction: column;
-                gap: 1rem;
+            .glass-card {
+                padding: 1.5rem;
+            }
+
+            .calculate-btn {
+                padding: 1rem 2rem;
+                font-size: 1rem;
             }
         }
 
-        /* Loading Animation */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(10, 10, 10, 0.9);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid var(--card-border);
-            border-top: 3px solid var(--text-accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .slide-up {
-            animation: slideUp 0.8s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Enhanced tooltips */
+        /* Tooltip Styles */
         .tooltip {
             position: relative;
             cursor: help;
+            color: var(--text-accent);
         }
 
-        .tooltip::after {
+        .tooltip:hover::after {
             content: attr(data-tooltip);
             position: absolute;
-            bottom: 100%;
+            bottom: 125%;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.9);
             color: white;
             padding: 0.5rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
+            border-radius: 8px;
             white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
+            font-size: 0.8rem;
             z-index: 1000;
-        }
-
-        .tooltip:hover::after {
-            opacity: 1;
         }
     </style>
 </head>
 <body>
     <!-- Enhanced Header -->
     <header class="header">
-        <div class="nav-container">
+        <div class="header-content">
             <div class="logo">
-                <i class="fas fa-chart-line"></i> ROI Calculator Pro
+                <i class="fas fa-chart-line"></i> ROI Calculator
             </div>
-            <div class="nav-links">
-                <span class="text-secondary">Calculate Your Business Success</span>
-            </div>
+            <div class="version-tag">v2.0 Enhanced</div>
         </div>
     </header>
 
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h3>Analyzing Your Investment</h3>
+            <p>Running Monte Carlo simulations and risk assessments...</p>
+        </div>
     </div>
 
-    <!-- Main Container -->
     <div class="container">
-        <!-- Enhanced Hero Section -->
-        <section class="hero fade-in">
-            <h1>Advanced Business ROI Calculator</h1>
-            <p>Get comprehensive cost estimates, risk assessments, and ROI projections for your business ventures. Now with multi-currency support, PDF reports, and advanced analytics.</p>
-            <div class="hero-features">
-                <div class="hero-feature">
-                    <i class="fas fa-coins"></i>
-                    <span>Multi-Currency Support</span>
-                </div>
-                <div class="hero-feature">
-                    <i class="fas fa-file-pdf"></i>
-                    <span>PDF Reports</span>
-                </div>
-                <div class="hero-feature">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Risk Assessment</span>
-                </div>
-                <div class="hero-feature">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Advanced Analytics</span>
-                </div>
-            </div>
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Business ROI Calculator</h1>
+            <p>Advanced financial modeling with Monte Carlo simulations, NPV/IRR analysis, and comprehensive risk assessment</p>
         </section>
 
         <!-- Enhanced Form Section -->
         <section class="form-section">
-            <div class="form-container">
+            <div class="validation-errors" id="validationErrors"></div>
+            
+            <div class="form-steps">
                 <!-- Step 1: Company Information -->
-                <div class="form-step glass-card slide-up">
+                <div class="form-step glass-card">
                     <div class="step-header">
                         <div class="step-number">1</div>
                         <div class="step-title">Company Information</div>
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Company Name</label>
-                        <input type="text" class="form-input" id="companyName" placeholder="Enter your company name">
+                        <label class="form-label">
+                            Company Name
+                            <i class="fas fa-info-circle tooltip" data-tooltip="Enter your company or project name"></i>
+                        </label>
+                        <input type="text" class="form-input" id="companyName" placeholder="Enter your company name" required>
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Company Size</label>
-                        <select class="form-input form-select" id="companySize">
-                            <option value="startup">Startup (1-10 employees)</option>
-                            <option value="small">Small (11-50 employees)</option>
-                            <option value="medium" selected>Medium (51-200 employees)</option>
+                        <label class="form-label">
+                            Company Size
+                            <i class="fas fa-info-circle tooltip" data-tooltip="Select the size category that best describes your company"></i>
+                        </label>
+                        <select class="form-input form-select" id="companySize" required>
+                            <option value="">Select company size</option>
+                            <option value="startup">Startup (5-15 employees)</option>
+                            <option value="small">Small (15-50 employees)</option>
+                            <option value="medium">Medium (50-200 employees)</option>
                             <option value="enterprise">Enterprise (200+ employees)</option>
                         </select>
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Current Industry</label>
+                        <label class="form-label">
+                            Current Industry
+                            <i class="fas fa-info-circle tooltip" data-tooltip="Your company's current primary industry"></i>
+                        </label>
                         <select class="form-input form-select" id="currentIndustry">
-                            <option value="saas">SaaS</option>
+                            <option value="">Select current industry</option>
                             <option value="fintech">FinTech</option>
                             <option value="healthtech">HealthTech</option>
                             <option value="edtech">EdTech</option>
                             <option value="ecommerce">E-commerce</option>
+                            <option value="saas">SaaS</option>
                             <option value="gaming">Gaming</option>
-                            <option value="crypto">Cryptocurrency</option>
-                            <option value="nft">NFT & Digital Assets</option>
-                            <option value="web3">Web3 & Blockchain</option>
-                            <option value="sustainability">Sustainability</option>
-                            <option value="biotech">Biotechnology</option>
                             <option value="realEstate">Real Estate</option>
                             <option value="foodBeverage">Food & Beverage</option>
                             <option value="manufacturing">Manufacturing</option>
                             <option value="logistics">Logistics</option>
+                            <option value="crypto">Cryptocurrency</option>
+                            <option value="nft">NFT</option>
+                            <option value="web3">Web3</option>
+                            <option value="sustainability">Sustainability</option>
+                            <option value="biotech">Biotech</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Step 2: Project Details -->
-                <div class="form-step glass-card slide-up">
+                <!-- Step 2: Project Selection -->
+                <div class="form-step glass-card">
                     <div class="step-header">
                         <div class="step-number">2</div>
-                        <div class="step-title">Project Details</div>
+                        <div class="step-title">Project Type</div>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">What do you want to build?</label>
-                        <div class="selection-grid" id="projectTypes">
-                            <!-- Project types will be loaded here -->
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Target Industry/Market</label>
-                        <select class="form-input form-select" id="targetIndustry">
-                            <option value="saas">SaaS</option>
-                            <option value="fintech">FinTech</option>
-                            <option value="healthtech">HealthTech</option>
-                            <option value="edtech">EdTech</option>
-                            <option value="ecommerce">E-commerce</option>
-                            <option value="gaming">Gaming</option>
-                            <option value="crypto">Cryptocurrency</option>
-                            <option value="nft">NFT & Digital Assets</option>
-                            <option value="web3">Web3 & Blockchain</option>
-                            <option value="sustainability">Sustainability</option>
-                            <option value="biotech">Biotechnology</option>
-                            <option value="realEstate">Real Estate</option>
-                            <option value="foodBeverage">Food & Beverage</option>
-                            <option value="manufacturing">Manufacturing</option>
-                            <option value="logistics">Logistics</option>
-                        </select>
+                    <p class="form-label">Select the type of project you're planning to invest in:</p>
+                    <div class="selection-grid" id="projectTypes">
+                        <!-- Project types will be loaded dynamically -->
                     </div>
                 </div>
 
-                <!-- Step 3: Currency & Preferences -->
-                <div class="form-step glass-card slide-up">
+                <!-- Step 3: Target Market -->
+                <div class="form-step glass-card">
                     <div class="step-header">
                         <div class="step-number">3</div>
-                        <div class="step-title">Currency & Settings</div>
+                        <div class="step-title">Target Market & Configuration</div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">
-                            Currency 
+                            Target Industry
+                            <i class="fas fa-info-circle tooltip" data-tooltip="The industry you plan to target with this project"></i>
+                        </label>
+                        <select class="form-input form-select" id="targetIndustry" required>
+                            <option value="">Select target industry</option>
+                            <option value="fintech">FinTech</option>
+                            <option value="healthtech">HealthTech</option>
+                            <option value="edtech">EdTech</option>
+                            <option value="ecommerce">E-commerce</option>
+                            <option value="saas">SaaS</option>
+                            <option value="gaming">Gaming</option>
+                            <option value="realEstate">Real Estate</option>
+                            <option value="foodBeverage">Food & Beverage</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="logistics">Logistics</option>
+                            <option value="crypto">Cryptocurrency</option>
+                            <option value="nft">NFT</option>
+                            <option value="web3">Web3</option>
+                            <option value="sustainability">Sustainability</option>
+                            <option value="biotech">Biotech</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            Currency
                             <i class="fas fa-info-circle tooltip" data-tooltip="Select your preferred currency for calculations"></i>
                         </label>
                         <select class="form-input form-select" id="currency">
-                            {% for code, info in currencies.items() %}
-                            <option value="{{ code }}" {% if code == 'USD' %}selected{% endif %}>
-                                {{ info.symbol }} {{ info.name }} ({{ code }})
-                            </option>
-                            {% endfor %}
+                            <option value="USD">$ US Dollar (USD)</option>
+                            <option value="EUR">€ Euro (EUR)</option>
+                            <option value="GBP">£ British Pound (GBP)</option>
+                            <option value="JPY">¥ Japanese Yen (JPY)</option>
+                            <option value="CAD">C$ Canadian Dollar (CAD)</option>
+                            <option value="AUD">A$ Australian Dollar (AUD)</option>
+                            <option value="CHF">CHF Swiss Franc (CHF)</option>
+                            <option value="CNY">¥ Chinese Yuan (CNY)</option>
+                            <option value="INR">₹ Indian Rupee (INR)</option>
+                            <option value="BRL">R$ Brazilian Real (BRL)</option>
                         </select>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">
-                            Analysis Depth
-                            <i class="fas fa-info-circle tooltip" data-tooltip="Choose the level of detail for your analysis"></i>
+                            Custom Investment Amount (Optional)
+                            <i class="fas fa-info-circle tooltip" data-tooltip="Override the estimated cost with your specific investment amount"></i>
                         </label>
-                        <select class="form-input form-select" id="analysisDepth">
-                            <option value="basic">Basic Analysis</option>
-                            <option value="standard" selected>Standard Analysis</option>
-                            <option value="comprehensive">Comprehensive Analysis</option>
-                        </select>
+                        <input type="number" class="form-input" id="customInvestment" placeholder="Enter custom amount" min="1000">
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">
-                            Risk Tolerance
-                            <i class="fas fa-info-circle tooltip" data-tooltip="Your company's appetite for risk"></i>
+                            Custom Timeline (Months) (Optional)
+                            <i class="fas fa-info-circle tooltip" data-tooltip="Override the estimated timeline with your specific project duration"></i>
                         </label>
-                        <select class="form-input form-select" id="riskTolerance">
-                            <option value="conservative">Conservative</option>
-                            <option value="moderate" selected>Moderate</option>
-                            <option value="aggressive">Aggressive</option>
-                        </select>
+                        <input type="number" class="form-input" id="customTimeline" placeholder="Enter timeline in months" min="1" max="120">
                     </div>
                 </div>
             </div>
 
             <!-- Enhanced Calculate Button -->
             <button class="calculate-btn" id="calculateBtn">
-                <i class="fas fa-calculator"></i> Calculate ROI & Risk Assessment
+                <i class="fas fa-calculator"></i> Analyze Investment & Calculate ROI
             </button>
         </section>
 
         <!-- Enhanced Results Section -->
         <section class="results-container" id="resultsContainer">
             <div class="results-header">
-                <h2 id="resultsTitle">Your Project Analysis</h2>
-                <p id="resultsSubtitle">Comprehensive analysis based on your requirements</p>
+                <h2 id="resultsTitle">Investment Analysis Results</h2>
+                <p id="resultsSubtitle">Comprehensive financial modeling and risk assessment</p>
             </div>
 
             <!-- Risk Assessment Section -->
@@ -871,7 +809,7 @@
 
             <!-- Enhanced Charts Section -->
             <div class="chart-container">
-                <h3 class="chart-title">ROI Projection Scenarios</h3>
+                <h3 class="chart-title">Monte Carlo ROI Simulation</h3>
                 <canvas id="roiChart"></canvas>
             </div>
 
@@ -883,7 +821,7 @@
             <!-- HTML Export Button -->
             <div style="text-align: center; margin-top: 2rem;">
                 <button class="calculate-btn" id="exportHtmlBtn" style="display: none;">
-                    <i class="fas fa-file-code"></i> Export HTML Report
+                    <i class="fas fa-file-code"></i> Export Comprehensive Report
                 </button>
             </div>
         </section>
@@ -900,19 +838,23 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadProjectTypes();
             setupEventListeners();
-            setupCurrencyConverter();
+            setupRealTimeValidation();
         });
 
         // Load project types from API
         async function loadProjectTypes() {
             try {
                 const response = await fetch('/api/projects');
-                const projects = await response.json();
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error('Failed to load project types');
+                }
                 
                 const container = document.getElementById('projectTypes');
                 container.innerHTML = '';
                 
-                projects.forEach(project => {
+                data.projects.forEach(project => {
                     const card = document.createElement('div');
                     card.className = 'selection-card';
                     card.dataset.projectId = project.id;
@@ -924,6 +866,7 @@
                         <div class="card-description">
                             ${project.complexity} complexity<br>
                             ${project.timeline}<br>
+                            ROI Potential: ${project.roi_potential}<br>
                             <small>${project.base_cost}</small>
                         </div>
                     `;
@@ -933,6 +876,7 @@
                 });
             } catch (error) {
                 console.error('Error loading project types:', error);
+                showError('Failed to load project types. Please refresh the page.');
             }
         }
 
@@ -968,6 +912,9 @@
             // Add selection to clicked card
             cardElement.classList.add('selected');
             selectedProjectType = projectId;
+            
+            // Clear validation errors if any
+            validateInput();
         }
 
         // Setup event listeners
@@ -976,16 +923,73 @@
             document.getElementById('exportHtmlBtn').addEventListener('click', exportHTML);
         }
 
-        // Setup currency converter
-        function setupCurrencyConverter() {
-            // Add real-time currency conversion if needed
-            // This is a placeholder for future enhancement
+        // Setup real-time validation
+        function setupRealTimeValidation() {
+            const inputs = ['companyName', 'companySize', 'targetIndustry'];
+            inputs.forEach(inputId => {
+                const element = document.getElementById(inputId);
+                element.addEventListener('input', validateInput);
+                element.addEventListener('change', validateInput);
+            });
         }
 
-        // Calculate ROI with enhanced features
-        async function calculateROI() {
+        // Enhanced input validation with real-time feedback
+        function validateInput() {
+            const errors = [];
+            const companyName = document.getElementById('companyName').value.trim();
+            
+            if (!companyName) {
+                errors.push('Company name is required');
+            } else if (companyName.length < 2) {
+                errors.push('Company name must be at least 2 characters long');
+            } else if (companyName.length > 100) {
+                errors.push('Company name cannot exceed 100 characters');
+            }
+            
             if (!selectedProjectType) {
-                alert('Please select a project type');
+                errors.push('Please select a project type');
+            }
+            
+            const companySize = document.getElementById('companySize').value;
+            if (!companySize) {
+                errors.push('Please select company size');
+            }
+            
+            const industry = document.getElementById('targetIndustry').value;
+            if (!industry) {
+                errors.push('Please select target industry');
+            }
+            
+            // Validate custom investment if provided
+            const customInvestment = document.getElementById('customInvestment').value;
+            if (customInvestment && (customInvestment < 1000 || customInvestment > 50000000)) {
+                errors.push('Custom investment must be between $1,000 and $50,000,000');
+            }
+            
+            // Validate custom timeline if provided
+            const customTimeline = document.getElementById('customTimeline').value;
+            if (customTimeline && (customTimeline < 1 || customTimeline > 120)) {
+                errors.push('Custom timeline must be between 1 and 120 months');
+            }
+            
+            // Display validation errors
+            const errorContainer = document.getElementById('validationErrors');
+            if (errors.length > 0) {
+                errorContainer.innerHTML = errors.map(error => 
+                    `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> ${error}</div>`
+                ).join('');
+                errorContainer.style.display = 'block';
+                return false;
+            } else {
+                errorContainer.style.display = 'none';
+                return true;
+            }
+        }
+
+        // Calculate ROI with enhanced features and validation
+        async function calculateROI() {
+            // Validate inputs first
+            if (!validateInput()) {
                 return;
             }
 
@@ -998,16 +1002,26 @@
             overlay.style.display = 'flex';
 
             try {
+                // Prepare form data
                 const formData = {
-                    company_name: document.getElementById('companyName').value || 'Your Company',
+                    company_name: document.getElementById('companyName').value.trim(),
                     company_size: document.getElementById('companySize').value,
-                    current_industry: document.getElementById('currentIndustry').value,
+                    current_industry: document.getElementById('currentIndustry').value || document.getElementById('targetIndustry').value,
                     project_type: selectedProjectType,
                     target_industry: document.getElementById('targetIndustry').value,
-                    currency: document.getElementById('currency').value,
-                    analysis_depth: document.getElementById('analysisDepth').value,
-                    risk_tolerance: document.getElementById('riskTolerance').value
+                    currency: document.getElementById('currency').value
                 };
+                
+                // Add optional fields if provided
+                const customInvestment = document.getElementById('customInvestment').value;
+                if (customInvestment) {
+                    formData.custom_investment = parseFloat(customInvestment);
+                }
+                
+                const customTimeline = document.getElementById('customTimeline').value;
+                if (customTimeline) {
+                    formData.custom_timeline = parseInt(customTimeline);
+                }
 
                 const response = await fetch('/api/calculate', {
                     method: 'POST',
@@ -1018,21 +1032,37 @@
                 });
 
                 const results = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(results.message || 'Calculation failed');
+                }
+                
+                if (results.error) {
+                    if (results.validation_error) {
+                        showValidationError(results.validation_error);
+                    } else if (results.business_error) {
+                        showBusinessError(results.business_error);
+                    } else {
+                        throw new Error(results.message || 'Unknown error occurred');
+                    }
+                    return;
+                }
+                
                 currentResults = results;
                 displayResults(results);
                 
             } catch (error) {
                 console.error('Error calculating ROI:', error);
-                alert('Error calculating ROI. Please try again.');
+                showError(`Error calculating ROI: ${error.message}`);
             } finally {
                 // Hide loading state
                 button.classList.remove('loading');
-                button.innerHTML = '<i class="fas fa-calculator"></i> Calculate ROI & Risk Assessment';
+                button.innerHTML = '<i class="fas fa-calculator"></i> Analyze Investment & Calculate ROI';
                 overlay.style.display = 'none';
             }
         }
 
-        // Enhanced display results
+        // Enhanced display results for new API response structure
         function displayResults(data) {
             const container = document.getElementById('resultsContainer');
             const grid = document.getElementById('resultsGrid');
@@ -1040,97 +1070,97 @@
             const subtitle = document.getElementById('resultsSubtitle');
             
             // Update titles
-            title.textContent = `${data.company_name} - ${data.project_summary.type}`;
-            subtitle.innerHTML = `${data.project_summary.industry} • ${data.project_summary.timeline} • ${data.project_summary.complexity} Complexity <span class="currency-display"><i class="fas fa-coins"></i> ${data.cost_analysis.currency}</span>`;
+            title.textContent = `${data.input_parameters.company_name} - Investment Analysis`;
+            subtitle.innerHTML = `
+                ${data.input_parameters.target_industry.replace('_', ' ')} • 
+                ${data.cost_analysis.timeline_months} months • 
+                ${data.cost_analysis.currency} analysis
+            `;
             
-            // Display risk assessment
-            displayRiskAssessment(data.risk_assessment);
-            
-            // Create result cards
+            // Create result cards with new data structure
             grid.innerHTML = '';
             
-            // Total Cost Card
-            const costCard = createResultCard(
-                `${data.cost_analysis.currency_symbol}${data.cost_analysis.total_cost.toLocaleString()}`,
-                'Total Project Cost',
-                `Estimated investment required for ${data.project_summary.type.toLowerCase()}`,
-                'fas fa-dollar-sign'
+            // Total Investment Card
+            const investmentCard = createResultCard(
+                `${data.cost_analysis.currency_symbol}${data.roi_projection.total_investment.toLocaleString()}`,
+                'Total Investment',
+                `Required capital investment for ${data.input_parameters.project_type.replace('_', ' ')}`,
+                'fas fa-dollar-sign',
+                'primary'
             );
-            grid.appendChild(costCard);
+            grid.appendChild(investmentCard);
             
-            // Enhanced ROI Cards for each scenario
-            Object.entries(data.roi_projections).forEach(([scenario, projection]) => {
-                const card = createResultCard(
-                    `${projection.roi_percentage}%`,
-                    `${scenario.charAt(0).toUpperCase() + scenario.slice(1)} ROI`,
-                    `${projection.description}<br>Annual Return: ${data.cost_analysis.currency_symbol}${projection.annual_return.toLocaleString()}<br>Break-even: ${projection.break_even_months} months<br>Probability: ${(projection.probability * 100).toFixed(0)}%`,
-                    'fas fa-chart-line'
-                );
-                grid.appendChild(card);
-            });
-            
-            // Enhanced Market Card
-            const marketCard = createResultCard(
-                data.market_insights.market_size,
-                'Market Analysis',
-                `Growth rate: ${data.market_insights.growth_rate}<br>Risk level: ${data.market_insights.risk_level}<br>Volatility: ${data.market_insights.volatility}`,
-                'fas fa-globe'
+            // ROI Percentage Card
+            const roiCard = createResultCard(
+                `${data.roi_projection.roi_percentage.toFixed(1)}%`,
+                'Expected ROI',
+                `Net return on investment over ${data.cost_analysis.timeline_months} months<br>
+                 Confidence: ${data.roi_projection.confidence_interval.lower.toFixed(1)}% - ${data.roi_projection.confidence_interval.upper.toFixed(1)}%`,
+                'fas fa-chart-line',
+                'success'
             );
-            grid.appendChild(marketCard);
+            grid.appendChild(roiCard);
+            
+            // Projected Revenue Card
+            const revenueCard = createResultCard(
+                `${data.cost_analysis.currency_symbol}${data.roi_projection.projected_revenue.toLocaleString()}`,
+                'Projected Revenue',
+                `Expected total revenue generation<br>Net Profit: ${data.cost_analysis.currency_symbol}${data.roi_projection.net_profit.toLocaleString()}`,
+                'fas fa-chart-area',
+                'success'
+            );
+            grid.appendChild(revenueCard);
+            
+            // Payback Period Card
+            const paybackCard = createResultCard(
+                `${data.roi_projection.payback_period_months} months`,
+                'Payback Period',
+                `Time to recover initial investment<br>Break-even: ${data.cost_analysis.currency_symbol}${data.roi_projection.break_even_point.toLocaleString()}`,
+                'fas fa-clock',
+                'info'
+            );
+            grid.appendChild(paybackCard);
+            
+            // NPV Card
+            const npvCard = createResultCard(
+                `${data.cost_analysis.currency_symbol}${data.roi_projection.npv.toLocaleString()}`,
+                'Net Present Value',
+                `NPV analysis with 8% discount rate<br>IRR: ${data.roi_projection.irr.toFixed(2)}%`,
+                'fas fa-coins',
+                data.roi_projection.npv > 0 ? 'success' : 'warning'
+            );
+            grid.appendChild(npvCard);
+            
+            // Risk Score Card
+            const riskCard = createResultCard(
+                `${data.roi_projection.risk_score.toFixed(1)}/100`,
+                'Risk Score',
+                getRiskDescription(data.roi_projection.risk_score),
+                'fas fa-shield-alt',
+                getRiskCardType(data.roi_projection.risk_score)
+            );
+            grid.appendChild(riskCard);
             
             // Create enhanced charts
-            createEnhancedROIChart(data.roi_projections);
-            createEnhancedCostChart(data.cost_analysis.breakdown);
+            createROIChart(data);
+            createCostChart(data.cost_analysis.cost_breakdown);
             
-            // Show export button for demo
+            // Show export button
             document.getElementById('exportHtmlBtn').style.display = 'block';
             
             // Show results with animation
             container.style.display = 'block';
-            container.classList.add('fade-in');
             
             // Scroll to results
-            container.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Display risk assessment
-        function displayRiskAssessment(riskData) {
-            const container = document.getElementById('riskAssessment');
-            const levelElement = document.getElementById('riskLevel');
-            const factorsContainer = document.getElementById('riskFactors');
-            const strategiesContainer = document.getElementById('riskStrategies');
-            
-            // Set risk level
-            levelElement.textContent = riskData.risk_category;
-            levelElement.className = `risk-level ${riskData.risk_category.toLowerCase()}`;
-            
-            // Display risk factors
-            factorsContainer.innerHTML = '';
-            Object.entries(riskData.risk_factors).forEach(([factor, value]) => {
-                const factorDiv = document.createElement('div');
-                factorDiv.className = 'risk-factor';
-                factorDiv.innerHTML = `
-                    <div class="risk-factor-value">${(value * 100).toFixed(1)}%</div>
-                    <div class="risk-factor-label">${factor.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
-                `;
-                factorsContainer.appendChild(factorDiv);
-            });
-            
-            // Display mitigation strategies
-            strategiesContainer.innerHTML = '';
-            riskData.risk_mitigation.forEach(strategy => {
-                const li = document.createElement('li');
-                li.textContent = strategy;
-                strategiesContainer.appendChild(li);
-            });
-            
-            container.style.display = 'block';
+            setTimeout(() => {
+                container.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
         }
 
         // Create enhanced result card
-        function createResultCard(value, label, description, icon) {
+        function createResultCard(value, label, description, icon, type = 'primary') {
             const card = document.createElement('div');
-            card.className = 'result-card glass-card';
+            card.className = `result-card glass-card ${type}`;
             card.innerHTML = `
                 <div class="card-icon">
                     <i class="${icon}"></i>
@@ -1143,55 +1173,42 @@
         }
 
         // Create enhanced ROI chart
-        function createEnhancedROIChart(projections) {
+        function createROIChart(data) {
             const ctx = document.getElementById('roiChart').getContext('2d');
             
             if (roiChart) {
                 roiChart.destroy();
             }
             
-            const scenarios = Object.keys(projections);
-            const roiValues = scenarios.map(scenario => projections[scenario].roi_percentage);
-            const probabilities = scenarios.map(scenario => projections[scenario].probability * 100);
+            // Create data for Monte Carlo visualization
+            const sensitivity = data.roi_projection.sensitivity_analysis;
+            const chartData = {
+                labels: ['Growth Rate -20%', 'Growth Rate -10%', 'Baseline', 'Growth Rate +10%', 'Growth Rate +20%'],
+                datasets: [{
+                    label: 'ROI Sensitivity (%)',
+                    data: sensitivity.growth_rate,
+                    backgroundColor: 'rgba(79, 172, 254, 0.8)',
+                    borderColor: 'rgba(79, 172, 254, 1)',
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            };
             
             roiChart = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: scenarios.map(s => s.charAt(0).toUpperCase() + s.slice(1)),
-                    datasets: [{
-                        label: 'ROI %',
-                        data: roiValues,
-                        backgroundColor: [
-                            'rgba(255, 71, 87, 0.8)',
-                            'rgba(255, 170, 0, 0.8)',
-                            'rgba(0, 242, 254, 0.8)',
-                            'rgba(0, 255, 136, 0.8)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 71, 87, 1)',
-                            'rgba(255, 170, 0, 1)',
-                            'rgba(0, 242, 254, 1)',
-                            'rgba(0, 255, 136, 1)'
-                        ],
-                        borderWidth: 2,
-                        borderRadius: 8
-                    }, {
-                        label: 'Probability %',
-                        data: probabilities,
-                        type: 'line',
-                        borderColor: 'rgba(255, 255, 255, 0.8)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        yAxisID: 'y1'
-                    }]
-                },
+                data: chartData,
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             labels: {
-                                color: 'rgba(255, 255, 255, 0.7)'
+                                color: '#ffffff'
                             }
+                        },
+                        title: {
+                            display: true,
+                            text: 'ROI Sensitivity Analysis',
+                            color: '#ffffff'
                         }
                     },
                     scales: {
@@ -1201,18 +1218,7 @@
                                 color: 'rgba(255, 255, 255, 0.1)'
                             },
                             ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
-                            }
-                        },
-                        y1: {
-                            type: 'linear',
-                            display: true,
-                            position: 'right',
-                            grid: {
-                                drawOnChartArea: false,
-                            },
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
+                                color: '#ffffff'
                             }
                         },
                         x: {
@@ -1220,7 +1226,7 @@
                                 color: 'rgba(255, 255, 255, 0.1)'
                             },
                             ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
+                                color: '#ffffff'
                             }
                         }
                     }
@@ -1228,18 +1234,18 @@
             });
         }
 
-        // Create enhanced cost breakdown chart
-        function createEnhancedCostChart(breakdown) {
+        // Create enhanced cost chart
+        function createCostChart(costBreakdown) {
             const ctx = document.getElementById('costChart').getContext('2d');
             
             if (costChart) {
                 costChart.destroy();
             }
             
-            const labels = Object.keys(breakdown).map(key => 
-                key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+            const labels = Object.keys(costBreakdown).map(key => 
+                key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
             );
-            const values = Object.values(breakdown);
+            const values = Object.values(costBreakdown);
             
             costChart = new Chart(ctx, {
                 type: 'doughnut',
@@ -1249,16 +1255,16 @@
                         data: values,
                         backgroundColor: [
                             'rgba(102, 126, 234, 0.8)',
-                            'rgba(118, 75, 162, 0.8)',
-                            'rgba(0, 242, 254, 0.8)',
-                            'rgba(255, 170, 0, 0.8)',
+                            'rgba(79, 172, 254, 0.8)',
+                            'rgba(240, 147, 251, 0.8)',
+                            'rgba(245, 87, 108, 0.8)',
                             'rgba(0, 255, 136, 0.8)'
                         ],
                         borderColor: [
                             'rgba(102, 126, 234, 1)',
-                            'rgba(118, 75, 162, 1)',
-                            'rgba(0, 242, 254, 1)',
-                            'rgba(255, 170, 0, 1)',
+                            'rgba(79, 172, 254, 1)',
+                            'rgba(240, 147, 251, 1)',
+                            'rgba(245, 87, 108, 1)',
                             'rgba(0, 255, 136, 1)'
                         ],
                         borderWidth: 2
@@ -1266,40 +1272,69 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             position: 'bottom',
                             labels: {
-                                color: 'rgba(255, 255, 255, 0.7)',
+                                color: '#ffffff',
                                 padding: 20
                             }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Investment Cost Distribution',
+                            color: '#ffffff'
                         }
                     }
                 }
             });
         }
 
-        // Export HTML functionality
+        // Helper functions
+        function getRiskDescription(riskScore) {
+            if (riskScore <= 30) {
+                return 'Low risk investment with stable returns expected';
+            } else if (riskScore <= 60) {
+                return 'Moderate risk with balanced risk-reward profile';
+            } else {
+                return 'High risk investment requiring careful monitoring';
+            }
+        }
+
+        function getRiskCardType(riskScore) {
+            if (riskScore <= 30) return 'success';
+            if (riskScore <= 60) return 'warning';
+            return 'error';
+        }
+
+        function showError(message) {
+            const errorContainer = document.getElementById('validationErrors');
+            errorContainer.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
+            errorContainer.style.display = 'block';
+        }
+
+        function showValidationError(validationError) {
+            showError(`Validation Error: ${validationError.message}`);
+        }
+
+        function showBusinessError(businessError) {
+            showError(`Business Logic Error: ${businessError.message}`);
+        }
+
+        // Export HTML report
         function exportHTML() {
-            const companyName = document.getElementById('companyName').value || 'Sample Company';
-            const companySize = document.getElementById('companySize').value || 'medium';
-            const currentIndustry = document.getElementById('currentIndustry').value || 'saas';
-            const targetIndustry = document.getElementById('targetIndustry').value || 'saas';
-            const currency = document.getElementById('currency').value || 'USD';
-            
-            if (!selectedProjectType) {
-                alert('Please select a project type first, then calculate ROI before exporting');
+            if (!currentResults) {
+                showError('No results to export. Please run a calculation first.');
                 return;
             }
             
             const params = new URLSearchParams({
-                company: companyName,
-                company_size: companySize,
-                current_industry: currentIndustry,
-                project_type: selectedProjectType,
-                target_industry: targetIndustry,
-                currency: currency
+                company: currentResults.input_parameters.company_name,
+                company_size: currentResults.input_parameters.company_size,
+                current_industry: currentResults.input_parameters.current_industry,
+                project_type: currentResults.input_parameters.project_type,
+                target_industry: currentResults.input_parameters.target_industry,
+                currency: currentResults.input_parameters.currency
             });
             
             window.open(`/api/export-html?${params.toString()}`, '_blank');
