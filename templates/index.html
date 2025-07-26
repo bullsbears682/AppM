@@ -38,15 +38,7 @@
             --dark-mode: 0;
         }
 
-        [data-theme="dark"] {
-            --dark-mode: 1;
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #151520;
-            --text-primary: #f0f0f5;
-            --text-secondary: #b0b0c0;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --glass-bg: rgba(255, 255, 255, 0.05);
-        }
+
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -969,28 +961,7 @@
             z-index: 1000;
         }
 
-        /* Performance Indicator */
-        .performance-indicator {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 8px 16px;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
 
-        .performance-indicator.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
 
         /* Enhanced Loading States */
         .skeleton-loader {
@@ -1008,173 +979,25 @@
             100% { background-position: 200% 0; }
         }
 
-        /* Floating Action Buttons */
-        .fab-container {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            z-index: 999;
-        }
 
-        .fab {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
-            border: none;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: white;
-            font-size: 1.2rem;
-        }
 
-        .fab:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
-        }
 
-        .fab.secondary {
-            background: var(--secondary-gradient);
-            width: 48px;
-            height: 48px;
-            font-size: 1rem;
-        }
 
-        /* Enhanced Cards with Micro-interactions */
-        .interactive-card {
-            position: relative;
-            overflow: hidden;
-        }
 
-        .interactive-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.1), 
-                transparent
-            );
-            transition: left 0.5s ease;
-        }
 
-        .interactive-card:hover::before {
-            left: 100%;
-        }
 
-        /* Theme Toggle */
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 50px;
-            padding: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1001;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .theme-toggle:hover {
-            transform: scale(1.05);
-        }
-
-        .theme-icon {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            color: var(--text-primary);
-        }
-
-        .theme-icon.active {
-            background: var(--text-accent);
-            color: var(--bg-primary);
-        }
-
-        /* Enhanced Tooltips */
-        .enhanced-tooltip {
-            position: relative;
-            cursor: help;
-        }
-
-        .enhanced-tooltip::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 150%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 1000;
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(15px);
-        }
-
-        .enhanced-tooltip:hover::after {
-            opacity: 1;
-        }
     </style>
 </head>
 <body>
-    <!-- Enhanced Header with Theme Toggle -->
+    <!-- Header -->
     <header class="header">
         <div class="header-content">
             <div class="logo">
                 <i class="fas fa-chart-line"></i> ROI Calculator
             </div>
-                            <div class="version-tag">v2.0 Enhanced</div>
+            <div class="version-tag">v2.0 Enhanced</div>
         </div>
     </header>
-
-    <!-- Theme Toggle -->
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <div class="theme-icon" id="lightTheme">
-            <i class="fas fa-sun"></i>
-        </div>
-        <div class="theme-icon" id="darkTheme">
-            <i class="fas fa-moon"></i>
-        </div>
-    </div>
-
-    <!-- Floating Action Buttons -->
-    <div class="fab-container">
-        <button class="fab secondary" onclick="showSaveScenarioDialog()" title="Save Scenario">
-            <i class="fas fa-save"></i>
-        </button>
-        <button class="fab secondary" onclick="loadLastCalculation()" title="Load Last Calculation">
-            <i class="fas fa-history"></i>
-        </button>
-        <button class="fab" onclick="calculateROI()" title="Calculate ROI (Ctrl+Enter)">
-            <i class="fas fa-calculator"></i>
-        </button>
-    </div>
-
-    <!-- Performance Indicator -->
-    <div class="performance-indicator" id="performanceIndicator"></div>
 
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -1428,11 +1251,7 @@
             console.log('DOM Content Loaded - Initializing app...');
             
             try {
-                if (typeof initializeTheme === 'function') {
-                    initializeTheme();
-                } else {
-                    console.log('initializeTheme function not found, skipping...');
-                }
+
                 
                 if (typeof setupEnhancedValidation === 'function') {
                     setupEnhancedValidation();
@@ -2654,36 +2473,12 @@
             document.body.appendChild(modal);
         }
 
-        // Enhanced Progressive Loading System
+        // Core v2.0 variables
         let isCalculating = false;
         let currentResults = null;
-        let calculationHistory = [];
-        let favoriteScenarios = JSON.parse(localStorage.getItem('roiCalculatorFavorites') || '[]');
+        let selectedProjectType = null;
 
-        // Performance monitoring
-        const performanceTracker = {
-            startTime: null,
-            endTime: null,
-            lastCalculationTime: 0,
-            
-            start() {
-                this.startTime = performance.now();
-            },
-            
-            end() {
-                this.endTime = performance.now();
-                this.lastCalculationTime = this.endTime - this.startTime;
-                this.updatePerformanceDisplay();
-            },
-            
-            updatePerformanceDisplay() {
-                const perfElement = document.getElementById('performanceIndicator');
-                if (perfElement) {
-                    perfElement.textContent = `Calculated in ${this.lastCalculationTime.toFixed(0)}ms`;
-                    perfElement.style.color = this.lastCalculationTime < 1000 ? 'var(--success)' : 'var(--warning)';
-                }
-            }
-        };
+
 
         // Enhanced keyboard shortcuts
         document.addEventListener('keydown', function(e) {
@@ -2817,43 +2612,7 @@
             }
         }
 
-        // Theme Management
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('preferred-theme', newTheme);
-            
-            // Update theme icons
-            const lightIcon = document.getElementById('lightTheme');
-            const darkIcon = document.getElementById('darkTheme');
-            
-            if (newTheme === 'dark') {
-                lightIcon.classList.remove('active');
-                darkIcon.classList.add('active');
-            } else {
-                darkIcon.classList.remove('active');
-                lightIcon.classList.add('active');
-            }
-            
-            showSuccess(`Switched to ${newTheme} theme`);
-        }
 
-        // Initialize theme on page load
-        function initializeTheme() {
-            const savedTheme = localStorage.getItem('preferred-theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            
-            const lightIcon = document.getElementById('lightTheme');
-            const darkIcon = document.getElementById('darkTheme');
-            
-            if (savedTheme === 'dark') {
-                darkIcon.classList.add('active');
-            } else {
-                lightIcon.classList.add('active');
-            }
-        }
 
         // Enhanced Scenario Management
         function showSaveScenarioDialog() {
@@ -2921,12 +2680,8 @@
             if (isCalculating) return;
             
             isCalculating = true;
-            performanceTracker.start();
             
             try {
-                // Show performance indicator
-                const perfIndicator = document.getElementById('performanceIndicator');
-                perfIndicator.classList.add('show');
                 
                 // Clear previous errors
                 clearValidationErrors();
@@ -3001,13 +2756,7 @@
             } finally {
                 hideLoading();
                 isCalculating = false;
-                performanceTracker.end();
-                
-                // Hide performance indicator after 3 seconds
-                setTimeout(() => {
-                    const perfIndicator = document.getElementById('performanceIndicator');
-                    perfIndicator.classList.remove('show');
-                }, 3000);
+
             }
         }
     </script>
