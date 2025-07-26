@@ -22,7 +22,7 @@ from utils.calculator import EnhancedROICalculator
 from utils.cache import calculation_cache
 from utils.rate_limiter import rate_limit, calculation_limiter, api_limiter
 from utils.export import ReportGenerator
-from utils.interactive import ScenarioManager, WhatIfAnalyzer, RealTimeCalculator
+# Core v2.0 - removed advanced interactive features
 
 # Load environment variables
 load_dotenv()
@@ -45,12 +45,9 @@ app.config.from_object(config_class)
 if config_class.ENABLE_CORS:
     CORS(app)
 
-# Initialize calculator and enhanced tools
+# Initialize core v2.0 calculator and tools
 calculator = EnhancedROICalculator()
 report_generator = ReportGenerator()
-scenario_manager = ScenarioManager()
-what_if_analyzer = WhatIfAnalyzer()
-realtime_calculator = RealTimeCalculator()
 
 # Validate configuration on startup
 try:
@@ -172,15 +169,7 @@ def calculate_roi():
         # Get market insights
         market_insights = calculator.get_market_insights(validated_data['target_industry'])
         
-        # Generate comprehensive business intelligence
-        business_intelligence = calculator.generate_business_intelligence(
-            investment=cost_analysis['total_cost'],
-            industry=validated_data['target_industry'],
-            project_type=validated_data['project_type'],
-            company_size=validated_data['company_size'],
-            timeline_months=cost_analysis['timeline_months'],
-            roi_result=roi_result
-        )
+        # Core v2.0 - basic recommendations only
         
         # Generate recommendations
         recommendations = calculator.generate_recommendations(
@@ -190,19 +179,7 @@ def calculate_roi():
             roi_result
         )
         
-        # Generate AI-powered insights
-        ai_insights = calculator.analytics_engine.generate_ai_powered_insights(
-            investment=cost_analysis['total_cost'],
-            industry=validated_data['target_industry'],
-            project_type=validated_data['project_type'],
-            company_size=validated_data['company_size'],
-            timeline_months=cost_analysis['timeline_months'],
-            roi_result=roi_result,
-            market_analysis=business_intelligence.market_analysis,
-            competitive_analysis=business_intelligence.competitive_analysis,
-            financial_metrics=business_intelligence.financial_metrics,
-            risk_analysis=business_intelligence.risk_analysis
-        )
+        # Core v2.0 - focus on enhanced calculations and basic business intelligence
         
         # Format response
         currency_config = config_class.CURRENCIES[validated_data['currency']]
@@ -236,13 +213,11 @@ def calculate_roi():
                 'sensitivity_analysis': roi_result.sensitivity_analysis
             },
             'market_insights': market_insights,
-            'business_intelligence': business_intelligence,
-            'ai_insights': ai_insights,
             'recommendations': recommendations,
             'calculation_metadata': {
                 'calculation_date': roi_result.calculation_date.isoformat(),
                 'calculator_version': '2.0.0',
-                'methodology': 'Enhanced Monte Carlo with NPV/IRR analysis + Business Intelligence'
+                'methodology': 'Enhanced Monte Carlo with NPV/IRR analysis'
             }
         }
         

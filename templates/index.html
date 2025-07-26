@@ -1314,94 +1314,7 @@
                 <!-- Results will be populated here -->
             </div>
 
-            <!-- Advanced Analytics Section -->
-            <div class="analytics-section" id="analyticsSection" style="display: none;">
-                <h2><i class="fas fa-chart-bar"></i> Advanced Business Intelligence</h2>
-                
-                <!-- Interactive Analytics Cards -->
-                <div class="analytics-grid">
-                    <div class="analytics-card" onclick="toggleAnalyticsCard(this, 'market')">
-                        <div class="analytics-header">
-                            <h3><i class="fas fa-globe"></i> Market Analysis</h3>
-                            <i class="fas fa-chevron-down expand-icon"></i>
-                        </div>
-                        <div id="marketAnalysis" class="analytics-content"></div>
-                        <div class="analytics-details">
-                            <div id="marketDetails"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="analytics-card" onclick="toggleAnalyticsCard(this, 'competitive')">
-                        <div class="analytics-header">
-                            <h3><i class="fas fa-users-cog"></i> Competitive Intelligence</h3>
-                            <i class="fas fa-chevron-down expand-icon"></i>
-                        </div>
-                        <div id="competitiveAnalysis" class="analytics-content"></div>
-                        <div class="analytics-details">
-                            <div id="competitiveDetails"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="analytics-card" onclick="toggleAnalyticsCard(this, 'financial')">
-                        <div class="analytics-header">
-                            <h3><i class="fas fa-calculator"></i> Financial Metrics</h3>
-                            <i class="fas fa-chevron-down expand-icon"></i>
-                        </div>
-                        <div id="financialMetrics" class="analytics-content"></div>
-                        <div class="analytics-details">
-                            <div id="financialDetails"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="analytics-card" onclick="toggleAnalyticsCard(this, 'risk')">
-                        <div class="analytics-header">
-                            <h3><i class="fas fa-shield-alt"></i> Risk Analysis</h3>
-                            <i class="fas fa-chevron-down expand-icon"></i>
-                        </div>
-                        <div id="riskAnalysis" class="analytics-content"></div>
-                        <div class="analytics-details">
-                            <div id="riskDetails"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Interactive Success Probability & KPIs -->
-                <div class="kpi-section">
-                    <div class="success-card analytics-card" onclick="toggleAnalyticsCard(this, 'success')">
-                        <div class="analytics-header">
-                            <h3><i class="fas fa-target"></i> Success Probability</h3>
-                            <i class="fas fa-chevron-down expand-icon"></i>
-                        </div>
-                        <div id="successProbability" class="probability-meter"></div>
-                        <div class="analytics-details">
-                            <div id="successDetails"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="kpi-card analytics-card" onclick="toggleAnalyticsCard(this, 'kpi')">
-                        <div class="analytics-header">
-                            <h3><i class="fas fa-bullseye"></i> KPI Targets</h3>
-                            <i class="fas fa-chevron-down expand-icon"></i>
-                        </div>
-                        <div id="kpiTargets" class="kpi-grid"></div>
-                        <div class="analytics-details">
-                            <div id="kpiDetails"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Interactive Milestones Timeline -->
-                <div class="milestones-section analytics-card" onclick="toggleAnalyticsCard(this, 'milestones')">
-                    <div class="analytics-header">
-                        <h3><i class="fas fa-road"></i> Project Milestones</h3>
-                        <i class="fas fa-chevron-down expand-icon"></i>
-                    </div>
-                    <div id="milestonesTimeline" class="timeline"></div>
-                    <div class="analytics-details">
-                        <div id="milestonesDetails"></div>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Enhanced Charts Section -->
             <div class="chart-container">
@@ -1718,11 +1631,9 @@
                 
                 currentResults = results;
                 displayResults(results);
-                displayAdvancedAnalytics(results);
                 
-                // Show export and scenario sections
+                // Show export section
                 document.getElementById('exportSection').style.display = 'block';
-                document.getElementById('scenarioSection').style.display = 'block';
                 
             } catch (error) {
                 console.error('Error calculating ROI:', error);
