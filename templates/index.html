@@ -3,101 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business ROI Calculator - Enhanced Edition v2.0</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Infinex ROI Calculator - Advanced Trading Analytics</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
     <style>
+        /* === INFINEX COLOR PALETTE === */
+        :root {
+            /* Dark Theme Base */
+            --bg-primary: #0A0A0A;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1A1A1A;
+            --bg-card: rgba(17, 17, 17, 0.8);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            
+            /* Infinex Neon Colors */
+            --neon-purple: #8B5CF6;
+            --neon-blue: #3B82F6;
+            --neon-cyan: #06B6D4;
+            --neon-green: #10B981;
+            --neon-pink: #EC4899;
+            --neon-orange: #F59E0B;
+            
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
+            --gradient-secondary: linear-gradient(135deg, #06B6D4 0%, #10B981 100%);
+            --gradient-accent: linear-gradient(135deg, #EC4899 0%, #F59E0B 100%);
+            --gradient-dark: linear-gradient(135deg, #1A1A1A 0%, #111111 100%);
+            
+            /* Text Colors */
+            --text-primary: #FFFFFF;
+            --text-secondary: #A3A3A3;
+            --text-tertiary: #737373;
+            --text-success: #10B981;
+            --text-error: #EF4444;
+            --text-warning: #F59E0B;
+            
+            /* Borders & Shadows */
+            --border-primary: rgba(139, 92, 246, 0.3);
+            --border-secondary: rgba(255, 255, 255, 0.1);
+            --shadow-neon: 0 0 20px rgba(139, 92, 246, 0.3);
+            --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.2);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+            
+            /* Fonts */
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        /* === GLOBAL STYLES === */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            /* Professional Finance Color Palette */
-            --primary-blue: #1e40af;
-            --secondary-blue: #3b82f6;
-            --accent-green: #10b981;
-            --success-green: #059669;
-            --warning-amber: #f59e0b;
-            --error-red: #dc2626;
-            --neutral-gray: #6b7280;
-            --light-gray: #f9fafb;
-            --dark-gray: #111827;
-            
-            /* Finance Gradients */
-            --primary-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-            --secondary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            --error-gradient: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            --accent-gradient: linear-gradient(135deg, #1e40af 0%, #10b981 100%);
-            --card-gradient: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            
-            /* Professional Layout */
-            --bg-primary: #f8fafc;
-            --bg-secondary: #ffffff;
-            --bg-tertiary: #f1f5f9;
-            --text-primary: #111827;
-            --text-secondary: #6b7280;
-            --text-accent: #1e40af;
-            --border-color: #e5e7eb;
-            --card-bg: #ffffff;
-            --card-border: #e5e7eb;
-            --success: #10b981;
-            
-            /* Professional Shadows */
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            --warning: #fee140;
-            --error: #f5576c;
-            --dark-mode: 0;
-        }
-
-
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-family: var(--font-primary);
             background: var(--bg-primary);
             color: var(--text-primary);
-            overflow-x: hidden;
-            position: relative;
             line-height: 1.6;
-            margin: 0;
-            padding: 0;
             min-height: 100vh;
+            overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Professional Finance Background */
-        body::before {
-            content: '';
+        /* === ANIMATED BACKGROUND === */
+        .bg-animation {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             z-index: -1;
+            opacity: 0.15;
         }
 
-        /* Professional Finance Cards */
-        .glass-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, var(--neon-purple) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, var(--neon-blue) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, var(--neon-cyan) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        /* === HEADER === */
+        .header {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-secondary);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo i {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2rem;
+        }
+
+        .nav-badge {
+            background: var(--gradient-secondary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* === MAIN CONTAINER === */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 2rem;
+        }
+
+        /* === HERO SECTION === */
+        .hero {
+            text-align: center;
+            padding: 4rem 0 6rem;
             position: relative;
-            box-shadow: var(--shadow-md);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 2rem;
+            font-weight: 600;
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.25rem;
+        }
+
+        /* === GLASS CARDS === */
+        .glass-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-secondary);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-card);
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .glass-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
+            border-color: var(--border-primary);
+            box-shadow: var(--shadow-neon);
             transform: translateY(-2px);
         }
 
@@ -108,158 +241,32 @@
             left: 0;
             right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background: var(--gradient-primary);
+            border-radius: 24px 24px 0 0;
         }
 
-        /* Professional Finance Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
-            z-index: 1000;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .version-tag {
-            background: var(--accent-gradient);
-            color: var(--dark-bg);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        /* Main Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 6rem 2rem 4rem;
-            min-height: 100vh;
-        }
-
-        /* Professional Finance Hero */
-        .hero {
-            text-align: center;
-            margin-bottom: 4rem;
-            padding: 2rem 0;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .hero-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-
-        .hero-features {
-            display: flex;
-            justify-content: center;
+        /* === FORM STYLES === */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            flex-wrap: wrap;
-            margin-top: 2rem;
+            margin-bottom: 3rem;
         }
 
-        .feature-item {
+        .form-section h3 {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            box-shadow: var(--shadow-sm);
         }
 
-        .feature-item i {
-            color: var(--primary-blue);
-            font-size: 1rem;
+        .form-section h3 i {
+            color: var(--neon-purple);
         }
 
-
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Enhanced Form Section */
-        .form-section {
-            margin-bottom: 3rem;
-        }
-
-        .form-steps {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .form-step {
-            transition: all 0.3s ease;
-        }
-
-        .step-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--accent-gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            margin-right: 1rem;
-            box-shadow: 0 0 20px var(--glow-color);
-            color: var(--dark-bg);
-        }
-
-        .step-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-
-        /* Enhanced Form Elements */
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -267,589 +274,175 @@
         .form-label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 500;
             color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .form-input {
             width: 100%;
-            padding: 0.875rem 1rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-secondary);
+            border-radius: 12px;
             color: var(--text-primary);
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: all 0.2s ease;
-            box-shadow: var(--shadow-sm);
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
         }
 
         .form-input:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
             background: var(--bg-secondary);
         }
 
         .form-input:valid {
-            border-color: var(--success-green);
+            border-color: var(--neon-green);
         }
 
-        .form-input.error {
-            border-color: var(--error-red);
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .form-group.success .form-input {
-            border-color: #4ade80;
-        }
-
-        .form-group.error .form-input {
-            border-color: #ef4444;
-        }
-
-        .form-select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 2.5rem;
-        }
-
-        /* Enhanced Selection Cards */
-        .selection-grid {
+        /* === PROJECT TYPE GRID === */
+        .project-types {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1rem;
-            margin-top: 1rem;
+            margin-bottom: 2rem;
         }
 
-        .selection-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
+        .project-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-secondary);
+            border-radius: 16px;
             padding: 1.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            text-align: center;
         }
 
-        .selection-card:hover {
-            background: rgba(255, 255, 255, 0.08);
+        .project-card:hover {
+            border-color: var(--neon-purple);
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-neon);
         }
 
-        .selection-card.selected {
-            border-color: var(--text-accent);
-            background: rgba(0, 242, 254, 0.1);
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+        .project-card.selected {
+            border-color: var(--neon-purple);
+            background: rgba(139, 92, 246, 0.1);
+            box-shadow: var(--shadow-neon);
         }
 
-        .selection-card::before {
+        .project-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--accent-gradient);
+            width: 100%;
+            height: 3px;
+            background: var(--gradient-primary);
             transform: scaleX(0);
             transition: transform 0.3s ease;
         }
 
-        .selection-card.selected::before {
+        .project-card.selected::before {
             transform: scaleX(1);
         }
 
-        .card-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .card-title {
-            font-size: 1rem;
+        .project-title {
             font-weight: 600;
+            font-size: 1.1rem;
             margin-bottom: 0.5rem;
+            color: var(--text-primary);
         }
 
-        .card-description {
-            font-size: 0.8rem;
+        .project-description {
             color: var(--text-secondary);
-            line-height: 1.4;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
         }
 
-        /* Validation Errors */
-        .validation-errors {
-            display: none;
-            margin: 1rem 0;
-            padding: 1rem;
-            background: rgba(255, 71, 87, 0.1);
-            border: 1px solid rgba(255, 71, 87, 0.2);
-            border-radius: 12px;
-        }
-
-        .error-message {
-            color: var(--error-color);
-            margin: 0.5rem 0;
+        .project-meta {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
         }
 
-        .success-message {
-            color: var(--success-color);
-            margin: 0.5rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Professional Finance Calculate Button */
-        .calculate-btn {
-            background: var(--primary-gradient);
-            border: none;
-            padding: 1rem 2.5rem;
-            border-radius: 12px;
-            color: white;
-            font-size: 1rem;
+        .project-cost {
+            font-family: var(--font-mono);
             font-weight: 600;
+            color: var(--neon-green);
+        }
+
+        /* === CALCULATE BUTTON === */
+        .calculate-section {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .calculate-btn {
+            background: var(--gradient-primary);
+            border: none;
+            padding: 1.25rem 3rem;
+            border-radius: 16px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: var(--font-primary);
             cursor: pointer;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: var(--shadow-neon);
+            min-width: 300px;
             position: relative;
-            margin: 2rem auto;
-            display: block;
-            box-shadow: var(--shadow-lg);
-            min-width: 250px;
-            font-family: inherit;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-        
-        /* Mobile responsiveness */
-        @media (max-width: 768px) {
-            .calculate-btn {
-                min-width: 250px;
-                font-size: 1rem;
-                padding: 1rem 2rem;
-            }
+            overflow: hidden;
         }
 
         .calculate-btn:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-xl);
-            background: var(--secondary-gradient);
+            box-shadow: var(--shadow-glow);
         }
 
         .calculate-btn:active {
             transform: translateY(0);
-            box-shadow: var(--shadow-md);
-        }
-
-        .calculate-btn.loading {
-            pointer-events: none;
-            opacity: 0.8;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 10px 30px rgba(0, 242, 254, 0.3); }
-            50% { box-shadow: 0 15px 40px rgba(0, 242, 254, 0.6); }
-            100% { box-shadow: 0 10px 30px rgba(0, 242, 254, 0.3); }
         }
 
         .calculate-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            transform: none;
+            animation: pulse 2s infinite;
         }
 
-        /* Advanced Analytics Styles */
-        .analytics-section {
-            margin: 3rem 0;
-            padding: 0;
-        }
-
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .analytics-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .analytics-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--text-accent);
-            box-shadow: 0 5px 20px rgba(87, 201, 255, 0.2);
-        }
-
-        .analytics-card.expanded {
-            border-color: var(--text-accent);
-        }
-
-        .analytics-details {
-            display: none;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .analytics-details.show {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .analytics-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            cursor: pointer;
-        }
-
-        .analytics-header h3 {
-            margin: 0;
-            color: var(--text-primary);
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .expand-icon {
-            transition: transform 0.3s ease;
-            color: var(--text-accent);
-            font-size: 1rem;
-        }
-
-        .analytics-card.expanded .expand-icon {
-            transform: rotate(180deg);
-        }
-
-        .analytics-content {
-            margin-bottom: 1rem;
-            color: var(--text-secondary);
-        }
-
-        .metric-highlight {
-            color: var(--text-accent);
-            font-weight: 600;
-            margin: 0.5rem 0;
-        }
-
-        .kpi-section {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
-        .success-card, .kpi-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .success-card:hover, .kpi-card:hover, .analytics-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--text-accent);
-            box-shadow: 0 5px 20px rgba(87, 201, 255, 0.2);
-        }
-
-        .probability-meter {
-            margin: 1rem 0;
-            text-align: center;
-        }
-
-        .probability-circle {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            position: relative;
-        }
-
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .kpi-item {
-            text-align: center;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .milestones-section {
-            margin: 2rem 0;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 15px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .milestone {
-            display: flex;
-            align-items: center;
-            margin: 1rem 0;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
-            border-left: 4px solid var(--text-accent);
-        }
-
-        /* Enhanced Export Styles */
-        .export-section, .scenario-section {
-            margin: 2rem 0;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .export-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .export-btn {
-            background: var(--secondary-gradient);
-            color: white;
-            border: none;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .export-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
-        }
-
-        .export-btn.executive {
-            background: var(--primary-gradient);
-        }
-
-        .export-btn.detailed {
-            background: var(--accent-gradient);
-        }
-
-        .export-btn.json {
-            background: var(--success-gradient);
-        }
-
-        .export-btn.csv {
-            background: var(--warning-gradient);
-        }
-
-        .scenario-controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: center;
-            align-items: center;
-            margin: 1.5rem 0;
-        }
-
-        .scenario-input {
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
-            font-size: 1rem;
-            min-width: 200px;
-        }
-
-        .scenario-input:focus {
-            outline: none;
-            border-color: var(--text-accent);
-            box-shadow: 0 0 0 2px rgba(0, 242, 254, 0.2);
-        }
-
-        .scenarios-list {
-            margin-top: 1.5rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        .scenario-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: left;
-        }
-
-        .scenario-name {
-            font-weight: bold;
-            color: var(--text-accent);
-            margin-bottom: 0.5rem;
-        }
-
-        .scenario-metrics {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
+        .calculate-btn::before {
+            content: '';
+            position: absolute;
             top: 0;
-            left: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(10px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
         }
 
-        .loading-content {
-            text-align: center;
-            color: var(--text-primary);
+        .calculate-btn:hover::before {
+            left: 100%;
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid var(--card-border);
-            border-top: 3px solid var(--text-accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.8; }
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Professional Finance Results */
+        /* === RESULTS SECTION === */
         .results-container {
             display: none;
             margin-top: 3rem;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        .financial-metrics {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .metric-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.2s ease;
-        }
-
-        .metric-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-
-        .metric-label {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .metric-value {
-            font-size: 1.875rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            margin-bottom: 0.25rem;
-        }
-
-        .metric-change {
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .metric-positive {
-            color: var(--success-green);
-        }
-
-        .metric-negative {
-            color: var(--error-red);
-        }
-
-        .metric-neutral {
-            color: var(--primary-blue);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .results-header {
@@ -860,363 +453,281 @@
         .results-header h2 {
             font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 1rem;
-            background: var(--primary-gradient);
+            background: var(--gradient-secondary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            margin-bottom: 0.5rem;
         }
 
-        .results-grid {
+        .results-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 3rem;
         }
 
-        .result-card {
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .result-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .metric-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .metric-label {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .metric-description {
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        /* Chart Containers */
-        .chart-container {
-            position: relative;
-            margin: 2rem 0;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
+        .metric-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-secondary);
             border-radius: 20px;
             padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
         }
 
-        .chart-container::before {
+        .metric-card:hover {
+            border-color: var(--border-primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-neon);
+        }
+
+        .metric-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: var(--primary-gradient);
+            height: 2px;
+            background: var(--gradient-primary);
         }
 
-        .chart-title {
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 1.5rem;
-            font-weight: 600;
+        .metric-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        /* Risk Assessment */
-        .risk-assessment {
-            margin: 2rem 0;
-            padding: 2rem;
-            background: var(--card-bg);
-            border-radius: 20px;
-            border: 1px solid var(--card-border);
+        .metric-value {
+            font-family: var(--font-mono);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1;
         }
 
-        .risk-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .risk-level {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        .risk-level.low {
-            background: var(--success-color);
-            color: var(--dark-bg);
-        }
-
-        .risk-level.medium {
-            background: var(--warning-color);
-            color: var(--dark-bg);
-        }
-
-        .risk-level.high {
-            background: var(--error-color);
-            color: white;
-        }
-
-        .risk-factors {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .risk-factor {
-            text-align: center;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-        }
-
-        .risk-factor-value {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-accent);
-        }
-
-        .risk-factor-label {
-            font-size: 0.9rem;
+        .metric-label {
             color: var(--text-secondary);
-            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
         }
 
-        /* Responsive Design */
+        /* === SUCCESS MESSAGE === */
+        .success-notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--gradient-secondary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-card);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            font-weight: 500;
+        }
+
+        .success-notification.show {
+            transform: translateX(0);
+        }
+
+        /* === ERROR STYLES === */
+        .error-message {
+            color: var(--text-error);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid var(--text-error);
+        }
+
+        .form-group.error .form-input {
+            border-color: var(--text-error);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .form-group.success .form-input {
+            border-color: var(--text-success);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        /* === LOADING STATES === */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid var(--neon-purple);
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* === RESPONSIVE DESIGN === */
         @media (max-width: 768px) {
             .container {
-                padding: 6rem 1rem 2rem;
+                padding: 1rem;
             }
-
-            .header-content {
-                padding: 0 1rem;
+            
+            .hero {
+                padding: 2rem 0 3rem;
             }
-
-            .selection-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            
+            .hero-stats {
+                gap: 2rem;
             }
-
-            .results-grid {
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .project-types {
                 grid-template-columns: 1fr;
             }
-
-            .hero h1 {
-                font-size: 2.5rem;
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
             }
-
-            .metric-value {
-                font-size: 2rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .step-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-
-            .glass-card {
-                padding: 1.5rem;
-            }
-
+            
             .calculate-btn {
+                min-width: 250px;
                 padding: 1rem 2rem;
-                font-size: 1rem;
+            }
+            
+            .success-notification {
+                right: 1rem;
+                left: 1rem;
+                transform: translateY(-100px);
+            }
+            
+            .success-notification.show {
+                transform: translateY(0);
             }
         }
 
-        /* Tooltip Styles */
-        .tooltip {
-            position: relative;
-            cursor: help;
-            color: var(--text-accent);
+        /* === ACCESSIBILITY === */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
 
-        .tooltip:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 0.5rem;
-            border-radius: 8px;
-            white-space: nowrap;
-            font-size: 0.8rem;
-            z-index: 1000;
+        /* === FOCUS STATES === */
+        .calculate-btn:focus,
+        .project-card:focus,
+        .form-input:focus {
+            outline: 2px solid var(--neon-purple);
+            outline-offset: 2px;
         }
-
-
-
-        /* Enhanced Loading States */
-        .skeleton-loader {
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.1), 
-                transparent
-            );
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-
-        @keyframes loading {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-
-
-
-
-
-
-
     </style>
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+
     <!-- Header -->
     <header class="header">
-        <div class="header-content">
+        <div class="nav-container">
             <div class="logo">
-                <i class="fas fa-chart-line"></i> ROI Calculator
+                <i class="fas fa-infinity"></i>
+                <span>Infinex ROI</span>
             </div>
-            <div class="version-tag">v2.0 Enhanced</div>
+            <div class="nav-badge">Advanced Analytics</div>
         </div>
     </header>
 
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <h3>Analyzing Your Investment</h3>
-            <p>Running Monte Carlo simulations and risk assessments...</p>
-        </div>
-    </div>
-
+    <!-- Main Container -->
     <div class="container">
-        <!-- Professional Finance Hero -->
+        <!-- Hero Section -->
         <section class="hero">
-            <h1>Professional ROI Calculator</h1>
-            <p class="hero-subtitle">Advanced financial modeling for informed investment decisions</p>
-            <div class="hero-features">
-                <div class="feature-item">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Monte Carlo Analysis</span>
+            <h1>Advanced ROI Analytics</h1>
+            <p class="hero-subtitle">
+                Harness the power of cutting-edge financial modeling for precise investment analysis and optimization
+            </p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-value">99.7%</span>
+                    <div class="stat-label">Accuracy</div>
                 </div>
-                <div class="feature-item">
-                    <i class="fas fa-calculator"></i>
-                    <span>NPV & IRR Calculations</span>
+                <div class="stat-item">
+                    <span class="stat-value">15+</span>
+                    <div class="stat-label">Industries</div>
                 </div>
-                <div class="feature-item">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Risk Assessment</span>
+                <div class="stat-item">
+                    <span class="stat-value">&lt;100ms</span>
+                    <div class="stat-label">Processing</div>
                 </div>
             </div>
         </section>
 
-        <!-- Enhanced Form Section -->
-        <section class="form-section">
-            <div class="validation-errors" id="validationErrors"></div>
-            
-            <div class="form-steps">
-                <!-- Step 1: Company Information -->
-                <div class="form-step glass-card">
-                    <div class="step-header">
-                        <div class="step-number">1</div>
-                        <div class="step-title">Company Information</div>
-                    </div>
+        <!-- Configuration Form -->
+        <div class="form-grid">
+            <!-- Project Selection -->
+            <div class="glass-card">
+                <div class="form-section">
+                    <h3><i class="fas fa-rocket"></i> Project Configuration</h3>
                     
                     <div class="form-group">
-                        <label class="form-label">
-                            Company Name
-                            <i class="fas fa-info-circle tooltip" data-tooltip="Enter your company or project name"></i>
-                        </label>
-                        <input type="text" class="form-input" id="companyName" placeholder="Enter your company name" required>
+                        <label class="form-label">Select Project Type</label>
+                        <div id="projectTypes" class="project-types">
+                            <!-- Projects will be loaded here -->
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Business Parameters -->
+            <div class="glass-card">
+                <div class="form-section">
+                    <h3><i class="fas fa-building"></i> Business Parameters</h3>
                     
                     <div class="form-group">
-                        <label class="form-label">
-                            Company Size
-                            <i class="fas fa-info-circle tooltip" data-tooltip="Select the size category that best describes your company"></i>
-                        </label>
-                        <select class="form-input form-select" id="companySize" required>
+                        <label for="companySize" class="form-label">Company Size</label>
+                        <select id="companySize" class="form-input" required>
                             <option value="">Select company size</option>
-                            <option value="startup">Startup (5-15 employees)</option>
-                            <option value="small">Small (15-50 employees)</option>
-                            <option value="medium">Medium (50-200 employees)</option>
-                            <option value="large">Large (200-1000 employees)</option>
+                            <option value="startup">Startup (1-10 employees)</option>
+                            <option value="small">Small (11-50 employees)</option>
+                            <option value="medium">Medium (51-200 employees)</option>
+                            <option value="large">Large (201-1000 employees)</option>
                             <option value="enterprise">Enterprise (1000+ employees)</option>
                         </select>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">
-                            Current Industry
-                            <i class="fas fa-info-circle tooltip" data-tooltip="Your company's current primary industry"></i>
-                        </label>
-                        <select class="form-input form-select" id="currentIndustry">
-                            <option value="">Select current industry</option>
-                            <option value="fintech">FinTech</option>
-                            <option value="healthtech">HealthTech</option>
-                            <option value="edtech">EdTech</option>
-                            <option value="ecommerce">E-commerce</option>
-                            <option value="saas">SaaS</option>
-                            <option value="gaming">Gaming</option>
-                            <option value="realEstate">Real Estate</option>
-                            <option value="foodBeverage">Food & Beverage</option>
-                            <option value="manufacturing">Manufacturing</option>
-                            <option value="logistics">Logistics</option>
-                            <option value="crypto">Cryptocurrency</option>
-                            <option value="nft">NFT</option>
-                            <option value="web3">Web3</option>
-                            <option value="sustainability">Sustainability</option>
-                            <option value="biotech">Biotech</option>
-                        </select>
-                    </div>
-                </div>
 
-                <!-- Step 2: Project Selection -->
-                <div class="form-step glass-card">
-                    <div class="step-header">
-                        <div class="step-number">2</div>
-                        <div class="step-title">Project Type</div>
-                    </div>
-                    
-                    <p class="form-label">Select the type of project you're planning to invest in:</p>
-                    <div class="selection-grid" id="projectTypes">
-                        <!-- Project types will be loaded dynamically -->
-                    </div>
-                </div>
-
-                <!-- Step 3: Target Market -->
-                <div class="form-step glass-card">
-                    <div class="step-header">
-                        <div class="step-number">3</div>
-                        <div class="step-title">Target Market & Configuration</div>
-                    </div>
-                    
                     <div class="form-group">
-                        <label class="form-label">
-                            Target Industry
-                            <i class="fas fa-info-circle tooltip" data-tooltip="The industry you plan to target with this project"></i>
-                        </label>
-                        <select class="form-input form-select" id="targetIndustry" required>
+                        <label for="targetIndustry" class="form-label">Target Industry</label>
+                        <select id="targetIndustry" class="form-input" required>
                             <option value="">Select target industry</option>
                             <option value="fintech">FinTech</option>
                             <option value="healthtech">HealthTech</option>
@@ -1228,277 +739,138 @@
                             <option value="foodBeverage">Food & Beverage</option>
                             <option value="manufacturing">Manufacturing</option>
                             <option value="logistics">Logistics</option>
-                            <option value="crypto">Cryptocurrency</option>
+                            <option value="crypto">Crypto/Web3</option>
                             <option value="nft">NFT</option>
                             <option value="web3">Web3</option>
                             <option value="sustainability">Sustainability</option>
-                            <option value="biotech">Biotech</option>
+                            <option value="biotech">BioTech</option>
                         </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">
-                            Currency
-                            <i class="fas fa-info-circle tooltip" data-tooltip="Select your preferred currency for calculations"></i>
-                        </label>
-                        <select class="form-input form-select" id="currency">
-                            <option value="USD">$ US Dollar (USD)</option>
-                            <option value="EUR">€ Euro (EUR)</option>
-                            <option value="GBP">£ British Pound (GBP)</option>
-                            <option value="JPY">¥ Japanese Yen (JPY)</option>
-                            <option value="CAD">C$ Canadian Dollar (CAD)</option>
-                            <option value="AUD">A$ Australian Dollar (AUD)</option>
-                            <option value="CHF">CHF Swiss Franc (CHF)</option>
-                            <option value="CNY">¥ Chinese Yuan (CNY)</option>
-                            <option value="INR">₹ Indian Rupee (INR)</option>
-                            <option value="BRL">R$ Brazilian Real (BRL)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">
-                            Custom Investment Amount (Optional)
-                            <i class="fas fa-info-circle tooltip" data-tooltip="Override the estimated cost with your specific investment amount"></i>
-                        </label>
-                        <input type="number" class="form-input" id="customInvestment" placeholder="Enter custom amount" min="1000" max="500000000">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">
-                            Custom Timeline (Months) (Optional)
-                            <i class="fas fa-info-circle tooltip" data-tooltip="Override the estimated timeline with your specific project duration"></i>
-                        </label>
-                        <input type="number" class="form-input" id="customTimeline" placeholder="Enter timeline in months" min="1" max="120">
                     </div>
                 </div>
             </div>
 
-            <!-- Enhanced Calculate Button -->
-            <button type="button" class="calculate-btn" id="calculateBtn" onclick="calculateROI()">
-                <i class="fas fa-calculator"></i> Analyze Investment & Calculate ROI
+            <!-- Financial Parameters -->
+            <div class="glass-card">
+                <div class="form-section">
+                    <h3><i class="fas fa-chart-line"></i> Financial Parameters</h3>
+                    
+                    <div class="form-group">
+                        <label for="investmentAmount" class="form-label">Investment Amount ($)</label>
+                        <input type="number" id="investmentAmount" class="form-input" min="1000" step="1000" placeholder="100000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expectedROI" class="form-label">Expected ROI (%)</label>
+                        <input type="number" id="expectedROI" class="form-input" min="1" max="1000" step="1" placeholder="25" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="timelineMonths" class="form-label">Timeline (Months)</label>
+                        <input type="number" id="timelineMonths" class="form-input" min="1" max="120" step="1" placeholder="12" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calculate Button -->
+        <div class="calculate-section">
+            <button type="button" class="calculate-btn" onclick="calculateROI()">
+                <i class="fas fa-calculator"></i>
+                Analyze Investment
             </button>
-        </section>
+        </div>
 
-        <!-- Enhanced Results Section -->
-        <section class="results-container" id="resultsContainer">
+        <!-- Results Section -->
+        <div id="resultsContainer" class="results-container">
             <div class="results-header">
-                <h2 id="resultsTitle">Investment Analysis Results</h2>
-                <p id="resultsSubtitle">Comprehensive financial modeling and risk assessment</p>
+                <h2>Investment Analysis</h2>
+                <p class="results-subtitle">Advanced financial modeling results</p>
             </div>
-
-            <!-- Risk Assessment Section -->
-            <div class="risk-assessment" id="riskAssessment" style="display: none;">
-                <div class="risk-header">
-                    <h3><i class="fas fa-shield-alt"></i> Risk Assessment</h3>
-                    <div class="risk-level" id="riskLevel">Medium</div>
-                </div>
-                <div class="risk-factors" id="riskFactors">
-                    <!-- Risk factors will be populated here -->
-                </div>
-                <div id="riskMitigation">
-                    <h4>Risk Mitigation Strategies:</h4>
-                    <ul id="riskStrategies"></ul>
-                </div>
-            </div>
-
-            <div class="results-grid" id="resultsGrid">
+            
+            <div class="metrics-grid" id="metricsGrid">
                 <!-- Results will be populated here -->
             </div>
+        </div>
+    </div>
 
-
-
-            <!-- Enhanced Charts Section -->
-            <div class="chart-container">
-                <h3 class="chart-title">Monte Carlo ROI Simulation</h3>
-                <canvas id="roiChart"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <h3 class="chart-title">Cost Breakdown Analysis</h3>
-                <canvas id="costChart"></canvas>
-            </div>
-
-            <!-- Enhanced Export Section -->
-            <div class="export-section" id="exportSection" style="display: none;">
-                <h3><i class="fas fa-download"></i> Export Professional Reports</h3>
-                <div class="export-buttons">
-                    <button class="export-btn executive" onclick="exportReport('executive')">
-                        <i class="fas fa-chart-pie"></i> Executive Summary
-                    </button>
-                    <button class="export-btn detailed" onclick="exportReport('detailed')">
-                        <i class="fas fa-file-alt"></i> Detailed Report
-                    </button>
-                    <button class="export-btn json" onclick="exportReport('json')">
-                        <i class="fas fa-code"></i> JSON Data
-                    </button>
-                    <button class="export-btn csv" onclick="exportReport('csv')">
-                        <i class="fas fa-table"></i> CSV Export
-                    </button>
-                </div>
-            </div>
-
-            <!-- Scenario Management Section -->
-            <div class="scenario-section" id="scenarioSection" style="display: none;">
-                <h3><i class="fas fa-layer-group"></i> Scenario Management</h3>
-                <div class="scenario-controls">
-                    <input type="text" id="scenarioName" placeholder="Scenario name..." class="scenario-input">
-                    <button class="calculate-btn" onclick="saveScenario()">
-                        <i class="fas fa-save"></i> Save Scenario
-                    </button>
-                    <button class="calculate-btn" onclick="showScenarioComparison()">
-                        <i class="fas fa-balance-scale"></i> Compare Scenarios
-                    </button>
-                </div>
-                <div id="scenariosList" class="scenarios-list"></div>
-            </div>
-        </section>
+    <!-- Success Notification -->
+    <div id="successNotification" class="success-notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="successMessage">Calculation completed successfully!</span>
     </div>
 
     <script>
         // Global variables
         let selectedProjectType = null;
-        let roiChart = null;
-        let costChart = null;
+        let isCalculating = false;
         let currentResults = null;
 
-        // Initialize App
+        // Initialize application
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM Content Loaded - Initializing app...');
-            
-            try {
-
-                
-                if (typeof setupEnhancedValidation === 'function') {
-                    setupEnhancedValidation();
-                } else {
-                    console.log('setupEnhancedValidation function not found, skipping...');
-                }
-                
-                setupEventListeners();
-                loadProjectTypes();
-                loadCurrencies();
-                
-                if (typeof showSuccess === 'function') {
-                    showSuccess('ROI Calculator v2.0 loaded successfully! 🚀');
-                } else {
-                    console.log('ROI Calculator v2.0 loaded successfully! 🚀');
-                }
-            } catch (error) {
-                console.error('Error during initialization:', error);
-            }
+            console.log('🚀 Infinex ROI Calculator - Initializing...');
+            loadProjectTypes();
+            setupEventListeners();
+            console.log('✅ Infinex ROI Calculator - Ready!');
         });
-
-        // Enhanced Form Validation Setup
-        function setupEnhancedValidation() {
-            // Real-time validation for company name
-            const companyNameInput = document.getElementById('companyName');
-            companyNameInput.addEventListener('input', function() {
-                debouncedValidation(this, 'companyName');
-            });
-
-            // Real-time validation for custom investment
-            const customInvestmentInput = document.getElementById('customInvestment');
-            customInvestmentInput.addEventListener('input', function() {
-                debouncedValidation(this, 'customInvestment');
-            });
-
-            // Real-time validation for custom timeline
-            const customTimelineInput = document.getElementById('customTimeline');
-            customTimelineInput.addEventListener('input', function() {
-                debouncedValidation(this, 'customTimeline');
-            });
-
-            // Enhanced tooltips
-            document.querySelectorAll('[data-tooltip]').forEach(element => {
-                element.classList.add('enhanced-tooltip');
-            });
-
-            // Interactive card effects
-            document.querySelectorAll('.analytics-card, .chart-container').forEach(card => {
-                card.classList.add('interactive-card');
-            });
-        }
 
         // Load project types from API
         async function loadProjectTypes() {
             try {
-                console.log('Loading project types...');
+                console.log('📊 Loading project types...');
                 const response = await fetch('/api/projects');
-                const data = await response.json();
                 
-                console.log('Project types data:', data);
-                
-                if (!data.success) {
-                    throw new Error('Failed to load project types');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                
+                const data = await response.json();
+                console.log('✅ Project types loaded:', data.projects.length);
                 
                 const container = document.getElementById('projectTypes');
                 if (!container) {
-                    console.error('Project types container not found!');
+                    console.error('❌ Project types container not found');
                     return;
                 }
                 
                 container.innerHTML = '';
-                console.log('Found', data.projects.length, 'projects to load');
                 
                 data.projects.forEach(project => {
                     const card = document.createElement('div');
-                    card.className = 'selection-card';
-                    card.dataset.projectId = project.id;
+                    card.className = 'project-card';
+                    card.setAttribute('data-project-id', project.id);
                     card.innerHTML = `
-                        <div class="card-icon">
-                            <i class="fas ${getProjectIcon(project.id)}"></i>
-                        </div>
-                        <div class="card-title">${project.name}</div>
-                        <div class="card-description">
-                            ${project.complexity} complexity<br>
-                            ${project.timeline}<br>
-                            ROI Potential: ${project.roi_potential}<br>
-                            <small>${project.base_cost}</small>
+                        <div class="project-title">${project.name}</div>
+                        <div class="project-description">${project.description}</div>
+                        <div class="project-meta">
+                            <span class="project-complexity">${project.complexity}</span>
+                            <span class="project-cost">${project.base_cost}</span>
                         </div>
                     `;
                     
-                    card.addEventListener('click', () => selectProjectType(project.id, card));
+                    card.addEventListener('click', () => selectProjectType(project.id, card, project.name));
                     container.appendChild(card);
                 });
                 
-                console.log('Successfully loaded', data.projects.length, 'project types');
-                
             } catch (error) {
-                console.error('Error loading project types:', error);
+                console.error('❌ Error loading project types:', error);
                 const container = document.getElementById('projectTypes');
                 if (container) {
-                    container.innerHTML = '<div class="error-message">Failed to load project types. Please refresh the page.</div>';
+                    container.innerHTML = `
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Failed to load project types. Please refresh the page.
+                        </div>
+                    `;
                 }
             }
         }
 
-        // Enhanced project icons
-        function getProjectIcon(projectId) {
-            const icons = {
-                'product_development': 'fa-rocket',
-                'digital_transformation': 'fa-digital-tachograph',
-                'market_expansion': 'fa-globe',
-                'tech_upgrade': 'fa-microchip',
-                'marketing_campaign': 'fa-bullhorn',
-                'ecommerce_platform': 'fa-shopping-cart',
-                'mobile_app': 'fa-mobile-alt',
-                'ai_integration': 'fa-brain',
-                'blockchain_platform': 'fa-link',
-                'iot_solution': 'fa-wifi',
-                'data_analytics': 'fa-chart-bar',
-                'subscription_service': 'fa-repeat',
-                'automation_system': 'fa-cogs',
-                'cybersecurity_upgrade': 'fa-shield-alt',
-                'cloud_migration': 'fa-cloud'
-            };
-            return icons[projectId] || 'fa-cog';
-        }
-
         // Select project type
-        function selectProjectType(projectId, cardElement) {
+        function selectProjectType(projectId, cardElement, projectName) {
+            console.log('🎯 Selected project:', projectName);
+            
             // Remove previous selection
-            document.querySelectorAll('.selection-card').forEach(card => {
+            document.querySelectorAll('.project-card').forEach(card => {
                 card.classList.remove('selected');
             });
             
@@ -1506,1319 +878,172 @@
             cardElement.classList.add('selected');
             selectedProjectType = projectId;
             
-            // Clear validation errors if any
-            validateInput();
+            // Clear any previous error
+            clearValidationErrors();
         }
 
         // Setup event listeners
         function setupEventListeners() {
-            const calculateBtn = document.getElementById('calculateBtn');
-            if (calculateBtn) {
-                // Remove any existing listeners and add new one
-                calculateBtn.removeEventListener('click', calculateROI);
-                calculateBtn.addEventListener('click', calculateROI);
-                console.log('Calculate button event listener set up');
-            } else {
-                console.error('Calculate button not found!');
+            console.log('🔧 Setting up event listeners...');
+            
+            // Form validation
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.removeEventListener('blur', validateField);
+                input.addEventListener('blur', validateField);
+                input.removeEventListener('input', clearFieldError);
+                input.addEventListener('input', clearFieldError);
+            });
+            
+            console.log('✅ Event listeners configured');
+        }
+
+        // Validate individual field
+        function validateField(event) {
+            const field = event.target;
+            const value = field.value.trim();
+            const fieldName = field.id;
+            
+            clearFieldError(event);
+            
+            if (!value && field.required) {
+                showFieldError(field, `${getFieldDisplayName(fieldName)} is required`);
+                return false;
+            }
+            
+            // Additional validation
+            if (fieldName === 'investmentAmount' && value) {
+                const amount = parseFloat(value);
+                if (amount < 1000) {
+                    showFieldError(field, 'Minimum investment is $1,000');
+                    return false;
+                }
+            }
+            
+            if (fieldName === 'expectedROI' && value) {
+                const roi = parseFloat(value);
+                if (roi < 1 || roi > 1000) {
+                    showFieldError(field, 'ROI must be between 1% and 1000%');
+                    return false;
+                }
+            }
+            
+            if (fieldName === 'timelineMonths' && value) {
+                const months = parseInt(value);
+                if (months < 1 || months > 120) {
+                    showFieldError(field, 'Timeline must be between 1 and 120 months');
+                    return false;
+                }
+            }
+            
+            // Mark as valid
+            field.parentElement.classList.add('success');
+            return true;
+        }
+
+        // Clear field error
+        function clearFieldError(event) {
+            const field = event.target;
+            const group = field.parentElement;
+            group.classList.remove('error', 'success');
+            
+            const existingError = group.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
             }
         }
 
-        // Setup smart validation - clears errors when fields are completed
-        function setupSmartValidation() {
-            // Clear errors when user types or selects
-            document.getElementById('companyName').addEventListener('input', clearValidationErrors);
-            document.getElementById('companySize').addEventListener('change', clearValidationErrors);
-            document.getElementById('targetIndustry').addEventListener('change', clearValidationErrors);
+        // Show field error
+        function showFieldError(field, message) {
+            const group = field.parentElement;
+            group.classList.add('error');
+            group.classList.remove('success');
             
-            // Clear errors when project type is selected
-            document.querySelectorAll('.project-card').forEach(card => {
-                card.addEventListener('click', clearValidationErrors);
+            const existingError = group.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            group.appendChild(errorDiv);
+        }
+
+        // Get field display name
+        function getFieldDisplayName(fieldId) {
+            const names = {
+                'companySize': 'Company size',
+                'targetIndustry': 'Target industry',
+                'investmentAmount': 'Investment amount',
+                'expectedROI': 'Expected ROI',
+                'timelineMonths': 'Timeline'
+            };
+            return names[fieldId] || fieldId;
+        }
+
+        // Clear all validation errors
+        function clearValidationErrors() {
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error', 'success');
+            });
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.remove();
             });
         }
 
-        // Enhanced input validation - only shows errors when submitting
-        function validateInput() {
-            const errors = [];
-            const companyName = document.getElementById('companyName').value.trim();
-            
-            if (!companyName) {
-                errors.push('Company name is required');
-            } else if (companyName.length < 2) {
-                errors.push('Company name must be at least 2 characters long');
-            } else if (companyName.length > 100) {
-                errors.push('Company name cannot exceed 100 characters');
-            }
-            
-            if (!selectedProjectType) {
-                errors.push('Please select a project type');
-            }
-            
-            const companySize = document.getElementById('companySize').value;
-            if (!companySize) {
-                errors.push('Please select company size');
-            }
-            
-            const industry = document.getElementById('targetIndustry').value;
-            if (!industry) {
-                errors.push('Please select target industry');
-            }
-            
-            // Validate custom investment if provided
-            const customInvestment = document.getElementById('customInvestment').value;
-            if (customInvestment && parseFloat(customInvestment) > 0 && (parseFloat(customInvestment) < 1000 || parseFloat(customInvestment) > 500000000)) {
-                errors.push('Custom investment must be between $1,000 and $500,000,000');
-            }
-            
-            // Validate custom timeline if provided
-            const customTimeline = document.getElementById('customTimeline').value;
-            if (customTimeline && (customTimeline < 1 || customTimeline > 120)) {
-                errors.push('Custom timeline must be between 1 and 120 months');
-            }
-            
-            // Only show errors when specifically requested (during calculation)
-            const errorContainer = document.getElementById('validationErrors');
-            if (errors.length > 0) {
-                errorContainer.innerHTML = errors.map(error => 
-                    `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> ${error}</div>`
-                ).join('');
-                errorContainer.style.display = 'block';
-                return false;
-            } else {
-                errorContainer.style.display = 'none';
-                return true;
-            }
-        }
-
-        // Clear validation errors when user makes changes
-        function clearValidationErrors() {
-            const errorContainer = document.getElementById('validationErrors');
-            errorContainer.style.display = 'none';
-        }
-
-        // Clear all error messages
+        // Clear all errors
         function clearAllErrors() {
-            const errorContainer = document.getElementById('validationErrors');
-            errorContainer.style.display = 'none';
-            // Clear any previous error messages in results
-            const errorCards = document.querySelectorAll('.error-card');
-            errorCards.forEach(card => card.remove());
-            // Clear success messages
-            const successMessages = document.querySelectorAll('.success-notification');
-            successMessages.forEach(msg => msg.remove());
+            clearValidationErrors();
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.remove();
+            });
         }
 
         // Show success message
         function showSuccessMessage(message) {
-            // Remove any existing success messages
-            const existingMessages = document.querySelectorAll('.success-notification');
-            existingMessages.forEach(msg => msg.remove());
+            const notification = document.getElementById('successNotification');
+            const messageSpan = document.getElementById('successMessage');
             
-            const successDiv = document.createElement('div');
-            successDiv.className = 'success-notification';
-            successDiv.innerHTML = `
-                <i class="fas fa-check-circle"></i>
-                ${message}
-            `;
-            
-            // Add success notification styles if not already present
-            if (!document.getElementById('successNotificationStyles')) {
-                const style = document.createElement('style');
-                style.id = 'successNotificationStyles';
-                style.textContent = `
-                    .success-notification {
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-                        color: white;
-                        padding: 1rem 1.5rem;
-                        border-radius: 12px;
-                        box-shadow: 0 10px 30px rgba(74, 222, 128, 0.3);
-                        z-index: 10000;
-                        animation: slideInRight 0.5s ease, fadeOut 0.5s ease 4s forwards;
-                        font-weight: 500;
-                        font-size: 0.95rem;
-                        max-width: 400px;
-                    }
-                    
-                    @keyframes slideInRight {
-                        from { transform: translateX(100%); opacity: 0; }
-                        to { transform: translateX(0); opacity: 1; }
-                    }
-                    
-                    @keyframes fadeOut {
-                        to { opacity: 0; transform: translateX(100%); }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-            
-            document.body.appendChild(successDiv);
-            
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                if (successDiv.parentNode) {
-                    successDiv.remove();
-                }
-            }, 5000);
-        }
-
-        // Calculate ROI with enhanced features and validation
-        async function calculateROI() {
-            console.log('Calculate ROI button clicked!');
-            
-            // Clear previous errors
-            clearValidationErrors();
-            clearAllErrors();
-            
-            // Validate inputs first
-            if (!validateInput()) {
-                console.log('Validation failed');
-                return;
-            }
-
-            const button = document.getElementById('calculateBtn');
-            const overlay = document.getElementById('loadingOverlay');
-            
-            // Disable button to prevent double clicks
-            button.disabled = true;
-            
-            // Show loading state
-            button.classList.add('loading');
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing Investment...';
-            overlay.style.display = 'flex';
-            
-            console.log('Starting calculation...');
-
-            try {
-                // Prepare form data
-                const formData = {
-                    company_name: document.getElementById('companyName').value.trim(),
-                    company_size: document.getElementById('companySize').value,
-                    current_industry: document.getElementById('currentIndustry').value || document.getElementById('targetIndustry').value,
-                    project_type: selectedProjectType,
-                    target_industry: document.getElementById('targetIndustry').value,
-                    currency: document.getElementById('currency').value
-                };
-                
-                // Add optional fields if provided
-                            const customInvestment = document.getElementById('customInvestment').value;
-            if (customInvestment && parseFloat(customInvestment) > 0) {
-                formData.custom_investment = parseFloat(customInvestment);
-            }
-                
-                const customTimeline = document.getElementById('customTimeline').value;
-                if (customTimeline) {
-                    formData.custom_timeline = parseInt(customTimeline);
-                }
-
-                const response = await fetch('/api/calculate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                const results = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(results.message || 'Calculation failed');
-                }
-                
-                if (results.error) {
-                    if (results.validation_error) {
-                        showValidationError(results.validation_error);
-                    } else if (results.business_error) {
-                        showBusinessError(results.business_error);
-                    } else if (results.retry_after) {
-                        // Rate limiting error
-                        showError(`Rate limit exceeded. Please wait ${results.retry_after} seconds before trying again.`, true);
-                    } else {
-                        throw new Error(results.message || 'Unknown error occurred');
-                    }
-                    return;
-                }
-                
-                currentResults = results;
-                displayResults(results);
-                
-                // Show export section
-                document.getElementById('exportSection').style.display = 'block';
-                
-                // Show success feedback
-                showSuccessMessage('✅ ROI Analysis Complete! Your investment analysis is ready.');
-                
-                // Smooth scroll to results
-                document.getElementById('resultsContainer').scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
-                });
-                
-            } catch (error) {
-                console.error('Error calculating ROI:', error);
-                showError(`Error calculating ROI: ${error.message}`);
-            } finally {
-                // Hide loading state
-                button.disabled = false;
-                button.classList.remove('loading');
-                button.innerHTML = '<i class="fas fa-calculator"></i> Analyze Investment & Calculate ROI';
-                overlay.style.display = 'none';
-                console.log('Calculation completed');
-            }
-        }
-
-        // Professional Finance Results Display
-        function displayResults(data) {
-            const container = document.getElementById('resultsContainer');
-            
-            // Create professional finance layout
-            container.innerHTML = `
-                <div class="results-header">
-                    <div class="results-title">${data.input_parameters.company_name} - Investment Analysis</div>
-                    <div class="results-subtitle">
-                        ${data.input_parameters.target_industry.replace('_', ' ').toUpperCase()} • 
-                        ${data.cost_analysis.timeline_months} months • 
-                        ${data.cost_analysis.currency} analysis
-                    </div>
-                </div>
-                
-                <div class="financial-metrics">
-                    <div class="metric-card">
-                        <div class="metric-label">Total Investment</div>
-                        <div class="metric-value metric-neutral">${data.cost_analysis.currency_symbol}${data.roi_projection.total_investment.toLocaleString()}</div>
-                        <div class="metric-change">Required Capital</div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="metric-label">Expected ROI</div>
-                        <div class="metric-value metric-positive">${data.roi_projection.roi_percentage.toFixed(1)}%</div>
-                        <div class="metric-change">Return on Investment</div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="metric-label">Projected Revenue</div>
-                        <div class="metric-value metric-positive">${data.cost_analysis.currency_symbol}${data.roi_projection.projected_revenue.toLocaleString()}</div>
-                        <div class="metric-change">Total Revenue</div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="metric-label">Net Present Value</div>
-                        <div class="metric-value ${data.roi_projection.npv > 0 ? 'metric-positive' : 'metric-negative'}">${data.cost_analysis.currency_symbol}${data.roi_projection.npv.toLocaleString()}</div>
-                        <div class="metric-change">NPV Analysis</div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="metric-label">Internal Rate of Return</div>
-                        <div class="metric-value metric-neutral">${(data.roi_projection.irr * 100).toFixed(1)}%</div>
-                        <div class="metric-change">IRR Analysis</div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="metric-label">Payback Period</div>
-                        <div class="metric-value metric-neutral">${data.roi_projection.payback_period_months} months</div>
-                        <div class="metric-change">Investment Recovery</div>
-                    </div>
-                </div>
-                
-                <div class="charts-section">
-                    <div class="chart-container">
-                        <h3 class="chart-title">ROI Projection Analysis</h3>
-                        <canvas id="roiChart"></canvas>
-                    </div>
-                    
-                    <div class="chart-container">
-                        <h3 class="chart-title">Investment Breakdown</h3>
-                        <canvas id="costChart"></canvas>
-                    </div>
-                </div>
-            `;
-            
-            // Show the results container
-            container.style.display = 'block';
-            
-            // Create professional finance charts
-            setTimeout(() => {
-                createROIChart(data);
-                createCostChart(data.cost_analysis.cost_breakdown);
-            }, 100);
-            
-            // Scroll to results
-            setTimeout(() => {
-                container.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
-        }
-
-        // Create enhanced result card
-        function createResultCard(value, label, description, icon, type = 'primary') {
-            const card = document.createElement('div');
-            card.className = `result-card glass-card ${type}`;
-            card.innerHTML = `
-                <div class="card-icon">
-                    <i class="${icon}"></i>
-                </div>
-                <div class="metric-value">${value}</div>
-                <div class="metric-label">${label}</div>
-                <div class="metric-description">${description}</div>
-            `;
-            return card;
-        }
-
-        // Create enhanced ROI chart
-        function createROIChart(data) {
-            const ctx = document.getElementById('roiChart').getContext('2d');
-            
-            if (roiChart) {
-                roiChart.destroy();
-            }
-            
-            // Create data for Monte Carlo visualization
-            const sensitivity = data.roi_projection.sensitivity_analysis;
-            const chartData = {
-                labels: ['Growth Rate -20%', 'Growth Rate -10%', 'Baseline', 'Growth Rate +10%', 'Growth Rate +20%'],
-                datasets: [{
-                    label: 'ROI Sensitivity (%)',
-                    data: sensitivity.growth_rate,
-                    backgroundColor: 'rgba(79, 172, 254, 0.8)',
-                    borderColor: 'rgba(79, 172, 254, 1)',
-                    borderWidth: 2,
-                    borderRadius: 8
-                }]
-            };
-            
-            roiChart = new Chart(ctx, {
-                type: 'bar',
-                data: chartData,
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#ffffff'
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'ROI Sensitivity Analysis',
-                            color: '#ffffff'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                                color: '#ffffff'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                                color: '#ffffff'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Create enhanced cost chart
-        function createCostChart(costBreakdown) {
-            const ctx = document.getElementById('costChart').getContext('2d');
-            
-            if (costChart) {
-                costChart.destroy();
-            }
-            
-            const labels = Object.keys(costBreakdown).map(key => 
-                key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-            );
-            const values = Object.values(costBreakdown);
-            
-            costChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: values,
-                        backgroundColor: [
-                            'rgba(102, 126, 234, 0.8)',
-                            'rgba(79, 172, 254, 0.8)',
-                            'rgba(240, 147, 251, 0.8)',
-                            'rgba(245, 87, 108, 0.8)',
-                            'rgba(0, 255, 136, 0.8)'
-                        ],
-                        borderColor: [
-                            'rgba(102, 126, 234, 1)',
-                            'rgba(79, 172, 254, 1)',
-                            'rgba(240, 147, 251, 1)',
-                            'rgba(245, 87, 108, 1)',
-                            'rgba(0, 255, 136, 1)'
-                        ],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#ffffff',
-                                padding: 20
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Investment Cost Distribution',
-                            color: '#ffffff'
-                        }
-                    }
-                }
-            });
-        }
-
-        // Helper functions
-        function getRiskDescription(riskScore) {
-            if (riskScore <= 25) {
-                return 'Low risk - Conservative investment with predictable outcomes';
-            } else if (riskScore <= 45) {
-                return 'Low-Moderate risk - Generally stable with some variability';
-            } else if (riskScore <= 65) {
-                return 'Moderate risk - Balanced approach with reasonable upside';
-            } else if (riskScore <= 80) {
-                return 'Moderate-High risk - Good potential but requires monitoring';
-            } else {
-                return 'High risk - Significant potential but needs careful management';
-            }
-        }
-
-        function getRiskCardType(riskScore) {
-            if (riskScore <= 45) return 'success';
-            if (riskScore <= 75) return 'warning';
-            return 'error';
-        }
-
-        // Display Advanced Analytics
-        function displayAdvancedAnalytics(data) {
-            const analyticsSection = document.getElementById('analyticsSection');
-            const bi = data.business_intelligence;
-            
-            if (!bi) {
-                analyticsSection.style.display = 'none';
-                return;
-            }
-            
-            analyticsSection.style.display = 'block';
-            
-            // Market Analysis
-            displayMarketAnalysis(bi.market_analysis);
-            
-            // Competitive Analysis
-            displayCompetitiveAnalysis(bi.competitive_analysis);
-            
-            // Financial Metrics
-            displayFinancialMetrics(bi.financial_metrics);
-            
-            // Risk Analysis
-            displayRiskAnalysis(bi.risk_analysis);
-            
-            // Success Probability
-            displaySuccessProbability(bi.success_probability);
-            
-            // KPI Targets
-            displayKPITargets(bi.kpi_targets);
-            
-            // Milestones
-            displayMilestones(bi.milestones);
-        }
-
-        function displayMarketAnalysis(market) {
-            const container = document.getElementById('marketAnalysis');
-            container.innerHTML = `
-                <div class="metric-highlight">Market Size: $${(market.market_size / 1000000).toFixed(0)}M</div>
-                <div class="metric-highlight">Growth Rate: ${(market.growth_rate * 100).toFixed(1)}% annually</div>
-                <div>Competition: ${market.competition_level}</div>
-                <div>Maturity: ${market.market_maturity}</div>
-                <h4 style="margin-top: 1rem; color: var(--text-accent);">Key Trends:</h4>
-                ${market.key_trends.map(trend => `<div class="trend-item">• ${trend}</div>`).join('')}
-                <h4 style="margin-top: 1rem; color: var(--text-accent);">Opportunities:</h4>
-                ${market.opportunities.map(opp => `<div class="trend-item">• ${opp}</div>`).join('')}
-            `;
-        }
-
-        function displayCompetitiveAnalysis(competitive) {
-            const container = document.getElementById('competitiveAnalysis');
-            container.innerHTML = `
-                <div class="metric-highlight">Market Share Potential: ${competitive.market_share_potential}%</div>
-                <div class="metric-highlight">Differentiation Score: ${competitive.differentiation_score}/10</div>
-                <div>Pricing Power: ${competitive.pricing_power}</div>
-                <div>Advantage: ${competitive.competitive_advantage}</div>
-                <h4 style="margin-top: 1rem; color: var(--text-accent);">Entry Barriers:</h4>
-                ${competitive.barriers_to_entry.map(barrier => `<div class="trend-item">• ${barrier}</div>`).join('')}
-            `;
-        }
-
-        function displayFinancialMetrics(financial) {
-            const container = document.getElementById('financialMetrics');
-            container.innerHTML = `
-                <div class="metric-highlight">CAC: $${financial.customer_acquisition_cost}</div>
-                <div class="metric-highlight">LTV: $${financial.lifetime_value}</div>
-                <div class="metric-highlight">LTV/CAC Ratio: ${(financial.lifetime_value / financial.customer_acquisition_cost).toFixed(1)}x</div>
-                <div>Gross Margin: ${financial.gross_margin.toFixed(1)}%</div>
-                <div>Operating Margin: ${financial.operating_margin.toFixed(1)}%</div>
-                <div>Monthly Burn: $${(financial.burn_rate / 1000).toFixed(0)}K</div>
-                <div>Runway: ${financial.runway_months} months</div>
-                <div>Break-even Units: ${financial.break_even_units.toLocaleString()}</div>
-            `;
-        }
-
-        function displayRiskAnalysis(risk) {
-            const container = document.getElementById('riskAnalysis');
-            container.innerHTML = `
-                <div class="metric-highlight">Overall Risk: ${risk.overall_risk}%</div>
-                <div>Market Risk: ${risk.market_risk}%</div>
-                <div>Execution Risk: ${risk.execution_risk}%</div>
-                <div>Financial Risk: ${risk.financial_risk}%</div>
-                <div>Regulatory Risk: ${risk.regulatory_risk}%</div>
-                <div>Technology Risk: ${risk.technology_risk}%</div>
-                <h4 style="margin-top: 1rem; color: var(--text-accent);">Mitigation Strategies:</h4>
-                ${risk.risk_mitigation.map(strategy => `<div class="trend-item">• ${strategy}</div>`).join('')}
-            `;
-        }
-
-        function displaySuccessProbability(probability) {
-            const container = document.getElementById('successProbability');
-            const color = probability > 70 ? 'var(--success-color)' : 
-                         probability > 50 ? 'var(--warning-color)' : 'var(--error-color)';
-            
-            container.innerHTML = `
-                <div class="probability-circle" style="background: conic-gradient(${color} ${probability * 3.6}deg, rgba(255,255,255,0.1) 0deg)">
-                    <span style="color: ${color}">${probability}%</span>
-                </div>
-                <div style="color: var(--text-secondary);">Probability of Success</div>
-            `;
-        }
-
-        function displayKPITargets(kpis) {
-            const container = document.getElementById('kpiTargets');
-            container.innerHTML = `
-                <div class="kpi-grid">
-                    <div class="kpi-item">
-                        <div class="kpi-value">$${(kpis.monthly_revenue_target / 1000).toFixed(0)}K</div>
-                        <div class="kpi-label">Monthly Revenue</div>
-                    </div>
-                    <div class="kpi-item">
-                        <div class="kpi-value">${kpis.customer_acquisition_target}</div>
-                        <div class="kpi-label">Customer Target</div>
-                    </div>
-                    <div class="kpi-item">
-                        <div class="kpi-value">${kpis.gross_margin_target.toFixed(1)}%</div>
-                        <div class="kpi-label">Gross Margin</div>
-                    </div>
-                    <div class="kpi-item">
-                        <div class="kpi-value">$${(kpis.cash_burn_target / 1000).toFixed(0)}K</div>
-                        <div class="kpi-label">Monthly Burn</div>
-                    </div>
-                    <div class="kpi-item">
-                        <div class="kpi-value">${kpis.market_share_target.toFixed(1)}%</div>
-                        <div class="kpi-label">Market Share</div>
-                    </div>
-                    <div class="kpi-item">
-                        <div class="kpi-value">${kpis.roi_milestone.toFixed(0)}%</div>
-                        <div class="kpi-label">ROI Milestone</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function displayMilestones(milestones) {
-            const container = document.getElementById('milestonesTimeline');
-            container.innerHTML = `
-                <div class="timeline">
-                    ${milestones.map(milestone => `
-                        <div class="milestone">
-                            <div class="milestone-month">Month ${milestone.month}</div>
-                            <div class="milestone-content">
-                                <div class="milestone-name">${milestone.name}</div>
-                                <div class="milestone-description">${milestone.description}</div>
-                                <div style="color: var(--text-accent); font-size: 0.85rem; margin-top: 0.25rem;">
-                                    Budget: $${(milestone.budget_allocated / 1000).toFixed(0)}K
-                                </div>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        function showError(message, isTemporary = false) {
-            const errorContainer = document.getElementById('validationErrors');
-            errorContainer.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
-            errorContainer.style.display = 'block';
-            
-            // Auto-hide temporary errors after 5 seconds
-            if (isTemporary) {
-                setTimeout(() => {
-                    errorContainer.style.display = 'none';
-                }, 5000);
-            }
-        }
-        
-        function showSuccess(message) {
-            const errorContainer = document.getElementById('validationErrors');
-            errorContainer.innerHTML = `<div class="success-message"><i class="fas fa-check-circle"></i> ${message}</div>`;
-            errorContainer.style.display = 'block';
+            messageSpan.textContent = message;
+            notification.classList.add('show');
             
             setTimeout(() => {
-                errorContainer.style.display = 'none';
+                notification.classList.remove('show');
             }, 3000);
         }
 
-        function showValidationError(validationError) {
-            showError(`Validation Error: ${validationError.message}`);
-        }
-
-        function showBusinessError(businessError) {
-            showError(`Business Logic Error: ${businessError.message}`);
-        }
-
-        // Export HTML report
-        function exportHTML() {
-            if (!currentResults) {
-                showError('No results to export. Please run a calculation first.');
-                return;
-            }
-            
-            const params = new URLSearchParams({
-                company: currentResults.input_parameters.company_name,
-                company_size: currentResults.input_parameters.company_size,
-                current_industry: currentResults.input_parameters.current_industry,
-                project_type: currentResults.input_parameters.project_type,
-                target_industry: currentResults.input_parameters.target_industry,
-                currency: currentResults.input_parameters.currency
-            });
-            
-            window.open(`/api/export-html?${params.toString()}`, '_blank');
-        }
-
-        // Interactive Analytics Cards
-        function toggleAnalyticsCard(card, type) {
-            console.log('Analytics card clicked:', type); // Debug log
-            
-            const isExpanded = card.classList.contains('expanded');
-            
-            // Close all other expanded cards
-            document.querySelectorAll('.analytics-card.expanded').forEach(c => {
-                if (c !== card) {
-                    c.classList.remove('expanded');
-                    const otherDetails = c.querySelector('.analytics-details');
-                    if (otherDetails) {
-                        otherDetails.classList.remove('show');
-                    }
-                }
-            });
-            
-            // Toggle current card
-            if (isExpanded) {
-                card.classList.remove('expanded');
-                const details = card.querySelector('.analytics-details');
-                if (details) {
-                    details.classList.remove('show');
-                }
-            } else {
-                card.classList.add('expanded');
-                const details = card.querySelector('.analytics-details');
-                if (details) {
-                    details.classList.add('show');
-                    
-                    // Load detailed content based on type
-                    loadDetailedContent(type, card);
-                } else {
-                    console.error('Analytics details container not found for:', type);
-                }
-            }
-        }
-
-        function loadDetailedContent(type, card) {
-            console.log('Loading detailed content for:', type); // Debug log
-            
-            const detailsContainer = card.querySelector('.analytics-details > div');
-            
-            if (!detailsContainer) {
-                console.error('Details container not found for type:', type);
-                return;
-            }
-            
-            if (!currentResults || !currentResults.business_intelligence) {
-                detailsContainer.innerHTML = '<p style="color: var(--text-secondary);">Please run a calculation first to see detailed analytics.</p>';
-                return;
-            }
-            
-            const bi = currentResults.business_intelligence;
-            console.log('Business intelligence data:', bi); // Debug log
-            
-            switch (type) {
-                case 'market':
-                    detailsContainer.innerHTML = `
-                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">📈 Detailed Market Insights</h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                            <div>
-                                <strong>Market Maturity:</strong> ${bi.market_analysis.market_maturity}<br>
-                                <strong>Competition:</strong> ${bi.market_analysis.competition_level}<br>
-                                <strong>Growth Potential:</strong> High
-                            </div>
-                            <div>
-                                <strong>Market Threats:</strong><br>
-                                ${bi.market_analysis.threats.map(t => `• ${t}`).join('<br>')}
-                            </div>
-                        </div>
-                        <div style="margin-top: 1rem;">
-                            <strong style="color: var(--text-accent);">Seasonal Factors:</strong><br>
-                            ${Object.entries(bi.market_analysis.seasonal_factors).map(([period, factor]) => 
-                                `${period}: ${(parseFloat(factor) * 100).toFixed(0)}%`).join(' | ')}
-                        </div>
-                    `;
-                    break;
-                    
-                case 'competitive':
-                    detailsContainer.innerHTML = `
-                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">⚔️ Competitive Analysis</h4>
-                        <div>
-                            <strong>Competitive Advantage:</strong> ${bi.competitive_analysis.competitive_advantage}<br>
-                            <strong>Pricing Power:</strong> ${bi.competitive_analysis.pricing_power}<br>
-                            <strong>Differentiation Score:</strong> ${bi.competitive_analysis.differentiation_score}/10
-                        </div>
-                        <div style="margin-top: 1rem;">
-                            <strong style="color: var(--text-accent);">Competitive Threats:</strong><br>
-                            ${bi.competitive_analysis.competitive_threats.map(t => `• ${t}`).join('<br>')}
-                        </div>
-                    `;
-                    break;
-                    
-                case 'financial':
-                    detailsContainer.innerHTML = `
-                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">💰 Financial Deep Dive</h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                            <div>
-                                <strong>Working Capital:</strong> $${(bi.financial_metrics.working_capital_needs / 1000).toFixed(0)}K<br>
-                                <strong>LTV/CAC Ratio:</strong> ${(bi.financial_metrics.lifetime_value / bi.financial_metrics.customer_acquisition_cost).toFixed(1)}x<br>
-                                <strong>Break-even Units:</strong> ${bi.financial_metrics.break_even_units.toLocaleString()}
-                            </div>
-                            <div>
-                                <strong>Cash Runway:</strong> ${bi.financial_metrics.runway_months} months<br>
-                                <strong>Operating Margin:</strong> ${bi.financial_metrics.operating_margin.toFixed(1)}%<br>
-                                <strong>Monthly Burn:</strong> $${(bi.financial_metrics.burn_rate / 1000).toFixed(0)}K
-                            </div>
-                        </div>
-                    `;
-                    break;
-                    
-                case 'risk':
-                    detailsContainer.innerHTML = `
-                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">🛡️ Risk Mitigation</h4>
-                        <div style="margin-bottom: 1rem;">
-                            <strong>Risk Mitigation Strategies:</strong><br>
-                            ${bi.risk_analysis.risk_mitigation.map(r => `• ${r}`).join('<br>')}
-                        </div>
-                        <div>
-                            <strong style="color: var(--text-accent);">Contingency Plans:</strong><br>
-                            ${bi.risk_analysis.contingency_plans.map(c => `• ${c}`).join('<br>')}
-                        </div>
-                    `;
-                    break;
-                    
-                case 'success':
-                    detailsContainer.innerHTML = `
-                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">🎯 Success Factors</h4>
-                        <div>
-                            <strong>Key Success Drivers:</strong><br>
-                            • Market growth rate: ${(bi.market_analysis.growth_rate * 100).toFixed(1)}%<br>
-                            • Competitive position: Strong differentiation<br>
-                            • Financial health: Positive unit economics<br>
-                            • Risk profile: ${bi.risk_analysis.overall_risk.toFixed(1)}% overall risk
-                        </div>
-                        <div style="margin-top: 1rem;">
-                            <strong style="color: var(--text-accent);">Recommended Actions:</strong><br>
-                            ${bi.recommended_actions.map(a => `• ${a}`).join('<br>')}
-                        </div>
-                    `;
-                    break;
-                    
-                case 'kpi':
-                    detailsContainer.innerHTML = `
-                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">📊 Dynamic KPI Targets</h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                            <div>
-                                <strong>Revenue Target:</strong> $${(bi.kpi_targets.monthly_revenue_target / 1000).toFixed(0)}K/month<br>
-                                <strong>Customer Acquisition:</strong> ${bi.kpi_targets.customer_acquisition_target} customers<br>
-                                <strong>Gross Margin Target:</strong> ${bi.kpi_targets.gross_margin_target.toFixed(1)}%<br>
-                                <strong>Cash Burn Target:</strong> $${(bi.kpi_targets.cash_burn_target / 1000).toFixed(0)}K/month
-                            </div>
-                            <div>
-                                <strong>Market Share Goal:</strong> ${bi.kpi_targets.market_share_target.toFixed(1)}%<br>
-                                <strong>ROI Milestone:</strong> ${bi.kpi_targets.roi_milestone.toFixed(1)}%<br>
-                                <strong>Industry Benchmark:</strong> ${bi.kpi_targets.industry_benchmark_margin}<br>
-                                <strong>Target Churn:</strong> ${bi.kpi_targets.target_customer_churn}%
-                            </div>
-                        </div>
-                        <div style="margin-top: 1rem;">
-                            <strong style="color: var(--text-accent);">Primary Focus Areas:</strong><br>
-                            ${bi.kpi_targets.primary_focus_areas.map(area => `• ${area.replace('_', ' ').toUpperCase()}`).join('<br>')}
-                        </div>
-                        <div style="margin-top: 1rem; color: var(--text-secondary);">
-                            <em>💡 These targets are customized for your industry, company size, and project type</em>
-                        </div>
-                    `;
-                    break;
-                    
-                case 'milestones':
-                    const milestonesHtml = bi.milestones.map(m => `
-                        <div style="border-left: 3px solid var(--text-accent); padding-left: 1rem; margin: 1rem 0;">
-                            <strong style="color: var(--text-accent);">Month ${m.month}: ${m.name}</strong><br>
-                            <em>${m.description}</em><br>
-                            <strong>Success Criteria:</strong> ${m.success_criteria}<br>
-                            <strong>Budget:</strong> $${(m.budget_allocated / 1000).toFixed(0)}K | 
-                            <strong>Risk Level:</strong> ${m.risk_level} | 
-                            <strong>Focus:</strong> ${m.focus_area}<br>
-                            <strong>Key Deliverables:</strong><br>
-                            ${m.deliverables.map(d => `&nbsp;&nbsp;• ${d}`).join('<br>')}
-                        </div>
-                    `).join('');
-                    
-                    detailsContainer.innerHTML = `
-                        <h4 style="color: var(--text-accent); margin-bottom: 1rem;">🛣️ Dynamic Project Roadmap</h4>
-                        ${milestonesHtml}
-                        <div style="margin-top: 1rem; padding: 1rem; background: rgba(87, 201, 255, 0.1); border-radius: 8px;">
-                            <strong style="color: var(--text-accent);">🎯 Project Intelligence:</strong><br>
-                            • Milestones are customized for your industry and project type<br>
-                            • Budget allocation varies by company size and complexity<br>
-                            • Risk levels are calculated based on timeline and execution factors<br>
-                            • Deliverables are specific to your chosen focus areas
-                        </div>
-                    `;
-                    break;
-            }
-        }
-
-        // Enhanced Export Functions
-        async function exportReport(format) {
-            if (!currentResults) {
-                showError('No calculation results available for export');
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/export/${format}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(currentResults)
-                });
-
-                if (format === 'executive' || format === 'detailed') {
-                    const html = await response.text();
-                    const newWindow = window.open('', '_blank');
-                    newWindow.document.write(html);
-                    newWindow.document.close();
-                } else {
-                    // Download file for JSON/CSV
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `roi_analysis.${format}`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-                }
-
-                showSuccess(`${format.toUpperCase()} report exported successfully!`);
-            } catch (error) {
-                showError(`Export failed: ${error.message}`);
-            }
-        }
-
-        // Scenario Management Functions
-        let savedScenarios = [];
-
-        async function saveScenario() {
-            const scenarioName = document.getElementById('scenarioName').value.trim();
-            
-            if (!scenarioName) {
-                showError('Please enter a scenario name');
-                return;
-            }
-
-            if (!currentResults) {
-                showError('No calculation results to save');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/scenarios', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        scenario_name: scenarioName,
-                        parameters: currentResults.input_parameters
-                    })
-                });
-
-                const result = await response.json();
-                
-                if (result.success) {
-                    savedScenarios.push({
-                        name: scenarioName,
-                        roi: currentResults.roi_projection.roi_percentage,
-                        investment: currentResults.cost_analysis.total_cost,
-                        risk: currentResults.roi_projection.risk_score
-                    });
-                    
-                    updateScenariosList();
-                    document.getElementById('scenarioName').value = '';
-                    showSuccess(`Scenario "${scenarioName}" saved successfully!`);
-                } else {
-                    showError('Failed to save scenario');
-                }
-            } catch (error) {
-                showError(`Save failed: ${error.message}`);
-            }
-        }
-
-        function updateScenariosList() {
-            const container = document.getElementById('scenariosList');
-            
-            if (savedScenarios.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-secondary);">No scenarios saved yet</p>';
-                return;
-            }
-
-            container.innerHTML = savedScenarios.map(scenario => `
-                <div class="scenario-item">
-                    <div class="scenario-name">${scenario.name}</div>
-                    <div class="scenario-metrics">
-                        ROI: ${scenario.roi.toFixed(1)}% | 
-                        Investment: $${scenario.investment.toLocaleString()} | 
-                        Risk: ${scenario.risk.toFixed(1)}%
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function showScenarioComparison() {
-            if (savedScenarios.length < 2) {
-                showError('Need at least 2 scenarios for comparison');
-                return;
-            }
-
-            try {
-                const scenarioNames = savedScenarios.map(s => s.name);
-                const response = await fetch('/api/scenarios/compare', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        scenario_names: scenarioNames
-                    })
-                });
-
-                const result = await response.json();
-                
-                if (result.success) {
-                    displayScenarioComparison(result.comparison);
-                } else {
-                    showError('Comparison failed');
-                }
-            } catch (error) {
-                showError(`Comparison failed: ${error.message}`);
-            }
-        }
-
-        function displayScenarioComparison(comparison) {
-            const modal = document.createElement('div');
-            modal.innerHTML = `
-                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center;">
-                    <div style="background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 16px; padding: 2rem; max-width: 800px; max-height: 80vh; overflow-y: auto;">
-                        <h2 style="color: var(--text-accent); margin-bottom: 1rem;">📊 Scenario Comparison</h2>
-                        
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
-                            ${comparison.scenarios.map(scenario => `
-                                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
-                                    <h4 style="color: var(--text-accent);">${scenario.name}</h4>
-                                    <div>ROI: ${scenario.roi_percentage.toFixed(1)}%</div>
-                                    <div>Risk: ${scenario.risk_score.toFixed(1)}%</div>
-                                    <div>Investment: $${scenario.total_investment.toLocaleString()}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                        
-                        <h3 style="color: var(--text-accent); margin: 1rem 0;">💡 Recommendations:</h3>
-                        <ul style="color: var(--text-secondary);">
-                            ${comparison.recommendations.map(rec => `<li style="margin: 0.5rem 0;">${rec}</li>`).join('')}
-                        </ul>
-                        
-                        <button onclick="this.closest('div').parentElement.remove()" style="background: var(--accent-gradient); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; margin-top: 1rem; cursor: pointer;">Close</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // Core v2.0 variables
-        let isCalculating = false;
-        let currentResults = null;
-        let selectedProjectType = null;
-
-
-
-        // Enhanced keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // Ctrl/Cmd + Enter to calculate
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                e.preventDefault();
-                calculateROI();
-            }
-            
-            // Ctrl/Cmd + S to save scenario
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                showSaveScenarioDialog();
-            }
-            
-            // Escape to close modals
-            if (e.key === 'Escape') {
-                closeAllModals();
-            }
-            
-            // Ctrl/Cmd + Z to load last calculation
-            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-                e.preventDefault();
-                loadLastCalculation();
-            }
-        });
-
-        // Enhanced error handling with retry mechanism
-        async function calculateROIWithRetry(maxRetries = 3) {
-            if (isCalculating) return;
-            
-            for (let attempt = 1; attempt <= maxRetries; attempt++) {
-                try {
-                    return await calculateROI();
-                } catch (error) {
-                    console.error(`Calculation attempt ${attempt} failed:`, error);
-                    
-                    if (attempt === maxRetries) {
-                        showError(`Calculation failed after ${maxRetries} attempts. Please check your internet connection and try again.`, false);
-                        return;
-                    }
-                    
-                    // Exponential backoff
-                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
-                    showError(`Retrying calculation (${attempt}/${maxRetries})...`, true, 2000);
-                }
-            }
-        }
-
-        // Real-time input validation with debouncing
-        const debouncedValidation = debounce(function(input, fieldName) {
-            validateFieldRealTime(input, fieldName);
-        }, 300);
-
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        function validateFieldRealTime(input, fieldName) {
-            const value = input.value.trim();
-            const fieldContainer = input.closest('.form-group');
-            const errorElement = fieldContainer.querySelector('.field-error') || createErrorElement(fieldContainer);
-            
-            let isValid = true;
-            let errorMessage = '';
-            
-            switch (fieldName) {
-                case 'companyName':
-                    if (value.length < 2) {
-                        isValid = false;
-                        errorMessage = 'Company name must be at least 2 characters';
-                    } else if (value.length > 100) {
-                        isValid = false;
-                        errorMessage = 'Company name must be less than 100 characters';
-                    }
-                    break;
-                    
-                case 'customInvestment':
-                    if (value && (isNaN(parseFloat(value)) || parseFloat(value) < 1000)) {
-                        isValid = false;
-                        errorMessage = 'Investment must be at least $1,000';
-                    }
-                    break;
-                    
-                case 'customTimeline':
-                    if (value && (isNaN(parseInt(value)) || parseInt(value) < 1 || parseInt(value) > 120)) {
-                        isValid = false;
-                        errorMessage = 'Timeline must be between 1-120 months';
-                    }
-                    break;
-            }
-            
-            updateFieldValidation(input, errorElement, isValid, errorMessage);
-        }
-
-        function createErrorElement(fieldContainer) {
-            const errorElement = document.createElement('div');
-            errorElement.className = 'field-error';
-            errorElement.style.cssText = `
-                color: var(--error);
-                font-size: 0.8rem;
-                margin-top: 0.25rem;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            `;
-            fieldContainer.appendChild(errorElement);
-            return errorElement;
-        }
-
-        function updateFieldValidation(input, errorElement, isValid, errorMessage) {
-            if (isValid) {
-                input.style.borderColor = 'var(--success)';
-                errorElement.style.opacity = '0';
-                setTimeout(() => {
-                    if (errorElement.style.opacity === '0') {
-                        errorElement.textContent = '';
-                    }
-                }, 300);
-            } else {
-                input.style.borderColor = 'var(--error)';
-                errorElement.textContent = errorMessage;
-                errorElement.style.opacity = '1';
-            }
-        }
-
-
-
-        // Enhanced Scenario Management
-        function showSaveScenarioDialog() {
-            if (!currentResults) {
-                showError('Please run a calculation first before saving a scenario');
-                return;
-            }
-            
-            const scenarioName = prompt('Enter a name for this scenario:');
-            if (scenarioName && scenarioName.trim()) {
-                saveScenarioToLocal(scenarioName.trim(), currentResults);
-                showSuccess(`Scenario "${scenarioName}" saved successfully`);
-            }
-        }
-
-        function saveScenarioToLocal(name, results) {
-            const scenario = {
-                name: name,
-                timestamp: new Date().toISOString(),
-                parameters: results.input_parameters,
-                results: {
-                    roi_percentage: results.roi_projection.roi_percentage,
-                    projected_revenue: results.roi_projection.projected_revenue,
-                    total_investment: results.roi_projection.total_investment,
-                    npv: results.roi_projection.npv,
-                    irr: results.roi_projection.irr
-                },
-                calculationTime: performanceTracker.lastCalculationTime
-            };
-            
-            favoriteScenarios.push(scenario);
-            localStorage.setItem('roiCalculatorFavorites', JSON.stringify(favoriteScenarios));
-        }
-
-        function loadLastCalculation() {
-            if (calculationHistory.length === 0) {
-                showError('No previous calculations found');
-                return;
-            }
-            
-            const lastCalculation = calculationHistory[calculationHistory.length - 1];
-            const params = lastCalculation.input_parameters;
-            
-            // Populate form with last calculation parameters
-            document.getElementById('companyName').value = params.company_name || '';
-            document.getElementById('companySize').value = params.company_size || '';
-            document.getElementById('targetIndustry').value = params.target_industry || '';
-            document.getElementById('projectType').value = params.project_type || '';
-            document.getElementById('currency').value = params.currency || 'USD';
-            
-            showSuccess('Last calculation parameters loaded');
-        }
-
-        // Modal Management
-        function closeAllModals() {
-            const modals = document.querySelectorAll('.modal, .overlay');
-            modals.forEach(modal => {
-                modal.style.display = 'none';
-                modal.remove();
-            });
-        }
-
-        // Enhanced Calculate Function with Performance Tracking
+        // Main calculation function
         async function calculateROI() {
-            if (isCalculating) return;
+            console.log('🧮 Starting ROI calculation...');
             
-            isCalculating = true;
+            const button = document.querySelector('.calculate-btn');
             
             try {
+                // Clear previous errors and results
+                clearAllErrors();
                 
-                // Clear previous errors
-                clearValidationErrors();
+                // Disable button
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+                isCalculating = true;
                 
                 // Validate inputs
-                const validation = validateInput();
-                if (!validation.isValid) {
-                    showError(validation.errors.join('<br>'), false);
+                if (!validateInputs()) {
                     return;
                 }
                 
-                // Show loading
-                showLoading('Calculating advanced ROI projections...');
-                
-                // Prepare form data
-                const formData = {
-                    company_name: document.getElementById('companyName').value.trim(),
+                // Prepare data
+                const requestData = {
+                    project_type: selectedProjectType,
                     company_size: document.getElementById('companySize').value,
-                    current_industry: document.getElementById('currentIndustry').value || document.getElementById('targetIndustry').value,
                     target_industry: document.getElementById('targetIndustry').value,
-                    project_type: document.getElementById('projectType').value,
-                    timeline_months: parseInt(document.getElementById('timelineMonths').value) || 12,
-                    currency: document.getElementById('currency').value
+                    investment_amount: parseFloat(document.getElementById('investmentAmount').value),
+                    expected_roi: parseFloat(document.getElementById('expectedROI').value),
+                    timeline_months: parseInt(document.getElementById('timelineMonths').value)
                 };
                 
-                // Add custom investment if provided and valid
-                const customInvestment = document.getElementById('customInvestment').value.trim();
-                if (customInvestment && parseFloat(customInvestment) > 0) {
-                    formData.custom_investment = parseFloat(customInvestment);
-                }
-                
-                // Add custom timeline if provided and valid
-                const customTimeline = document.getElementById('customTimeline').value.trim();
-                if (customTimeline && parseInt(customTimeline) > 0) {
-                    formData.custom_timeline = parseInt(customTimeline);
-                }
+                console.log('📤 Sending calculation request:', requestData);
                 
                 // Make API call
                 const response = await fetch('/api/calculate', {
@@ -2826,40 +1051,172 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(requestData)
                 });
                 
                 const data = await response.json();
+                console.log('📥 Received response:', data);
                 
-                if (data.success) {
-                    currentResults = data;
-                    calculationHistory.push(data);
-                    
-                    // Limit history to last 10 calculations
-                    if (calculationHistory.length > 10) {
-                        calculationHistory = calculationHistory.slice(-10);
-                    }
-                    
-                    displayResults(data);
-                    showSuccess('Calculation completed successfully!');
-                } else {
-                    if (data.business_error) {
-                        showError(`Business Logic Error: ${data.business_error.message}`, false);
-                    } else if (data.validation_error) {
-                        showError(`Validation Error: ${data.validation_error.message}`, false);
-                    } else {
-                        showError('An unexpected error occurred. Please try again.', false);
-                    }
+                if (data.error) {
+                    throw new Error(data.validation_error?.message || 'Calculation failed');
                 }
+                
+                // Display results
+                displayResults(data);
+                showSuccessMessage('Investment analysis completed successfully!');
+                
+                // Scroll to results
+                document.getElementById('resultsContainer').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
             } catch (error) {
-                console.error('Calculation error:', error);
-                showError('Network error. Please check your connection and try again.', false);
+                console.error('❌ Calculation error:', error);
+                showFieldError(document.getElementById('investmentAmount'), `Calculation failed: ${error.message}`);
             } finally {
-                hideLoading();
+                // Re-enable button
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-calculator"></i> Analyze Investment';
                 isCalculating = false;
-
             }
         }
+
+        // Validate all inputs
+        function validateInputs() {
+            let isValid = true;
+            
+            // Check project type selection
+            if (!selectedProjectType) {
+                const container = document.getElementById('projectTypes');
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please select a project type';
+                container.parentElement.appendChild(errorDiv);
+                isValid = false;
+            }
+            
+            // Validate form fields
+            const requiredFields = ['companySize', 'targetIndustry', 'investmentAmount', 'expectedROI', 'timelineMonths'];
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    showFieldError(field, `${getFieldDisplayName(fieldId)} is required`);
+                    isValid = false;
+                } else {
+                    // Trigger field validation
+                    const event = { target: field };
+                    if (!validateField(event)) {
+                        isValid = false;
+                    }
+                }
+            });
+            
+            return isValid;
+        }
+
+        // Display calculation results
+        function displayResults(data) {
+            console.log('📊 Displaying results...');
+            
+            const container = document.getElementById('resultsContainer');
+            const metricsGrid = document.getElementById('metricsGrid');
+            
+            // Clear previous results
+            metricsGrid.innerHTML = '';
+            
+            // Prepare metrics data
+            const metrics = [
+                {
+                    icon: 'fas fa-dollar-sign',
+                    label: 'Total Investment',
+                    value: formatCurrency(data.roi_projection.total_investment),
+                    gradient: 'var(--gradient-primary)'
+                },
+                {
+                    icon: 'fas fa-percentage',
+                    label: 'ROI Percentage',
+                    value: `${data.roi_projection.roi_percentage.toFixed(2)}%`,
+                    gradient: 'var(--gradient-secondary)'
+                },
+                {
+                    icon: 'fas fa-chart-line',
+                    label: 'Projected Revenue',
+                    value: formatCurrency(data.roi_projection.projected_revenue),
+                    gradient: 'var(--gradient-accent)'
+                },
+                {
+                    icon: 'fas fa-coins',
+                    label: 'Net Present Value',
+                    value: formatCurrency(data.roi_projection.npv),
+                    gradient: 'var(--gradient-primary)'
+                },
+                {
+                    icon: 'fas fa-trending-up',
+                    label: 'Internal Rate of Return',
+                    value: `${(data.roi_projection.irr * 100).toFixed(2)}%`,
+                    gradient: 'var(--gradient-secondary)'
+                },
+                {
+                    icon: 'fas fa-clock',
+                    label: 'Payback Period',
+                    value: `${data.roi_projection.payback_period_months} months`,
+                    gradient: 'var(--gradient-accent)'
+                }
+            ];
+            
+            // Create metric cards
+            metrics.forEach(metric => {
+                const card = document.createElement('div');
+                card.className = 'metric-card';
+                card.innerHTML = `
+                    <div class="metric-icon">
+                        <i class="${metric.icon}"></i>
+                    </div>
+                    <div class="metric-value">${metric.value}</div>
+                    <div class="metric-label">${metric.label}</div>
+                `;
+                
+                // Set gradient for icon
+                const icon = card.querySelector('.metric-icon');
+                icon.style.background = metric.gradient;
+                icon.style.webkitBackgroundClip = 'text';
+                icon.style.webkitTextFillColor = 'transparent';
+                icon.style.backgroundClip = 'text';
+                
+                metricsGrid.appendChild(card);
+            });
+            
+            // Show results container
+            container.style.display = 'block';
+            currentResults = data;
+            
+            console.log('✅ Results displayed successfully');
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            if (amount >= 1000000) {
+                return `$${(amount / 1000000).toFixed(1)}M`;
+            } else if (amount >= 1000) {
+                return `$${(amount / 1000).toFixed(1)}K`;
+            } else {
+                return `$${amount.toLocaleString()}`;
+            }
+        }
+
+        // Error handling for network issues
+        window.addEventListener('online', function() {
+            console.log('🌐 Network connection restored');
+        });
+
+        window.addEventListener('offline', function() {
+            console.log('🚫 Network connection lost');
+            showSuccessMessage('⚠️ Network connection lost. Please check your connection.');
+        });
+
+        console.log('🎉 Infinex ROI Calculator - Script loaded successfully');
     </script>
 </body>
 </html>
