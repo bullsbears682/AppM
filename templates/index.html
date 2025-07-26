@@ -17,9 +17,9 @@
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --error-gradient: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --error-gradient: linear-gradient(135deg, #f5576c 0%, #fa709a 100%);
             --dark-bg: #0a0a0a;
             --card-bg: rgba(255, 255, 255, 0.05);
             --card-border: rgba(255, 255, 255, 0.1);
@@ -30,6 +30,22 @@
             --success-color: #00ff88;
             --warning-color: #ffaa00;
             --error-color: #ff4757;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --success: #00f2fe;
+            --warning: #fee140;
+            --error: #f5576c;
+            --dark-mode: 0;
+        }
+
+        [data-theme="dark"] {
+            --dark-mode: 1;
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #151520;
+            --text-primary: #f0f0f5;
+            --text-secondary: #b0b0c0;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --glass-bg: rgba(255, 255, 255, 0.05);
         }
 
         body {
@@ -744,11 +760,24 @@
 
         /* Chart Containers */
         .chart-container {
-            margin: 3rem 0;
-            padding: 2rem;
+            position: relative;
+            margin: 2rem 0;
             background: var(--card-bg);
-            border-radius: 20px;
+            backdrop-filter: blur(20px);
             border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
         }
 
         .chart-title {
@@ -887,19 +916,212 @@
             z-index: 1000;
         }
 
+        /* Performance Indicator */
+        .performance-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
 
+        .performance-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Enhanced Loading States */
+        .skeleton-loader {
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1), 
+                transparent
+            );
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Floating Action Buttons */
+        .fab-container {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 999;
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .fab.secondary {
+            background: var(--secondary-gradient);
+            width: 48px;
+            height: 48px;
+            font-size: 1rem;
+        }
+
+        /* Enhanced Cards with Micro-interactions */
+        .interactive-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .interactive-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1), 
+                transparent
+            );
+            transition: left 0.5s ease;
+        }
+
+        .interactive-card:hover::before {
+            left: 100%;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .theme-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+        }
+
+        .theme-icon.active {
+            background: var(--text-accent);
+            color: var(--bg-primary);
+        }
+
+        /* Enhanced Tooltips */
+        .enhanced-tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .enhanced-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 150%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(15px);
+        }
+
+        .enhanced-tooltip:hover::after {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
-    <!-- Enhanced Header -->
+    <!-- Enhanced Header with Theme Toggle -->
     <header class="header">
         <div class="header-content">
             <div class="logo">
                 <i class="fas fa-chart-line"></i> ROI Calculator
             </div>
-            <div class="version-tag">v2.0 Enhanced</div>
+            <div class="version-tag">v3.0 AI-Powered</div>
         </div>
     </header>
+
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <div class="theme-icon" id="lightTheme">
+            <i class="fas fa-sun"></i>
+        </div>
+        <div class="theme-icon" id="darkTheme">
+            <i class="fas fa-moon"></i>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <button class="fab secondary" onclick="showSaveScenarioDialog()" title="Save Scenario">
+            <i class="fas fa-save"></i>
+        </button>
+        <button class="fab secondary" onclick="loadLastCalculation()" title="Load Last Calculation">
+            <i class="fas fa-history"></i>
+        </button>
+        <button class="fab" onclick="calculateROI()" title="Calculate ROI (Ctrl+Enter)">
+            <i class="fas fa-calculator"></i>
+        </button>
+    </div>
+
+    <!-- Performance Indicator -->
+    <div class="performance-indicator" id="performanceIndicator"></div>
 
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -1235,12 +1457,45 @@
         let costChart = null;
         let currentResults = null;
 
-        // Initialize the application
+        // Initialize App
         document.addEventListener('DOMContentLoaded', function() {
+            initializeTheme();
+            setupEnhancedValidation();
             loadProjectTypes();
-            setupEventListeners();
-            setupSmartValidation();
+            loadCurrencies();
+            showSuccess('ROI Calculator v3.0 loaded successfully! 🚀');
         });
+
+        // Enhanced Form Validation Setup
+        function setupEnhancedValidation() {
+            // Real-time validation for company name
+            const companyNameInput = document.getElementById('companyName');
+            companyNameInput.addEventListener('input', function() {
+                debouncedValidation(this, 'companyName');
+            });
+
+            // Real-time validation for custom investment
+            const customInvestmentInput = document.getElementById('customInvestment');
+            customInvestmentInput.addEventListener('input', function() {
+                debouncedValidation(this, 'customInvestment');
+            });
+
+            // Real-time validation for custom timeline
+            const customTimelineInput = document.getElementById('customTimeline');
+            customTimelineInput.addEventListener('input', function() {
+                debouncedValidation(this, 'customTimeline');
+            });
+
+            // Enhanced tooltips
+            document.querySelectorAll('[data-tooltip]').forEach(element => {
+                element.classList.add('enhanced-tooltip');
+            });
+
+            // Interactive card effects
+            document.querySelectorAll('.analytics-card, .chart-container').forEach(card => {
+                card.classList.add('interactive-card');
+            });
+        }
 
         // Load project types from API
         async function loadProjectTypes() {
@@ -2298,6 +2553,363 @@
                 </div>
             `;
             document.body.appendChild(modal);
+        }
+
+        // Enhanced Progressive Loading System
+        let isCalculating = false;
+        let currentResults = null;
+        let calculationHistory = [];
+        let favoriteScenarios = JSON.parse(localStorage.getItem('roiCalculatorFavorites') || '[]');
+
+        // Performance monitoring
+        const performanceTracker = {
+            startTime: null,
+            endTime: null,
+            lastCalculationTime: 0,
+            
+            start() {
+                this.startTime = performance.now();
+            },
+            
+            end() {
+                this.endTime = performance.now();
+                this.lastCalculationTime = this.endTime - this.startTime;
+                this.updatePerformanceDisplay();
+            },
+            
+            updatePerformanceDisplay() {
+                const perfElement = document.getElementById('performanceIndicator');
+                if (perfElement) {
+                    perfElement.textContent = `Calculated in ${this.lastCalculationTime.toFixed(0)}ms`;
+                    perfElement.style.color = this.lastCalculationTime < 1000 ? 'var(--success)' : 'var(--warning)';
+                }
+            }
+        };
+
+        // Enhanced keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + Enter to calculate
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                calculateROI();
+            }
+            
+            // Ctrl/Cmd + S to save scenario
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                showSaveScenarioDialog();
+            }
+            
+            // Escape to close modals
+            if (e.key === 'Escape') {
+                closeAllModals();
+            }
+            
+            // Ctrl/Cmd + Z to load last calculation
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                e.preventDefault();
+                loadLastCalculation();
+            }
+        });
+
+        // Enhanced error handling with retry mechanism
+        async function calculateROIWithRetry(maxRetries = 3) {
+            if (isCalculating) return;
+            
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    return await calculateROI();
+                } catch (error) {
+                    console.error(`Calculation attempt ${attempt} failed:`, error);
+                    
+                    if (attempt === maxRetries) {
+                        showError(`Calculation failed after ${maxRetries} attempts. Please check your internet connection and try again.`, false);
+                        return;
+                    }
+                    
+                    // Exponential backoff
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+                    showError(`Retrying calculation (${attempt}/${maxRetries})...`, true, 2000);
+                }
+            }
+        }
+
+        // Real-time input validation with debouncing
+        const debouncedValidation = debounce(function(input, fieldName) {
+            validateFieldRealTime(input, fieldName);
+        }, 300);
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function validateFieldRealTime(input, fieldName) {
+            const value = input.value.trim();
+            const fieldContainer = input.closest('.form-group');
+            const errorElement = fieldContainer.querySelector('.field-error') || createErrorElement(fieldContainer);
+            
+            let isValid = true;
+            let errorMessage = '';
+            
+            switch (fieldName) {
+                case 'companyName':
+                    if (value.length < 2) {
+                        isValid = false;
+                        errorMessage = 'Company name must be at least 2 characters';
+                    } else if (value.length > 100) {
+                        isValid = false;
+                        errorMessage = 'Company name must be less than 100 characters';
+                    }
+                    break;
+                    
+                case 'customInvestment':
+                    if (value && (isNaN(parseFloat(value)) || parseFloat(value) < 1000)) {
+                        isValid = false;
+                        errorMessage = 'Investment must be at least $1,000';
+                    }
+                    break;
+                    
+                case 'customTimeline':
+                    if (value && (isNaN(parseInt(value)) || parseInt(value) < 1 || parseInt(value) > 120)) {
+                        isValid = false;
+                        errorMessage = 'Timeline must be between 1-120 months';
+                    }
+                    break;
+            }
+            
+            updateFieldValidation(input, errorElement, isValid, errorMessage);
+        }
+
+        function createErrorElement(fieldContainer) {
+            const errorElement = document.createElement('div');
+            errorElement.className = 'field-error';
+            errorElement.style.cssText = `
+                color: var(--error);
+                font-size: 0.8rem;
+                margin-top: 0.25rem;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            fieldContainer.appendChild(errorElement);
+            return errorElement;
+        }
+
+        function updateFieldValidation(input, errorElement, isValid, errorMessage) {
+            if (isValid) {
+                input.style.borderColor = 'var(--success)';
+                errorElement.style.opacity = '0';
+                setTimeout(() => {
+                    if (errorElement.style.opacity === '0') {
+                        errorElement.textContent = '';
+                    }
+                }, 300);
+            } else {
+                input.style.borderColor = 'var(--error)';
+                errorElement.textContent = errorMessage;
+                errorElement.style.opacity = '1';
+            }
+        }
+
+        // Theme Management
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('preferred-theme', newTheme);
+            
+            // Update theme icons
+            const lightIcon = document.getElementById('lightTheme');
+            const darkIcon = document.getElementById('darkTheme');
+            
+            if (newTheme === 'dark') {
+                lightIcon.classList.remove('active');
+                darkIcon.classList.add('active');
+            } else {
+                darkIcon.classList.remove('active');
+                lightIcon.classList.add('active');
+            }
+            
+            showSuccess(`Switched to ${newTheme} theme`);
+        }
+
+        // Initialize theme on page load
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('preferred-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const lightIcon = document.getElementById('lightTheme');
+            const darkIcon = document.getElementById('darkTheme');
+            
+            if (savedTheme === 'dark') {
+                darkIcon.classList.add('active');
+            } else {
+                lightIcon.classList.add('active');
+            }
+        }
+
+        // Enhanced Scenario Management
+        function showSaveScenarioDialog() {
+            if (!currentResults) {
+                showError('Please run a calculation first before saving a scenario');
+                return;
+            }
+            
+            const scenarioName = prompt('Enter a name for this scenario:');
+            if (scenarioName && scenarioName.trim()) {
+                saveScenarioToLocal(scenarioName.trim(), currentResults);
+                showSuccess(`Scenario "${scenarioName}" saved successfully`);
+            }
+        }
+
+        function saveScenarioToLocal(name, results) {
+            const scenario = {
+                name: name,
+                timestamp: new Date().toISOString(),
+                parameters: results.input_parameters,
+                results: {
+                    roi_percentage: results.roi_projection.roi_percentage,
+                    projected_revenue: results.roi_projection.projected_revenue,
+                    total_investment: results.roi_projection.total_investment,
+                    npv: results.roi_projection.npv,
+                    irr: results.roi_projection.irr
+                },
+                calculationTime: performanceTracker.lastCalculationTime
+            };
+            
+            favoriteScenarios.push(scenario);
+            localStorage.setItem('roiCalculatorFavorites', JSON.stringify(favoriteScenarios));
+        }
+
+        function loadLastCalculation() {
+            if (calculationHistory.length === 0) {
+                showError('No previous calculations found');
+                return;
+            }
+            
+            const lastCalculation = calculationHistory[calculationHistory.length - 1];
+            const params = lastCalculation.input_parameters;
+            
+            // Populate form with last calculation parameters
+            document.getElementById('companyName').value = params.company_name || '';
+            document.getElementById('companySize').value = params.company_size || '';
+            document.getElementById('targetIndustry').value = params.target_industry || '';
+            document.getElementById('projectType').value = params.project_type || '';
+            document.getElementById('currency').value = params.currency || 'USD';
+            
+            showSuccess('Last calculation parameters loaded');
+        }
+
+        // Modal Management
+        function closeAllModals() {
+            const modals = document.querySelectorAll('.modal, .overlay');
+            modals.forEach(modal => {
+                modal.style.display = 'none';
+                modal.remove();
+            });
+        }
+
+        // Enhanced Calculate Function with Performance Tracking
+        async function calculateROI() {
+            if (isCalculating) return;
+            
+            isCalculating = true;
+            performanceTracker.start();
+            
+            try {
+                // Show performance indicator
+                const perfIndicator = document.getElementById('performanceIndicator');
+                perfIndicator.classList.add('show');
+                
+                // Clear previous errors
+                clearValidationErrors();
+                
+                // Validate inputs
+                const validation = validateInput();
+                if (!validation.isValid) {
+                    showError(validation.errors.join('<br>'), false);
+                    return;
+                }
+                
+                // Show loading
+                showLoading('Calculating advanced ROI projections...');
+                
+                // Prepare form data
+                const formData = {
+                    company_name: document.getElementById('companyName').value.trim(),
+                    company_size: document.getElementById('companySize').value,
+                    current_industry: document.getElementById('currentIndustry').value || document.getElementById('targetIndustry').value,
+                    target_industry: document.getElementById('targetIndustry').value,
+                    project_type: document.getElementById('projectType').value,
+                    timeline_months: parseInt(document.getElementById('timelineMonths').value) || 12,
+                    currency: document.getElementById('currency').value
+                };
+                
+                // Add custom investment if provided and valid
+                const customInvestment = document.getElementById('customInvestment').value.trim();
+                if (customInvestment && parseFloat(customInvestment) > 0) {
+                    formData.custom_investment = parseFloat(customInvestment);
+                }
+                
+                // Add custom timeline if provided and valid
+                const customTimeline = document.getElementById('customTimeline').value.trim();
+                if (customTimeline && parseInt(customTimeline) > 0) {
+                    formData.custom_timeline = parseInt(customTimeline);
+                }
+                
+                // Make API call
+                const response = await fetch('/api/calculate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentResults = data;
+                    calculationHistory.push(data);
+                    
+                    // Limit history to last 10 calculations
+                    if (calculationHistory.length > 10) {
+                        calculationHistory = calculationHistory.slice(-10);
+                    }
+                    
+                    displayResults(data);
+                    showSuccess('Calculation completed successfully!');
+                } else {
+                    if (data.business_error) {
+                        showError(`Business Logic Error: ${data.business_error.message}`, false);
+                    } else if (data.validation_error) {
+                        showError(`Validation Error: ${data.validation_error.message}`, false);
+                    } else {
+                        showError('An unexpected error occurred. Please try again.', false);
+                    }
+                }
+            } catch (error) {
+                console.error('Calculation error:', error);
+                showError('Network error. Please check your connection and try again.', false);
+            } finally {
+                hideLoading();
+                isCalculating = false;
+                performanceTracker.end();
+                
+                // Hide performance indicator after 3 seconds
+                setTimeout(() => {
+                    const perfIndicator = document.getElementById('performanceIndicator');
+                    perfIndicator.classList.remove('show');
+                }, 3000);
+            }
         }
     </script>
 </body>

@@ -190,6 +190,20 @@ def calculate_roi():
             roi_result
         )
         
+        # Generate AI-powered insights
+        ai_insights = calculator.analytics_engine.generate_ai_powered_insights(
+            investment=cost_analysis['total_cost'],
+            industry=validated_data['target_industry'],
+            project_type=validated_data['project_type'],
+            company_size=validated_data['company_size'],
+            timeline_months=cost_analysis['timeline_months'],
+            roi_result=roi_result,
+            market_analysis=business_intelligence.market_analysis,
+            competitive_analysis=business_intelligence.competitive_analysis,
+            financial_metrics=business_intelligence.financial_metrics,
+            risk_analysis=business_intelligence.risk_analysis
+        )
+        
         # Format response
         currency_config = config_class.CURRENCIES[validated_data['currency']]
         
@@ -223,6 +237,7 @@ def calculate_roi():
             },
             'market_insights': market_insights,
             'business_intelligence': business_intelligence,
+            'ai_insights': ai_insights,
             'recommendations': recommendations,
             'calculation_metadata': {
                 'calculation_date': roi_result.calculation_date.isoformat(),
