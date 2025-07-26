@@ -62,6 +62,7 @@ def index():
     """Main application page"""
     return render_template('index.html')
 
+
 @app.route('/api/health')
 def health_check():
     """Health check endpoint with system status"""
