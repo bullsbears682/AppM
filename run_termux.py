@@ -51,7 +51,7 @@ def check_and_install_dependencies():
 
 def main():
     """Main launcher function"""
-    print("🚀 Starting Business ROI Calculator v3.0 for Termux - Enterprise Edition")
+    print("🚀 Starting Business ROI Calculator v2.0 for Termux - Enhanced Edition")
     print("=" * 50)
     
     # Check dependencies

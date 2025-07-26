@@ -241,8 +241,8 @@ def calculate_roi():
             'recommendations': recommendations,
             'calculation_metadata': {
                 'calculation_date': roi_result.calculation_date.isoformat(),
-                'calculator_version': '2.1.0',
-                'methodology': 'Enhanced Monte Carlo with NPV/IRR analysis + Advanced Business Intelligence'
+                'calculator_version': '2.0.0',
+                'methodology': 'Enhanced Monte Carlo with NPV/IRR analysis + Business Intelligence'
             }
         }
         
