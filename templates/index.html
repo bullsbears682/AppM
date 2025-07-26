@@ -14,25 +14,43 @@
         }
 
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            --error-gradient: linear-gradient(135deg, #f5576c 0%, #fa709a 100%);
-            --dark-bg: #0a0a0a;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --card-border: rgba(255, 255, 255, 0.1);
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --text-accent: #00f2fe;
-            --glow-color: rgba(0, 242, 254, 0.3);
-            --success-color: #00ff88;
-            --warning-color: #ffaa00;
-            --error-color: #ff4757;
-            --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --success: #00f2fe;
+            /* Professional Finance Color Palette */
+            --primary-blue: #1e40af;
+            --secondary-blue: #3b82f6;
+            --accent-green: #10b981;
+            --success-green: #059669;
+            --warning-amber: #f59e0b;
+            --error-red: #dc2626;
+            --neutral-gray: #6b7280;
+            --light-gray: #f9fafb;
+            --dark-gray: #111827;
+            
+            /* Finance Gradients */
+            --primary-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            --secondary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --error-gradient: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            --accent-gradient: linear-gradient(135deg, #1e40af 0%, #10b981 100%);
+            --card-gradient: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            
+            /* Professional Layout */
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-accent: #1e40af;
+            --border-color: #e5e7eb;
+            --card-bg: #ffffff;
+            --card-border: #e5e7eb;
+            --success: #10b981;
+            
+            /* Professional Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             --warning: #fee140;
             --error: #f5576c;
             --dark-mode: 0;
@@ -41,15 +59,20 @@
 
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--dark-bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-primary);
             color: var(--text-primary);
             overflow-x: hidden;
             position: relative;
             line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Enhanced Animated Background */
+        /* Professional Finance Background */
         body::before {
             content: '';
             position: fixed;
@@ -57,30 +80,18 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 60% 70%, rgba(255, 215, 155, 0.08) 0%, transparent 50%);
-            z-index: -2;
-            animation: backgroundShift 25s ease-in-out infinite;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            z-index: -1;
         }
 
-        @keyframes backgroundShift {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            33% { transform: scale(1.05) rotate(0.3deg); }
-            66% { transform: scale(1.1) rotate(-0.3deg); }
-        }
-
-        /* Enhanced Glassmorphism Cards */
+        /* Professional Finance Cards */
         .glass-card {
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
             border: 1px solid var(--card-border);
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 2rem;
             position: relative;
-            overflow: hidden;
+            box-shadow: var(--shadow-md);
             transition: all 0.3s ease;
         }
 
@@ -100,17 +111,17 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
         }
 
-        /* Enhanced Header */
+        /* Professional Finance Header */
         .header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--card-border);
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
             padding: 1rem 2rem;
             z-index: 1000;
+            box-shadow: var(--shadow-sm);
         }
 
         .header-content {
@@ -143,20 +154,57 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 8rem 2rem 4rem;
+            padding: 6rem 2rem 4rem;
             min-height: 100vh;
         }
 
-        /* Hero Section */
+        /* Professional Finance Hero */
         .hero {
             text-align: center;
             margin-bottom: 4rem;
+            padding: 2rem 0;
         }
 
         .hero h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .hero-features {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .feature-item i {
+            color: var(--primary-blue);
+            font-size: 1rem;
+        }
+
+
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -225,31 +273,31 @@
 
         .form-input {
             width: 100%;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
+            padding: 0.875rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            position: relative;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
         }
 
         .form-input:focus {
             outline: none;
-            border-color: var(--text-accent);
-            box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.1);
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-1px);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+            background: var(--bg-secondary);
         }
 
         .form-input:valid {
-            border-color: #4ade80;
+            border-color: var(--success-green);
         }
 
         .form-input.error {
-            border-color: #ef4444;
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+            border-color: var(--error-red);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
 
         .form-group {
@@ -369,25 +417,23 @@
             gap: 0.5rem;
         }
 
-        /* Enhanced Calculate Button */
+        /* Professional Finance Calculate Button */
         .calculate-btn {
-            background: var(--accent-gradient);
+            background: var(--primary-gradient);
             border: none;
-            padding: 1.2rem 3rem;
-            border-radius: 50px;
-            color: var(--dark-bg);
-            font-size: 1.1rem;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
             margin: 2rem auto;
             display: block;
-            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.3);
-            min-width: 280px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-lg);
+            min-width: 250px;
+            font-family: inherit;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
@@ -403,13 +449,13 @@
 
         .calculate-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(0, 242, 254, 0.4);
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            box-shadow: var(--shadow-xl);
+            background: var(--secondary-gradient);
         }
 
         .calculate-btn:active {
             transform: translateY(0);
-            box-shadow: 0 5px 20px rgba(0, 242, 254, 0.3);
+            box-shadow: var(--shadow-md);
         }
 
         .calculate-btn.loading {
@@ -739,11 +785,66 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Enhanced Results Section */
+        /* Professional Finance Results */
         .results-container {
             display: none;
             margin-top: 3rem;
             animation: fadeIn 0.5s ease-in;
+        }
+
+        .financial-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .metric-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-change {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .metric-positive {
+            color: var(--success-green);
+        }
+
+        .metric-negative {
+            color: var(--error-red);
+        }
+
+        .metric-neutral {
+            color: var(--primary-blue);
         }
 
         @keyframes fadeIn {
@@ -1009,10 +1110,24 @@
     </div>
 
     <div class="container">
-        <!-- Hero Section -->
+        <!-- Professional Finance Hero -->
         <section class="hero">
-            <h1>Business ROI Calculator</h1>
-            <p>Advanced financial modeling with Monte Carlo simulations, NPV/IRR analysis, and comprehensive risk assessment</p>
+            <h1>Professional ROI Calculator</h1>
+            <p class="hero-subtitle">Advanced financial modeling for informed investment decisions</p>
+            <div class="hero-features">
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Monte Carlo Analysis</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-calculator"></i>
+                    <span>NPV & IRR Calculations</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Risk Assessment</span>
+                </div>
+            </div>
         </section>
 
         <!-- Enhanced Form Section -->
@@ -1653,94 +1768,80 @@
             }
         }
 
-        // Enhanced display results for new API response structure
+        // Professional Finance Results Display
         function displayResults(data) {
             const container = document.getElementById('resultsContainer');
-            const grid = document.getElementById('resultsGrid');
-            const title = document.getElementById('resultsTitle');
-            const subtitle = document.getElementById('resultsSubtitle');
             
-            // Update titles
-            title.textContent = `${data.input_parameters.company_name} - Investment Analysis`;
-            subtitle.innerHTML = `
-                ${data.input_parameters.target_industry.replace('_', ' ')} • 
-                ${data.cost_analysis.timeline_months} months • 
-                ${data.cost_analysis.currency} analysis
+            // Create professional finance layout
+            container.innerHTML = `
+                <div class="results-header">
+                    <div class="results-title">${data.input_parameters.company_name} - Investment Analysis</div>
+                    <div class="results-subtitle">
+                        ${data.input_parameters.target_industry.replace('_', ' ').toUpperCase()} • 
+                        ${data.cost_analysis.timeline_months} months • 
+                        ${data.cost_analysis.currency} analysis
+                    </div>
+                </div>
+                
+                <div class="financial-metrics">
+                    <div class="metric-card">
+                        <div class="metric-label">Total Investment</div>
+                        <div class="metric-value metric-neutral">${data.cost_analysis.currency_symbol}${data.roi_projection.total_investment.toLocaleString()}</div>
+                        <div class="metric-change">Required Capital</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-label">Expected ROI</div>
+                        <div class="metric-value metric-positive">${data.roi_projection.roi_percentage.toFixed(1)}%</div>
+                        <div class="metric-change">Return on Investment</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-label">Projected Revenue</div>
+                        <div class="metric-value metric-positive">${data.cost_analysis.currency_symbol}${data.roi_projection.projected_revenue.toLocaleString()}</div>
+                        <div class="metric-change">Total Revenue</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-label">Net Present Value</div>
+                        <div class="metric-value ${data.roi_projection.npv > 0 ? 'metric-positive' : 'metric-negative'}">${data.cost_analysis.currency_symbol}${data.roi_projection.npv.toLocaleString()}</div>
+                        <div class="metric-change">NPV Analysis</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-label">Internal Rate of Return</div>
+                        <div class="metric-value metric-neutral">${(data.roi_projection.irr * 100).toFixed(1)}%</div>
+                        <div class="metric-change">IRR Analysis</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-label">Payback Period</div>
+                        <div class="metric-value metric-neutral">${data.roi_projection.payback_period_months} months</div>
+                        <div class="metric-change">Investment Recovery</div>
+                    </div>
+                </div>
+                
+                <div class="charts-section">
+                    <div class="chart-container">
+                        <h3 class="chart-title">ROI Projection Analysis</h3>
+                        <canvas id="roiChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 class="chart-title">Investment Breakdown</h3>
+                        <canvas id="costChart"></canvas>
+                    </div>
+                </div>
             `;
             
-            // Create result cards with new data structure
-            grid.innerHTML = '';
-            
-            // Total Investment Card
-            const investmentCard = createResultCard(
-                `${data.cost_analysis.currency_symbol}${data.roi_projection.total_investment.toLocaleString()}`,
-                'Total Investment',
-                `Required capital investment for ${data.input_parameters.project_type.replace('_', ' ')}`,
-                'fas fa-dollar-sign',
-                'primary'
-            );
-            grid.appendChild(investmentCard);
-            
-            // ROI Percentage Card
-            const roiCard = createResultCard(
-                `${data.roi_projection.roi_percentage.toFixed(1)}%`,
-                'Expected ROI',
-                `Net return on investment over ${data.cost_analysis.timeline_months} months<br>
-                 Confidence: ${data.roi_projection.confidence_interval.lower.toFixed(1)}% - ${data.roi_projection.confidence_interval.upper.toFixed(1)}%`,
-                'fas fa-chart-line',
-                'success'
-            );
-            grid.appendChild(roiCard);
-            
-            // Projected Revenue Card
-            const revenueCard = createResultCard(
-                `${data.cost_analysis.currency_symbol}${data.roi_projection.projected_revenue.toLocaleString()}`,
-                'Projected Revenue',
-                `Expected total revenue generation<br>Net Profit: ${data.cost_analysis.currency_symbol}${data.roi_projection.net_profit.toLocaleString()}`,
-                'fas fa-chart-area',
-                'success'
-            );
-            grid.appendChild(revenueCard);
-            
-            // Payback Period Card
-            const paybackCard = createResultCard(
-                `${data.roi_projection.payback_period_months} months`,
-                'Payback Period',
-                `Time to recover initial investment<br>Break-even: ${data.cost_analysis.currency_symbol}${data.roi_projection.break_even_point.toLocaleString()}`,
-                'fas fa-clock',
-                'info'
-            );
-            grid.appendChild(paybackCard);
-            
-            // NPV Card
-            const npvCard = createResultCard(
-                `${data.cost_analysis.currency_symbol}${data.roi_projection.npv.toLocaleString()}`,
-                'Net Present Value',
-                `NPV analysis with 8% discount rate<br>IRR: ${data.roi_projection.irr.toFixed(2)}%`,
-                'fas fa-coins',
-                data.roi_projection.npv > 0 ? 'success' : 'warning'
-            );
-            grid.appendChild(npvCard);
-            
-            // Risk Score Card
-            const riskCard = createResultCard(
-                `${data.roi_projection.risk_score.toFixed(1)}/100`,
-                'Risk Score',
-                getRiskDescription(data.roi_projection.risk_score),
-                'fas fa-shield-alt',
-                getRiskCardType(data.roi_projection.risk_score)
-            );
-            grid.appendChild(riskCard);
-            
-            // Create enhanced charts
-            createROIChart(data);
-            createCostChart(data.cost_analysis.cost_breakdown);
-            
-            // Show export button
-                            // Export sections will be shown after successful calculation
-            
-            // Show results with animation
+            // Show the results container
             container.style.display = 'block';
+            
+            // Create professional finance charts
+            setTimeout(() => {
+                createROIChart(data);
+                createCostChart(data.cost_analysis.cost_breakdown);
+            }, 100);
             
             // Scroll to results
             setTimeout(() => {
