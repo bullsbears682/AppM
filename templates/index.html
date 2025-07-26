@@ -1425,11 +1425,33 @@
 
         // Initialize App
         document.addEventListener('DOMContentLoaded', function() {
-            initializeTheme();
-            setupEnhancedValidation();
-            loadProjectTypes();
-            loadCurrencies();
-            showSuccess('ROI Calculator v2.0 loaded successfully! 🚀');
+            console.log('DOM Content Loaded - Initializing app...');
+            
+            try {
+                if (typeof initializeTheme === 'function') {
+                    initializeTheme();
+                } else {
+                    console.log('initializeTheme function not found, skipping...');
+                }
+                
+                if (typeof setupEnhancedValidation === 'function') {
+                    setupEnhancedValidation();
+                } else {
+                    console.log('setupEnhancedValidation function not found, skipping...');
+                }
+                
+                setupEventListeners();
+                loadProjectTypes();
+                loadCurrencies();
+                
+                if (typeof showSuccess === 'function') {
+                    showSuccess('ROI Calculator v2.0 loaded successfully! 🚀');
+                } else {
+                    console.log('ROI Calculator v2.0 loaded successfully! 🚀');
+                }
+            } catch (error) {
+                console.error('Error during initialization:', error);
+            }
         });
 
         // Enhanced Form Validation Setup
@@ -1466,15 +1488,24 @@
         // Load project types from API
         async function loadProjectTypes() {
             try {
+                console.log('Loading project types...');
                 const response = await fetch('/api/projects');
                 const data = await response.json();
+                
+                console.log('Project types data:', data);
                 
                 if (!data.success) {
                     throw new Error('Failed to load project types');
                 }
                 
                 const container = document.getElementById('projectTypes');
+                if (!container) {
+                    console.error('Project types container not found!');
+                    return;
+                }
+                
                 container.innerHTML = '';
+                console.log('Found', data.projects.length, 'projects to load');
                 
                 data.projects.forEach(project => {
                     const card = document.createElement('div');
@@ -1496,9 +1527,15 @@
                     card.addEventListener('click', () => selectProjectType(project.id, card));
                     container.appendChild(card);
                 });
+                
+                console.log('Successfully loaded', data.projects.length, 'project types');
+                
             } catch (error) {
                 console.error('Error loading project types:', error);
-                showError('Failed to load project types. Please refresh the page.');
+                const container = document.getElementById('projectTypes');
+                if (container) {
+                    container.innerHTML = '<div class="error-message">Failed to load project types. Please refresh the page.</div>';
+                }
             }
         }
 
@@ -1541,8 +1578,15 @@
 
         // Setup event listeners
         function setupEventListeners() {
-            document.getElementById('calculateBtn').addEventListener('click', calculateROI);
-            // Export and scenario management will be handled by onclick events
+            const calculateBtn = document.getElementById('calculateBtn');
+            if (calculateBtn) {
+                // Remove any existing listeners and add new one
+                calculateBtn.removeEventListener('click', calculateROI);
+                calculateBtn.addEventListener('click', calculateROI);
+                console.log('Calculate button event listener set up');
+            } else {
+                console.error('Calculate button not found!');
+            }
         }
 
         // Setup smart validation - clears errors when fields are completed
