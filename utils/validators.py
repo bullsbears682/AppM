@@ -17,15 +17,16 @@ logger = logging.getLogger(__name__)
 
 class ValidationError(Exception):
     """Custom validation error with detailed error information"""
-    def __init__(self, message: str, field: str = None, value: Any = None, code: str = None):
+    def __init__(self, message: str, field: str = None, value: Any = None, code: str = None, details: List = None):
         self.message = message
         self.field = field
         self.value = value
         self.code = code
+        self.details = details
         super().__init__(self.message)
     
     def to_dict(self):
-        return {
+        result = {
             'error': 'validation_error',
             'message': self.message,
             'field': self.field,
@@ -33,6 +34,9 @@ class ValidationError(Exception):
             'code': self.code,
             'timestamp': datetime.utcnow().isoformat()
         }
+        if self.details:
+            result['details'] = self.details
+        return result
 
 class BusinessLogicError(Exception):
     """Custom error for business logic violations"""
