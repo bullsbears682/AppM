@@ -240,6 +240,7 @@
             color: var(--text-primary);
             font-size: 1rem;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .form-input:focus {
@@ -247,6 +248,29 @@
             border-color: var(--text-accent);
             box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.1);
             background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .form-input:valid {
+            border-color: #4ade80;
+        }
+
+        .form-input.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group.success .form-input {
+            border-color: #4ade80;
+        }
+
+        .form-group.error .form-input {
+            border-color: #ef4444;
         }
 
         .form-select {
@@ -369,20 +393,49 @@
             margin: 2rem auto;
             display: block;
             box-shadow: 0 10px 30px rgba(0, 242, 254, 0.3);
-            min-width: 200px;
+            min-width: 280px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .calculate-btn {
+                min-width: 250px;
+                font-size: 1rem;
+                padding: 1rem 2rem;
+            }
         }
 
         .calculate-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 15px 40px rgba(0, 242, 254, 0.4);
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
         }
 
         .calculate-btn:active {
             transform: translateY(0);
+            box-shadow: 0 5px 20px rgba(0, 242, 254, 0.3);
         }
 
         .calculate-btn.loading {
             pointer-events: none;
+            opacity: 0.8;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 10px 30px rgba(0, 242, 254, 0.3); }
+            50% { box-shadow: 0 15px 40px rgba(0, 242, 254, 0.6); }
+            100% { box-shadow: 0 10px 30px rgba(0, 242, 254, 0.3); }
+        }
+
+        .calculate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* Advanced Analytics Styles */
@@ -1283,7 +1336,7 @@
             </div>
 
             <!-- Enhanced Calculate Button -->
-            <button class="calculate-btn" id="calculateBtn">
+            <button type="button" class="calculate-btn" id="calculateBtn" onclick="calculateROI()">
                 <i class="fas fa-calculator"></i> Analyze Investment & Calculate ROI
             </button>
         </section>
@@ -1564,20 +1617,100 @@
             errorContainer.style.display = 'none';
         }
 
+        // Clear all error messages
+        function clearAllErrors() {
+            const errorContainer = document.getElementById('validationErrors');
+            errorContainer.style.display = 'none';
+            // Clear any previous error messages in results
+            const errorCards = document.querySelectorAll('.error-card');
+            errorCards.forEach(card => card.remove());
+            // Clear success messages
+            const successMessages = document.querySelectorAll('.success-notification');
+            successMessages.forEach(msg => msg.remove());
+        }
+
+        // Show success message
+        function showSuccessMessage(message) {
+            // Remove any existing success messages
+            const existingMessages = document.querySelectorAll('.success-notification');
+            existingMessages.forEach(msg => msg.remove());
+            
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-notification';
+            successDiv.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                ${message}
+            `;
+            
+            // Add success notification styles if not already present
+            if (!document.getElementById('successNotificationStyles')) {
+                const style = document.createElement('style');
+                style.id = 'successNotificationStyles';
+                style.textContent = `
+                    .success-notification {
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+                        color: white;
+                        padding: 1rem 1.5rem;
+                        border-radius: 12px;
+                        box-shadow: 0 10px 30px rgba(74, 222, 128, 0.3);
+                        z-index: 10000;
+                        animation: slideInRight 0.5s ease, fadeOut 0.5s ease 4s forwards;
+                        font-weight: 500;
+                        font-size: 0.95rem;
+                        max-width: 400px;
+                    }
+                    
+                    @keyframes slideInRight {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    
+                    @keyframes fadeOut {
+                        to { opacity: 0; transform: translateX(100%); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(successDiv);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.remove();
+                }
+            }, 5000);
+        }
+
         // Calculate ROI with enhanced features and validation
         async function calculateROI() {
+            console.log('Calculate ROI button clicked!');
+            
+            // Clear previous errors
+            clearValidationErrors();
+            clearAllErrors();
+            
             // Validate inputs first
             if (!validateInput()) {
+                console.log('Validation failed');
                 return;
             }
 
             const button = document.getElementById('calculateBtn');
             const overlay = document.getElementById('loadingOverlay');
             
+            // Disable button to prevent double clicks
+            button.disabled = true;
+            
             // Show loading state
             button.classList.add('loading');
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing Investment...';
             overlay.style.display = 'flex';
+            
+            console.log('Starting calculation...');
 
             try {
                 // Prepare form data
@@ -1635,14 +1768,25 @@
                 // Show export section
                 document.getElementById('exportSection').style.display = 'block';
                 
+                // Show success feedback
+                showSuccessMessage('✅ ROI Analysis Complete! Your investment analysis is ready.');
+                
+                // Smooth scroll to results
+                document.getElementById('resultsContainer').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+                
             } catch (error) {
                 console.error('Error calculating ROI:', error);
                 showError(`Error calculating ROI: ${error.message}`);
             } finally {
                 // Hide loading state
+                button.disabled = false;
                 button.classList.remove('loading');
                 button.innerHTML = '<i class="fas fa-calculator"></i> Analyze Investment & Calculate ROI';
                 overlay.style.display = 'none';
+                console.log('Calculation completed');
             }
         }
 
