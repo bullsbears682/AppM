@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phantom ROI Calculator - Ethereal Analytics Platform</title>
+    <title>Rembrandt ROI Calculator - Renaissance Analytics Atelier</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Creepster&family=Nosifer&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Crimson+Text:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=EB+Garamond:wght@400;500;600;700;800&family=Cinzel:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -13,68 +13,68 @@
     <style>
         /* === NEXT-GEN COLOR PALETTE === */
         :root {
-            /* Phantom Dark Theme */
-            --bg-phantom: #0B0B0F;
-            --bg-spirit: #121218;
-            --bg-shadow: #1A1A22;
-            --bg-ethereal: #22222E;
-            --bg-whisper: #2A2A3A;
-            --bg-spectral: #323246;
-            --bg-layer: rgba(18, 18, 24, 0.90);
-            --bg-glass-ultra: rgba(255, 255, 255, 0.02);
-            --bg-glass-phantom: rgba(168, 85, 247, 0.08);
+            /* Rembrandt Chiaroscuro Palette */
+            --bg-canvas: #1A1612;
+            --bg-umber: #2B251E;
+            --bg-sienna: #3D342A;
+            --bg-ochre: #4F4438;
+            --bg-gold-shadow: #5C4F3F;
+            --bg-warm-light: #6B5C4A;
+            --bg-layer: rgba(43, 37, 30, 0.85);
+            --bg-glass-ultra: rgba(255, 248, 220, 0.03);
+            --bg-glass-warm: rgba(218, 165, 32, 0.08);
             
-            /* Phantom Spectrum */
-            --phantom-purple: #A855F7;
-            --phantom-silver: #C0C0D8;
-            --phantom-blue: #4C6EF5;
-            --phantom-teal: #12B8A3;
-            --phantom-pink: #E879F9;
-            --phantom-gray: #6B7280;
-            --phantom-white: #F8FAFC;
-            --phantom-void: #1E1B4B;
+            /* Renaissance Gold & Warm Tones */
+            --rembrandt-gold: #DAA520;
+            --venetian-red: #C73E1D;
+            --burnt-sienna: #A0522D;
+            --raw-umber: #826644;
+            --cadmium-yellow: #FFF8DC;
+            --ivory-black: #41424C;
+            --titanium-white: #FFFEF7;
+            --prussian-blue: #003153;
             
-            /* Ethereal Gradients */
-            --ethereal-primary: linear-gradient(135deg, #A855F7 0%, #4C6EF5 50%, #12B8A3 100%);
-            --ethereal-secondary: linear-gradient(135deg, #E879F9 0%, #A855F7 50%, #4C6EF5 100%);
-            --ethereal-accent: linear-gradient(135deg, #12B8A3 0%, #A855F7 50%, #E879F9 100%);
-            --ethereal-void: linear-gradient(135deg, #1A1A22 0%, #121218 50%, #0B0B0F 100%);
-            --ethereal-glow: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, transparent 70%);
+            /* Baroque Gradients */
+            --chiaroscuro-primary: linear-gradient(135deg, #DAA520 0%, #C73E1D 50%, #A0522D 100%);
+            --chiaroscuro-secondary: linear-gradient(135deg, #FFF8DC 0%, #DAA520 50%, #826644 100%);
+            --chiaroscuro-accent: linear-gradient(135deg, #C73E1D 0%, #A0522D 50%, #003153 100%);
+            --chiaroscuro-shadow: linear-gradient(135deg, #3D342A 0%, #2B251E 50%, #1A1612 100%);
+            --golden-glow: radial-gradient(circle, rgba(218, 165, 32, 0.3) 0%, transparent 70%);
             
-            /* Phantom Typography */
-            --text-phantom: #F8FAFC;
-            --text-spirit: #E2E8F0;
-            --text-ethereal: #CBD5E1;
-            --text-whisper: #94A3B8;
-            --text-shadow: #64748B;
-            --text-success: #12B8A3;
-            --text-error: #F87171;
-            --text-warning: #FBBF24;
+            /* Renaissance Typography */
+            --text-ivory: #FFFEF7;
+            --text-parchment: #F5F5DC;
+            --text-gold: #DAA520;
+            --text-sienna: #A0522D;
+            --text-umber: #826644;
+            --text-success: #228B22;
+            --text-error: #C73E1D;
+            --text-warning: #DAA520;
             
-            /* Phantom Borders & Effects */
-            --border-phantom: rgba(168, 85, 247, 0.5);
-            --border-spirit: rgba(255, 255, 255, 0.1);
-            --border-ethereal: rgba(255, 255, 255, 0.2);
-            --shadow-phantom: 0 0 50px rgba(168, 85, 247, 0.5);
-            --shadow-spirit: 0 25px 70px rgba(0, 0, 0, 0.9);
-            --shadow-ethereal: 0 0 90px rgba(168, 85, 247, 0.4);
-            --glow-spectral: 0 0 120px rgba(168, 85, 247, 0.7);
+            /* Baroque Borders & Effects */
+            --border-gold: rgba(218, 165, 32, 0.6);
+            --border-sienna: rgba(160, 82, 45, 0.4);
+            --border-parchment: rgba(245, 245, 220, 0.2);
+            --shadow-chiaroscuro: 0 8px 40px rgba(26, 22, 18, 0.8);
+            --shadow-golden: 0 0 30px rgba(218, 165, 32, 0.4);
+            --shadow-warm: 0 15px 60px rgba(43, 37, 30, 0.7);
+            --glow-renaissance: 0 0 50px rgba(218, 165, 32, 0.5);
             
-            /* Phantom Typography */
-            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-display: 'Orbitron', 'Space Grotesk', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --font-creepy: 'Creepster', cursive;
-            --font-nosifer: 'Nosifer', cursive;
+            /* Renaissance Typography */
+            --font-primary: 'Crimson Text', 'Times New Roman', serif;
+            --font-display: 'Playfair Display', 'Georgia', serif;
+            --font-heading: 'Cinzel', 'Times New Roman', serif;
+            --font-body: 'Cormorant Garamond', 'Times New Roman', serif;
+            --font-elegant: 'EB Garamond', 'Times New Roman', serif;
             
-            /* Phantom Timing */
-            --transition-phantom: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            --transition-spirit: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
-            --transition-ethereal: all 0.3s ease-out;
-            --transition-haunt: all 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            /* Baroque Timing */
+            --transition-rembrandt: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-renaissance: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            --transition-baroque: all 0.4s ease-out;
+            --transition-chiaroscuro: all 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        /* === PHANTOM FOUNDATION === */
+        /* === REMBRANDT FOUNDATION === */
         * {
             margin: 0;
             padding: 0;
@@ -87,9 +87,9 @@
 
         body {
             font-family: var(--font-primary);
-            background: var(--bg-phantom);
-            color: var(--text-phantom);
-            line-height: 1.6;
+            background: var(--bg-canvas);
+            color: var(--text-ivory);
+            line-height: 1.7;
             min-height: 100vh;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
@@ -106,12 +106,28 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 20%, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(76, 110, 245, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 40% 60%, rgba(18, 184, 163, 0.06) 0%, transparent 50%);
+                radial-gradient(circle at 25% 25%, rgba(218, 165, 32, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(199, 62, 29, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(160, 82, 45, 0.04) 0%, transparent 50%),
+                linear-gradient(135deg, rgba(26, 22, 18, 0.3) 0%, rgba(43, 37, 30, 0.2) 100%);
             pointer-events: none;
             z-index: -1;
-            animation: phantomFloat 20s ease-in-out infinite;
+            animation: rembrandtGlow 25s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at top left, rgba(218, 165, 32, 0.02) 0%, transparent 40%),
+                radial-gradient(ellipse at bottom right, rgba(199, 62, 29, 0.02) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+            animation: chiaroscuroLight 30s ease-in-out infinite;
         }
 
         /* === PHANTOM BACKGROUND SYSTEM === */
@@ -166,22 +182,41 @@
             }
         }
 
-        @keyframes phantomFloat {
+        @keyframes rembrandtGlow {
             0%, 100% { 
-                transform: translate(0, 0) rotate(0deg) scale(1);
-                opacity: 0.8;
+                opacity: 0.6;
+                transform: scale(1) rotate(0deg);
             }
             25% { 
-                transform: translate(10px, -20px) rotate(1deg) scale(1.02);
-                opacity: 0.9;
+                opacity: 0.8;
+                transform: scale(1.02) rotate(0.5deg);
             }
             50% { 
-                transform: translate(-15px, -10px) rotate(-0.5deg) scale(0.98);
-                opacity: 1;
+                opacity: 0.9;
+                transform: scale(0.98) rotate(-0.3deg);
             }
             75% { 
-                transform: translate(5px, 15px) rotate(0.8deg) scale(1.01);
-                opacity: 0.85;
+                opacity: 0.7;
+                transform: scale(1.01) rotate(0.2deg);
+            }
+        }
+
+        @keyframes chiaroscuroLight {
+            0%, 100% { 
+                opacity: 0.3;
+                transform: translateX(0px) translateY(0px);
+            }
+            25% { 
+                opacity: 0.5;
+                transform: translateX(10px) translateY(-5px);
+            }
+            50% { 
+                opacity: 0.4;
+                transform: translateX(-8px) translateY(8px);
+            }
+            75% { 
+                opacity: 0.6;
+                transform: translateX(5px) translateY(-3px);
             }
         }
 
@@ -1322,28 +1357,28 @@
     </style>
 </head>
 <body>
-    <!-- Phantom Background System -->
-    <canvas class="phantom-canvas" id="phantomCanvas"></canvas>
-    <div class="ethereal-grid"></div>
-    <div class="spectral-mist"></div>
-    <div class="phantom-spirits">
-        <div class="spirit spirit-1"></div>
-        <div class="spirit spirit-2"></div>
-        <div class="spirit spirit-3"></div>
+    <!-- Rembrandt Canvas System -->
+    <canvas class="rembrandt-canvas" id="rembrandtCanvas"></canvas>
+    <div class="renaissance-texture"></div>
+    <div class="baroque-ornaments"></div>
+    <div class="chiaroscuro-lights">
+        <div class="light-source light-1"></div>
+        <div class="light-source light-2"></div>
+        <div class="light-source light-3"></div>
     </div>
 
-    <!-- Phantom Navigation -->
-    <nav class="phantom-nav">
+    <!-- Rembrandt Navigation -->
+    <nav class="rembrandt-nav">
         <div class="nav-container">
-            <div class="phantom-logo">
+            <div class="rembrandt-logo">
                 <div class="logo-icon">
-                    <i class="fas fa-ghost"></i>
+                    <i class="fas fa-palette"></i>
                 </div>
-                <span class="logo-text">Phantom ROI</span>
+                <span class="logo-text">Rembrandt ROI</span>
             </div>
             <div class="nav-badges">
-                <div class="nav-badge spectral">Ethereal Analytics</div>
-                <div class="nav-badge spirit">AI-Powered</div>
+                <div class="nav-badge golden">Renaissance Analytics</div>
+                <div class="nav-badge venetian">Master's Precision</div>
             </div>
         </div>
     </nav>
@@ -1366,50 +1401,50 @@
         </div>
     </div>
 
-    <!-- Main Phantom Container -->
-    <div class="phantom-container">
-        <!-- Hero Phantom -->
-        <section class="hero-phantom">
-            <h1 class="hero-title phantom-glow">Ethereal ROI Analytics</h1>
+    <!-- Main Rembrandt Container -->
+    <div class="rembrandt-container">
+        <!-- Hero Rembrandt -->
+        <section class="hero-rembrandt">
+            <h1 class="hero-title golden-glow">Renaissance ROI Analytics</h1>
             <p class="hero-subtitle">
-                Unveil the mysteries of financial modeling with spectral AI insights, ghostly precision calculations, and otherworldly analytics that transcend conventional business intelligence
+                Master the art of financial modeling with classical precision, baroque elegance, and chiaroscuro insights that illuminate the shadows of investment uncertainty with Renaissance wisdom
             </p>
             
-            <div class="phantom-stats">
-                <div class="stat-phantom scroll-reveal">
-                    <span class="stat-value spectral">99.9%</span>
-                    <div class="stat-label">Spectral Accuracy</div>
+            <div class="rembrandt-stats">
+                <div class="stat-rembrandt scroll-reveal">
+                    <span class="stat-value golden">99.9%</span>
+                    <div class="stat-label">Master's Precision</div>
                 </div>
-                <div class="stat-phantom scroll-reveal">
-                    <span class="stat-value ethereal">18+</span>
-                    <div class="stat-label">Ethereal Industries</div>
+                <div class="stat-rembrandt scroll-reveal">
+                    <span class="stat-value venetian">18+</span>
+                    <div class="stat-label">Renaissance Industries</div>
                 </div>
-                <div class="stat-phantom scroll-reveal">
-                    <span class="stat-value spirit">&lt;30ms</span>
-                    <div class="stat-label">Phantom Processing</div>
+                <div class="stat-rembrandt scroll-reveal">
+                    <span class="stat-value sienna">&lt;50ms</span>
+                    <div class="stat-label">Baroque Processing</div>
                 </div>
-                <div class="stat-phantom scroll-reveal">
-                    <span class="stat-value mystic">👻</span>
-                    <div class="stat-label">Supernatural Insights</div>
+                <div class="stat-rembrandt scroll-reveal">
+                    <span class="stat-value umber">🎨</span>
+                    <div class="stat-label">Artistic Insights</div>
                 </div>
             </div>
         </section>
 
-        <!-- Configuration Phantom Form -->
-        <div class="form-phantom">
-            <!-- Project Selection Phantom -->
-            <div class="phantom-card scroll-reveal">
-                <div class="form-section-phantom">
+        <!-- Configuration Renaissance Form -->
+        <div class="form-rembrandt">
+            <!-- Project Selection Renaissance -->
+            <div class="rembrandt-card scroll-reveal">
+                <div class="form-section-rembrandt">
                     <h3>
-                        <div class="section-icon spectral">
-                            <i class="fas fa-magic"></i>
+                        <div class="section-icon golden">
+                            <i class="fas fa-brush"></i>
                         </div>
-                        Ethereal Project Configuration
+                        Renaissance Project Composition
                     </h3>
                     
-                    <div class="form-group-phantom">
-                        <label class="form-label-phantom">Select Spectral Project Type</label>
-                        <div id="projectTypesPhantom" class="project-grid-phantom">
+                    <div class="form-group-rembrandt">
+                        <label class="form-label-rembrandt">Select Masterpiece Project Type</label>
+                        <div id="projectTypesRembrandt" class="project-grid-rembrandt">
                             <!-- Projects will be loaded here -->
                         </div>
                     </div>
