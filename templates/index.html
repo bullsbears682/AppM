@@ -1045,6 +1045,111 @@
             font-size: 1rem;
         }
 
+        /* === PROJECT SELECTION PHANTOM === */
+        .project-grid-phantom {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .project-card-phantom {
+            background: var(--bg-shadow);
+            border: 2px solid var(--border-phantom);
+            border-radius: 20px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: var(--transition-phantom);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 8px 32px rgba(10, 10, 15, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .project-card-phantom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--ethereal-primary);
+            transform: scaleX(0);
+            transition: transform 0.6s ease;
+        }
+
+        .project-card-phantom:hover {
+            border-color: var(--phantom-purple);
+            transform: translateY(-8px) rotateX(3deg);
+            box-shadow: 
+                0 20px 50px rgba(10, 10, 15, 0.6),
+                0 0 40px rgba(147, 51, 234, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .project-card-phantom:hover::before {
+            transform: scaleX(1);
+        }
+
+        .project-card-phantom.selected {
+            border-color: var(--phantom-purple);
+            background: rgba(147, 51, 234, 0.15);
+            box-shadow: 
+                0 15px 40px rgba(10, 10, 15, 0.5),
+                0 0 30px rgba(147, 51, 234, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .project-card-phantom.selected::before {
+            transform: scaleX(1);
+        }
+
+        .project-title-phantom {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-phantom);
+            font-family: var(--font-display);
+            text-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+        }
+
+        .project-description-phantom {
+            color: var(--text-ethereal);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .project-meta-phantom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .project-complexity-phantom {
+            background: var(--ethereal-accent);
+            color: var(--phantom-white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 2px 10px rgba(147, 51, 234, 0.3);
+        }
+
+        .project-cost-phantom {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--phantom-teal);
+            font-size: 1rem;
+            text-shadow: 0 0 10px rgba(20, 184, 166, 0.5);
+        }
+
         /* === QUANTUM BUTTON === */
         .quantum-btn {
             background: var(--holo-primary);
@@ -1794,9 +1899,9 @@
                 console.log('✅ Quantum project types loaded:', data.projects?.length || 0);
                 console.log('📋 Project data:', data);
                 
-                const container = document.getElementById('projectTypesQuantum');
+                const container = document.getElementById('projectTypesPhantom');
                 if (!container) {
-                    console.error('❌ Quantum project types container not found');
+                    console.error('❌ Phantom project types container not found');
                     return;
                 }
                 
@@ -1837,16 +1942,16 @@
                 
                 data.projects.forEach((project, index) => {
                     const card = document.createElement('div');
-                    card.className = 'project-card-quantum scroll-reveal';
+                    card.className = 'project-card-phantom scroll-reveal';
                     card.style.animationDelay = `${index * 0.1}s`;
                     card.setAttribute('data-project-id', project.id);
                     card.setAttribute('tabindex', '0'); // Make keyboard accessible
                     card.innerHTML = `
-                        <div class="project-title-quantum">${project.name || 'Unknown Project'}</div>
-                        <div class="project-description-quantum">${project.description || 'No description available'}</div>
-                        <div class="project-meta-quantum">
-                            <span class="project-complexity">${project.complexity || 'Medium'}</span>
-                            <span class="project-cost">${project.base_cost || '$50K'}</span>
+                        <div class="project-title-phantom">${project.name || 'Unknown Project'}</div>
+                        <div class="project-description-phantom">${project.description || 'No description available'}</div>
+                        <div class="project-meta-phantom">
+                            <span class="project-complexity-phantom">${project.complexity || 'Medium'}</span>
+                            <span class="project-cost-phantom">${project.base_cost || '$50K'}</span>
                         </div>
                     `;
                     
@@ -1893,7 +1998,7 @@
             }
             
             // Remove previous selection
-            document.querySelectorAll('.project-card-quantum').forEach(card => {
+            document.querySelectorAll('.project-card-phantom').forEach(card => {
                 card.classList.remove('selected');
             });
             
