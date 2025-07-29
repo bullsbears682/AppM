@@ -881,6 +881,7 @@
             margin-left: 0.5rem;
             border: 1px solid rgba(168, 85, 247, 0.3);
             text-shadow: none;
+            animation: optionalPulse 2s ease-in-out infinite;
         }
 
         .field-hint {
@@ -889,6 +890,257 @@
             margin-top: 0.5rem;
             font-style: italic;
             opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        /* === ENHANCED INTERACTIVE ELEMENTS === */
+        
+        /* Loading States */
+        .loading-state {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading-state::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(147, 51, 234, 0.3), transparent);
+            animation: loadingShimmer 1.5s infinite;
+        }
+        
+        @keyframes loadingShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        @keyframes optionalPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        /* Enhanced Form States */
+        .form-input-quantum:focus,
+        .form-input-phantom:focus {
+            border-color: var(--phantom-purple);
+            box-shadow: 
+                0 0 0 3px rgba(147, 51, 234, 0.1),
+                0 0 20px rgba(147, 51, 234, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .form-input-quantum.valid,
+        .form-input-phantom.valid {
+            border-color: var(--text-success);
+            box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+        }
+        
+        .form-input-quantum.error,
+        .form-input-phantom.error {
+            border-color: #EF4444;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+            animation: inputShake 0.5s ease-in-out;
+        }
+        
+        @keyframes inputShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        /* Progress Indicator */
+        .progress-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(147, 51, 234, 0.2);
+            z-index: 9999;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+        
+        .progress-indicator.active {
+            transform: scaleX(1);
+        }
+        
+        /* Enhanced Button States */
+        .quantum-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .quantum-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 10px 25px rgba(147, 51, 234, 0.4),
+                0 0 30px rgba(147, 51, 234, 0.3);
+        }
+        
+        .quantum-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .quantum-btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        
+        .quantum-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid var(--phantom-white);
+            border-radius: 50%;
+            animation: buttonSpin 1s linear infinite;
+        }
+        
+        @keyframes buttonSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Mobile Navigation Enhancement */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-phantom);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-toggle:hover {
+            background: rgba(147, 51, 234, 0.2);
+        }
+        
+        @media (max-width: 480px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .nav-badges {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--bg-spirit);
+                border-radius: 0 0 16px 16px;
+                padding: 1rem;
+                border: 1px solid var(--border-phantom);
+                border-top: none;
+            }
+            
+            .nav-badges.mobile-open {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .phantom-nav {
+                position: relative;
+            }
+        }
+        
+        /* Enhanced Tooltips */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip {
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-spirit);
+            color: var(--text-phantom);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-phantom);
+            z-index: 1000;
+        }
+        
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top: 5px solid var(--bg-spirit);
+        }
+        
+        .tooltip-container:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: var(--ethereal-primary);
+            border: none;
+            border-radius: 50%;
+            color: var(--phantom-white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(147, 51, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(147, 51, 234, 0.6);
+        }
+        
+        .fab.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Enhanced Card Interactions */
+        .interactive-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .interactive-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(10, 10, 15, 0.3),
+                0 0 50px rgba(147, 51, 234, 0.2);
+        }
+        
+        .interactive-card:active {
+            transform: translateY(-4px) scale(1.01);
         }
 
         .form-input-quantum {
@@ -1460,58 +1712,325 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* === RESPONSIVE QUANTUM === */
-        @media (max-width: 1200px) {
-            .ai-insights-panel {
-                position: relative;
-                right: auto;
-                top: auto;
-                transform: none;
-                width: 100%;
+        /* === ENHANCED RESPONSIVE DESIGN === */
+        
+        /* Mobile First - Base styles for mobile */
+        @media (max-width: 480px) {
+            :root {
+                --container-padding: 1rem;
+                --section-gap: 1.5rem;
+                --card-padding: 1rem;
+                --font-size-base: 0.9rem;
+            }
+            
+            body {
+                font-size: var(--font-size-base);
+            }
+            
+            .phantom-nav {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .phantom-logo {
+                font-size: 1.2rem;
+            }
+            
+            .nav-badges {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                justify-content: center;
+            }
+            
+            .nav-badge {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.6rem;
+            }
+            
+            .hero-phantom {
+                padding: 2rem 0;
+                text-align: center;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+                line-height: 1.2;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+                margin: 1rem 0;
+            }
+            
+            .brand-tagline {
+                font-size: 0.8rem;
+                margin: 1rem 0;
+            }
+            
+            .phantom-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
                 margin: 2rem 0;
-                opacity: 1;
             }
             
-            .charts-quantum {
+            .stat-phantom {
+                padding: 1rem;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .stat-label {
+                font-size: 0.7rem;
+            }
+            
+            .form-phantom {
                 grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .quantum-container {
-                padding: 6rem 1rem 2rem;
+                gap: 1.5rem;
+                padding: 0 1rem;
             }
             
-            .hero-quantum {
-                padding: 2rem 0 4rem;
+            .phantom-card {
+                padding: 1.5rem;
+                margin-bottom: 1rem;
             }
             
-            .form-quantum {
+            .project-grid-phantom {
                 grid-template-columns: 1fr;
-                gap: 2rem;
+                gap: 1rem;
             }
             
-            .project-grid-quantum {
-                grid-template-columns: 1fr;
+            .project-card-phantom {
+                padding: 1rem;
+            }
+            
+            .form-input-quantum,
+            .form-input-phantom {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+            
+            .quantum-btn {
+                width: 100%;
+                min-width: auto;
+                padding: 1.25rem;
+                font-size: 1rem;
+                margin: 1rem 0;
+            }
+            
+            .results-quantum {
+                padding: 1rem;
+                margin: 1rem 0;
             }
             
             .metrics-quantum {
                 grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .metric-card-quantum {
+                padding: 1rem;
+            }
+            
+            .charts-quantum {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+        }
+        
+        /* Tablet Portrait */
+        @media (min-width: 481px) and (max-width: 768px) {
+            :root {
+                --container-padding: 1.5rem;
+                --section-gap: 2rem;
+                --card-padding: 1.5rem;
+            }
+            
+            .phantom-nav {
+                padding: 1.5rem;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .phantom-stats {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+            }
+            
+            .project-grid-phantom {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            
+            .form-phantom {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 0 1.5rem;
+            }
+            
+            .metrics-quantum {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            
+            .charts-quantum {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+        
+        /* Tablet Landscape / Small Desktop */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .project-grid-phantom {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.5rem;
+            }
+            
+            .form-phantom {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+            
+            .metrics-quantum {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 2rem;
+            }
+            
+            .charts-quantum {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+        }
+        
+        /* Large Desktop */
+        @media (min-width: 1025px) and (max-width: 1440px) {
+            .project-grid-phantom {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 2rem;
+            }
+            
+            .form-phantom {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 3rem;
+            }
+            
+            .metrics-quantum {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 2rem;
+            }
+            
+            .charts-quantum {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+        }
+        
+        /* Ultra Wide */
+        @media (min-width: 1441px) {
+            .quantum-container {
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+            
+            .project-grid-phantom {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 2rem;
+            }
+            
+            .form-phantom {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 3rem;
+            }
+            
+            .metrics-quantum {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 2rem;
+            }
+        }
+        
+        /* Touch Improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .project-card-phantom,
+            .quantum-btn,
+            .nav-badge {
+                transform: none !important;
+                transition: background-color 0.3s ease, border-color 0.3s ease;
+            }
+            
+            .project-card-phantom:active {
+                background: rgba(147, 51, 234, 0.2);
+                border-color: var(--phantom-purple);
+            }
+            
+            .quantum-btn:active {
+                background: var(--ethereal-primary);
+                transform: scale(0.98);
+            }
+            
+            /* Larger touch targets */
+            .project-card-phantom {
+                min-height: 120px;
+                padding: 1.5rem;
+            }
+            
+            .form-input-quantum,
+            .form-input-phantom {
+                min-height: 48px;
+                padding: 1rem 1.5rem;
             }
             
             .quantum-btn {
-                min-width: 250px;
+                min-height: 48px;
                 padding: 1.25rem 2rem;
             }
-            
-            .quantum-notification {
-                right: 1rem;
-                left: 1rem;
-                transform: translateY(-100px);
+        }
+        
+        /* High DPI / Retina Displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .phantom-canvas {
+                image-rendering: crisp-edges;
             }
             
-            .quantum-notification.show {
-                transform: translateY(0);
+            .chart-container canvas {
+                image-rendering: crisp-edges;
+            }
+        }
+        
+        /* Landscape Orientation on Mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .hero-phantom {
+                padding: 1rem 0;
+            }
+            
+            .phantom-stats {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1rem;
+                margin: 1rem 0;
+            }
+            
+            .stat-phantom {
+                padding: 0.75rem;
+            }
+            
+            .phantom-nav {
+                padding: 0.75rem 1rem;
+            }
+        }
+        
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-phantom: #000000;
+                --bg-spirit: #0A0A0A;
+                --text-phantom: #FFFFFF;
             }
         }
 
@@ -1572,6 +2091,9 @@
         <div class="spirit spirit-3"></div>
     </div>
 
+    <!-- Progress Indicator -->
+    <div class="progress-indicator" id="progressIndicator"></div>
+
     <!-- Phantom Navigation -->
     <nav class="phantom-nav">
         <div class="nav-container">
@@ -1581,9 +2103,14 @@
                 </div>
                 <span class="logo-text">VoidSight</span>
             </div>
-            <div class="nav-badges">
-                                <div class="nav-badge spectral">Spectral Intelligence</div>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-badges" id="navBadges">
+                <div class="nav-badge spectral">Spectral Intelligence</div>
                 <div class="nav-badge spirit">Void Analytics</div>
+                <div class="nav-badge ethereal">Enterprise Ready</div>
+                <div class="nav-badge void">Mobile Optimized</div>
             </div>
         </div>
     </nav>
@@ -2731,7 +3258,187 @@
             }
         });
 
-        console.log('🎉 Infinex Quantum ROI Calculator - All systems initialized successfully');
+        console.log('🎉 VoidSight Analytics - All systems initialized successfully');
+        
+        // === ENHANCED MOBILE & DESKTOP FEATURES ===
+        
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const navBadges = document.getElementById('navBadges');
+        
+        if (mobileMenuToggle && navBadges) {
+            mobileMenuToggle.addEventListener('click', () => {
+                navBadges.classList.toggle('mobile-open');
+                const icon = mobileMenuToggle.querySelector('i');
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
+            });
+        }
+        
+        // Progress Indicator
+        function showProgress() {
+            const indicator = document.getElementById('progressIndicator');
+            if (indicator) {
+                indicator.classList.add('active');
+            }
+        }
+        
+        function hideProgress() {
+            const indicator = document.getElementById('progressIndicator');
+            if (indicator) {
+                indicator.classList.remove('active');
+            }
+        }
+        
+        // Enhanced Form Validation with Visual Feedback
+        function enhanceFormValidation() {
+            const inputs = document.querySelectorAll('.form-input-quantum, .form-input-phantom');
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const field = e.target;
+                    field.classList.remove('error', 'valid');
+                    
+                    if (field.value.trim()) {
+                        if (field.checkValidity()) {
+                            field.classList.add('valid');
+                        } else {
+                            field.classList.add('error');
+                        }
+                    }
+                });
+                
+                input.addEventListener('focus', (e) => {
+                    e.target.classList.add('loading-state');
+                });
+                
+                input.addEventListener('blur', (e) => {
+                    e.target.classList.remove('loading-state');
+                });
+            });
+        }
+        
+        // Floating Action Button for Quick Actions
+        function initializeFAB() {
+            const fab = document.createElement('button');
+            fab.className = 'fab';
+            fab.innerHTML = '<i class="fas fa-calculator"></i>';
+            fab.title = 'Quick Calculate';
+            
+            fab.addEventListener('click', () => {
+                document.getElementById('calculateBtnQuantum')?.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            });
+            
+            document.body.appendChild(fab);
+            
+            // Show FAB when scrolled down
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    fab.classList.add('show');
+                } else {
+                    fab.classList.remove('show');
+                }
+            });
+        }
+        
+        // Enhanced Card Interactions
+        function enhanceCardInteractions() {
+            const cards = document.querySelectorAll('.project-card-phantom');
+            
+            cards.forEach(card => {
+                card.classList.add('interactive-card');
+                
+                // Add ripple effect on click
+                card.addEventListener('click', (e) => {
+                    const ripple = document.createElement('div');
+                    ripple.style.position = 'absolute';
+                    ripple.style.width = '20px';
+                    ripple.style.height = '20px';
+                    ripple.style.background = 'rgba(147, 51, 234, 0.5)';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'ripple 0.6s linear';
+                    ripple.style.left = (e.clientX - card.offsetLeft - 10) + 'px';
+                    ripple.style.top = (e.clientY - card.offsetTop - 10) + 'px';
+                    
+                    card.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        }
+        
+        // Smart Loading States
+        function enhanceLoadingStates() {
+            const calculateBtn = document.getElementById('calculateBtnQuantum');
+            
+            if (calculateBtn) {
+                const originalCalculate = window.calculateQuantumROI;
+                
+                window.calculateQuantumROI = function() {
+                    calculateBtn.classList.add('loading');
+                    calculateBtn.innerHTML = '<span>Analyzing...</span>';
+                    showProgress();
+                    
+                    return originalCalculate.apply(this, arguments).finally(() => {
+                        calculateBtn.classList.remove('loading');
+                        calculateBtn.innerHTML = '<i class="fas fa-atom"></i><span>Initiate AI Analysis</span>';
+                        hideProgress();
+                    });
+                };
+            }
+        }
+        
+        // Device-specific optimizations
+        function applyDeviceOptimizations() {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isTouch = 'ontouchstart' in window;
+            
+            if (isMobile || isTouch) {
+                document.body.classList.add('mobile-device');
+                
+                // Improve touch responsiveness
+                document.addEventListener('touchstart', () => {}, { passive: true });
+                
+                // Prevent zoom on input focus
+                const viewport = document.querySelector('meta[name=viewport]');
+                if (viewport) {
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+                }
+            }
+        }
+        
+        // Initialize all enhancements
+        enhanceFormValidation();
+        initializeFAB();
+        enhanceCardInteractions();
+        enhanceLoadingStates();
+        applyDeviceOptimizations();
+        
+        // Add ripple animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
+
+    <!-- Quantum Notification -->
+    <div id="quantumNotification" class="quantum-notification">
+        <div class="notification-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <span id="notificationMessage">VoidSight analysis completed successfully!</span>
+    </div>
 </body>
 </html>
