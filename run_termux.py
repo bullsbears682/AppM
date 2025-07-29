@@ -139,15 +139,15 @@ TERMUX_MODE=true
     # Import and run the main application
     try:
         from app import app, config_class, logger
-        logger.info("Starting Business ROI Calculator v2.0 in Termux mode")
+        logger.info("Starting VoidSight Analytics v2.0 in Termux mode")
         
-            # Try to use smart starter if available
-    if os.path.exists('start_app.py'):
-        print(f"\n🌟 Using smart port detection...")
-        os.system('python3 start_app.py')
-    else:
-        # Fallback to manual port management
-        import socket
+        # Try to use smart starter if available
+        if os.path.exists('start_app.py'):
+            print(f"\n🌟 Using smart port detection...")
+            os.system('python3 start_app.py')
+        else:
+            # Fallback to manual port management
+            import socket
         from contextlib import closing
         
         def find_free_port(start_port=5000):
@@ -163,16 +163,17 @@ TERMUX_MODE=true
         
         port = find_free_port()
         
-        print(f"\n🌟 Quantum ROI Calculator is starting...")
+        print(f"\n👁️ VoidSight Analytics is starting...")
         print(f"📡 Using port: {port}")
         print(f"🌐 Open your browser and go to: http://localhost:{port}")
         print(f"📱 Or from other devices: http://YOUR_IP:{port}")
-        print(f"\n🧠 Features Available:")
-        print(f"   • AI-Powered ARIA Assistant")
-        print(f"   • Quantum-Inspired UI with 3D animations")
-        print(f"   • Interactive data visualizations")
+        print(f"\n🔮 VoidSight Features Available:")
+        print(f"   • Spectral AI Intelligence")
+        print(f"   • Phantom-Inspired UI with ethereal animations")
+        print(f"   • Interactive void visualizations")
         print(f"   • Advanced financial modeling")
-        print(f"   • Real-time insights and recommendations")
+        print(f"   • Real-time spectral insights")
+        print(f"   • See Beyond The Veil™")
         print(f"\nPress Ctrl+C to stop the server")
         print("=" * 60)
         
@@ -183,7 +184,7 @@ TERMUX_MODE=true
             use_reloader=False  # Disable reloader for Termux stability
         )
     except KeyboardInterrupt:
-        print("\n👋 Quantum ROI Calculator stopped")
+        print("\n👋 VoidSight Analytics stopped")
     except ImportError as e:
         print(f"\n❌ Import error: {e}")
         print("\n🔧 Troubleshooting steps:")
