@@ -266,6 +266,145 @@ class BaseConfig:
         }
     }
     
+    # Project Type Configuration with Enhanced Metadata
+    PROJECT_TYPES = {
+        'product_development': {
+            'description': 'New Product Development',
+            'complexity': 'High',
+            'timeline': 12,
+            'base_cost': 150000,
+            'roi_potential': 2.5,
+            'risk_level': 0.3,
+            'required_skills': ['Product Manager', 'Software Engineer', 'Designer', 'QA Engineer']
+        },
+        'digital_transformation': {
+            'description': 'Digital Transformation',
+            'complexity': 'Very High',
+            'timeline': 18,
+            'base_cost': 200000,
+            'roi_potential': 3.0,
+            'risk_level': 0.25,
+            'required_skills': ['Solution Architect', 'Change Manager', 'Software Engineer', 'Business Analyst']
+        },
+        'market_expansion': {
+            'description': 'Market Expansion',
+            'complexity': 'Medium',
+            'timeline': 8,
+            'base_cost': 100000,
+            'roi_potential': 2.2,
+            'risk_level': 0.35,
+            'required_skills': ['Marketing Manager', 'Sales Representative', 'Market Researcher']
+        },
+        'tech_upgrade': {
+            'description': 'Technology Upgrade',
+            'complexity': 'Medium',
+            'timeline': 6,
+            'base_cost': 80000,
+            'roi_potential': 1.8,
+            'risk_level': 0.2,
+            'required_skills': ['System Administrator', 'Software Engineer', 'Technical Lead']
+        },
+        'marketing_campaign': {
+            'description': 'Marketing Campaign',
+            'complexity': 'Low',
+            'timeline': 4,
+            'base_cost': 50000,
+            'roi_potential': 1.5,
+            'risk_level': 0.25,
+            'required_skills': ['Marketing Manager', 'Graphic Designer', 'Content Writer']
+        },
+        'ecommerce_platform': {
+            'description': 'E-commerce Platform',
+            'complexity': 'High',
+            'timeline': 10,
+            'base_cost': 120000,
+            'roi_potential': 2.8,
+            'risk_level': 0.28,
+            'required_skills': ['E-commerce Developer', 'UX Designer', 'Payment Integration Specialist']
+        },
+        'mobile_app': {
+            'description': 'Mobile Application',
+            'complexity': 'High',
+            'timeline': 8,
+            'base_cost': 90000,
+            'roi_potential': 2.4,
+            'risk_level': 0.32,
+            'required_skills': ['Mobile Developer', 'UI/UX Designer', 'Backend Developer']
+        },
+        'ai_integration': {
+            'description': 'AI Integration',
+            'complexity': 'Very High',
+            'timeline': 14,
+            'base_cost': 180000,
+            'roi_potential': 3.5,
+            'risk_level': 0.4,
+            'required_skills': ['AI Engineer', 'Data Scientist', 'ML Engineer', 'Software Architect']
+        },
+        'blockchain_platform': {
+            'description': 'Blockchain Platform',
+            'complexity': 'Very High',
+            'timeline': 16,
+            'base_cost': 250000,
+            'roi_potential': 4.0,
+            'risk_level': 0.5,
+            'required_skills': ['Blockchain Developer', 'Smart Contract Engineer', 'Security Auditor']
+        },
+        'iot_solution': {
+            'description': 'IoT Solution',
+            'complexity': 'High',
+            'timeline': 12,
+            'base_cost': 160000,
+            'roi_potential': 2.6,
+            'risk_level': 0.35,
+            'required_skills': ['IoT Engineer', 'Embedded Developer', 'Cloud Architect']
+        },
+        'data_analytics': {
+            'description': 'Data Analytics Platform',
+            'complexity': 'High',
+            'timeline': 10,
+            'base_cost': 140000,
+            'roi_potential': 2.9,
+            'risk_level': 0.28,
+            'required_skills': ['Data Engineer', 'Data Analyst', 'BI Developer']
+        },
+        'subscription_service': {
+            'description': 'Subscription Service',
+            'complexity': 'Medium',
+            'timeline': 6,
+            'base_cost': 75000,
+            'roi_potential': 2.1,
+            'risk_level': 0.22,
+            'required_skills': ['Backend Developer', 'Payment Specialist', 'Customer Success Manager']
+        },
+        'automation_system': {
+            'description': 'Automation System',
+            'complexity': 'High',
+            'timeline': 9,
+            'base_cost': 110000,
+            'roi_potential': 3.2,
+            'risk_level': 0.25,
+            'required_skills': ['Automation Engineer', 'System Integrator', 'Process Analyst']
+        },
+        'cybersecurity_upgrade': {
+            'description': 'Cybersecurity Upgrade',
+            'complexity': 'Medium',
+            'timeline': 7,
+            'base_cost': 95000,
+            'roi_potential': 1.9,
+            'risk_level': 0.15,
+            'required_skills': ['Security Engineer', 'Penetration Tester', 'Compliance Specialist']
+        },
+        'cloud_migration': {
+            'description': 'Cloud Migration',
+            'complexity': 'High',
+            'timeline': 11,
+            'base_cost': 130000,
+            'roi_potential': 2.3,
+            'risk_level': 0.18,
+            'required_skills': ['Cloud Architect', 'DevOps Engineer', 'Migration Specialist']
+        }
+    }
+
     # Company Size Configuration
     COMPANY_SIZES = {
         'startup': {

@@ -376,17 +376,78 @@ def get_projects():
     """Get available project types with enhanced information"""
     try:
         projects = []
-        for key, config in config_class.PROJECT_TYPES.items():
-            projects.append({
-                'id': key,
-                'name': config.description,
-                'complexity': config.complexity,
-                'timeline': f"{config.timeline} months",
-                'base_cost': f"${config.base_cost:,}",
-                'roi_potential': f"{config.roi_potential:.1f}x",
-                'risk_level': f"{config.risk_level * 100:.1f}%",
-                'required_skills': config.required_skills
-            })
+        
+        # Handle both object and dictionary config formats
+        if hasattr(config_class, 'PROJECT_TYPES'):
+            project_types = config_class.PROJECT_TYPES
+        else:
+            # Fallback project types for basic functionality
+            project_types = {
+                'product_development': {
+                    'description': 'New Product Development',
+                    'complexity': 'High',
+                    'timeline': 12,
+                    'base_cost': 150000,
+                    'roi_potential': 2.5,
+                    'risk_level': 0.3,
+                    'required_skills': ['Product Manager', 'Software Engineer', 'Designer']
+                },
+                'mobile_app': {
+                    'description': 'Mobile Application',
+                    'complexity': 'High',
+                    'timeline': 8,
+                    'base_cost': 90000,
+                    'roi_potential': 2.4,
+                    'risk_level': 0.32,
+                    'required_skills': ['Mobile Developer', 'UI/UX Designer']
+                },
+                'ecommerce_platform': {
+                    'description': 'E-commerce Platform',
+                    'complexity': 'High',
+                    'timeline': 10,
+                    'base_cost': 120000,
+                    'roi_potential': 2.8,
+                    'risk_level': 0.28,
+                    'required_skills': ['E-commerce Developer', 'UX Designer']
+                },
+                'marketing_campaign': {
+                    'description': 'Marketing Campaign',
+                    'complexity': 'Low',
+                    'timeline': 4,
+                    'base_cost': 50000,
+                    'roi_potential': 1.5,
+                    'risk_level': 0.25,
+                    'required_skills': ['Marketing Manager', 'Designer']
+                }
+            }
+        
+        for key, config in project_types.items():
+            # Handle both object attributes and dictionary keys
+            if isinstance(config, dict):
+                projects.append({
+                    'id': key,
+                    'name': config.get('description', key.replace('_', ' ').title()),
+                    'description': config.get('description', 'No description available'),
+                    'complexity': config.get('complexity', 'Medium'),
+                    'timeline': f"{config.get('timeline', 6)} months",
+                    'base_cost': f"${config.get('base_cost', 100000):,}",
+                    'roi_potential': f"{config.get('roi_potential', 2.0):.1f}x",
+                    'risk_level': f"{config.get('risk_level', 0.2) * 100:.1f}%",
+                    'required_skills': config.get('required_skills', [])
+                })
+            else:
+                # Handle object format (legacy)
+                projects.append({
+                    'id': key,
+                    'name': getattr(config, 'description', key.replace('_', ' ').title()),
+                    'description': getattr(config, 'description', 'No description available'),
+                    'complexity': getattr(config, 'complexity', 'Medium'),
+                    'timeline': f"{getattr(config, 'timeline', 6)} months",
+                    'base_cost': f"${getattr(config, 'base_cost', 100000):,}",
+                    'roi_potential': f"{getattr(config, 'roi_potential', 2.0):.1f}x",
+                    'risk_level': f"{getattr(config, 'risk_level', 0.2) * 100:.1f}%",
+                    'required_skills': getattr(config, 'required_skills', [])
+                })
         
         return jsonify({
             'success': True,
