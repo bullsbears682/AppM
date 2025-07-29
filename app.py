@@ -53,18 +53,35 @@ except ImportError:
             # Basic ROI calculation fallback
             investment = kwargs.get('custom_investment', 100000)
             timeline = kwargs.get('custom_timeline', 12)
-            roi_percentage = 25.0
+            project_type = kwargs.get('project_type', 'product_development')
+            company_size = kwargs.get('company_size', 'medium')
+            
+            # Simple ROI calculation based on project type
+            roi_multipliers = {
+                'product_development': 2.5,
+                'mobile_app': 2.4,
+                'ecommerce_platform': 2.8,
+                'marketing_campaign': 1.5,
+                'digital_transformation': 3.0,
+                'ai_integration': 3.5,
+                'blockchain_platform': 4.0
+            }
+            
+            roi_multiplier = roi_multipliers.get(project_type, 2.0)
+            roi_percentage = (roi_multiplier - 1) * 100
+            projected_revenue = investment * roi_multiplier
+            
             return {
                 'roi_projection': {
                     'total_investment': investment,
                     'roi_percentage': roi_percentage,
-                    'projected_revenue': investment * (1 + roi_percentage/100),
+                    'projected_revenue': projected_revenue,
                     'payback_period_months': timeline,
                     'npv': investment * 0.15,
-                    'irr': 0.18
+                    'irr': 18.5
                 },
                 'cost_analysis': {'development': investment * 0.7, 'marketing': investment * 0.3},
-                'risk_assessment': {'risk_score': 5.0, 'confidence_level': 0.8}
+                'risk_assessment': {'risk_score': 5.0, 'confidence_level': 85.0}
             }
 
 try:
@@ -465,17 +482,33 @@ def get_company_sizes():
     try:
         company_sizes = []
         for key, config in config_class.COMPANY_SIZES.items():
-            company_sizes.append({
-                'id': key,
-                'name': key.title(),
-                'multiplier': config.multiplier,
-                'budget_range': {
-                    'min': config.min_budget,
-                    'max': config.max_budget
-                },
-                'typical_team_size': config.typical_team_size,
-                'risk_factor': f"{config.risk_factor * 100:.1f}%"
-            })
+            # Handle both dictionary and object formats
+            if isinstance(config, dict):
+                company_sizes.append({
+                    'id': key,
+                    'name': config.get('name', key.title()),
+                    'multiplier': config.get('cost_multiplier', 1.0),
+                    'budget_range': {
+                        'min': config.get('min_budget', 1000),
+                        'max': config.get('max_budget', 10000000)
+                    },
+                    'typical_team_size': config.get('typical_team_size', 10),
+                    'risk_factor': f"{config.get('risk_multiplier', 1.0) * 100:.1f}%",
+                    'description': config.get('description', 'No description available')
+                })
+            else:
+                # Handle object format (legacy)
+                company_sizes.append({
+                    'id': key,
+                    'name': getattr(config, 'name', key.title()),
+                    'multiplier': getattr(config, 'multiplier', 1.0),
+                    'budget_range': {
+                        'min': getattr(config, 'min_budget', 1000),
+                        'max': getattr(config, 'max_budget', 10000000)
+                    },
+                    'typical_team_size': getattr(config, 'typical_team_size', 10),
+                    'risk_factor': f"{getattr(config, 'risk_factor', 1.0) * 100:.1f}%"
+                })
         
         return jsonify({
             'success': True,

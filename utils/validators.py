@@ -379,28 +379,39 @@ class BusinessValidator:
                               investment_amount: Decimal = None) -> bool:
         """Validate business logic constraints"""
         
-        company_config = Config.COMPANY_SIZES[company_size]
-        project_config = Config.PROJECT_TYPES[project_type]
-        industry_config = Config.INDUSTRIES[industry]
+        # Get configurations with fallback handling
+        company_config = Config.COMPANY_SIZES.get(company_size, {})
+        project_config = Config.PROJECT_TYPES.get(project_type, {})
+        industry_config = Config.INDUSTRIES.get(industry, {})
+        
+        # Helper function to get value from dict or object
+        def get_config_value(config, key, default=None):
+            if isinstance(config, dict):
+                return config.get(key, default)
+            else:
+                return getattr(config, key, default)
         
         # Check if investment is within company size budget range
-        if investment_amount:
-            if investment_amount < company_config.min_budget:
+        if investment_amount and company_config:
+            min_budget = get_config_value(company_config, 'min_budget', 1000)
+            max_budget = get_config_value(company_config, 'max_budget', 10000000)
+            
+            if investment_amount < min_budget:
                 raise BusinessLogicError(
                     f"Investment amount is below typical budget range for {company_size} companies",
                     {
-                        'min_budget': company_config.min_budget,
-                        'max_budget': company_config.max_budget,
+                        'min_budget': min_budget,
+                        'max_budget': max_budget,
                         'investment': float(investment_amount)
                     }
                 )
             
-            if investment_amount > company_config.max_budget * 5:  # More flexibility for large investments
+            if investment_amount > max_budget * 5:  # More flexibility for large investments
                 raise BusinessLogicError(
                     f"Investment amount is significantly above typical budget range for {company_size} companies",
                     {
-                        'min_budget': company_config.min_budget,
-                        'max_budget': company_config.max_budget,
+                        'min_budget': min_budget,
+                        'max_budget': max_budget,
                         'investment': float(investment_amount),
                         'note': 'Consider selecting a larger company size or breaking into phases'
                     }

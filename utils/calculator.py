@@ -62,6 +62,13 @@ class EnhancedROICalculator:
         self.precision = Config.CALCULATION_PRECISION
         self.discount_rate = Decimal('0.08')  # 8% annual discount rate
         self.analytics_engine = AdvancedAnalyticsEngine()
+    
+    def _get_config_value(self, config, key, default=None):
+        """Helper to get value from dict or object config"""
+        if isinstance(config, dict):
+            return config.get(key, default)
+        else:
+            return getattr(config, key, default)
         
     def convert_currency(self, amount: Decimal, from_currency: str, to_currency: str) -> Decimal:
         """Convert amount between currencies with enhanced precision"""
@@ -642,8 +649,9 @@ class EnhancedROICalculator:
             recommendations.append("🔄 Implement change management for smooth adoption")
         
         # Project type specific recommendations
-        project_config = Config.PROJECT_TYPES[project_type]
-        if 'AI' in project_config.description or 'Blockchain' in project_config.description:
+        project_config = Config.PROJECT_TYPES.get(project_type, {})
+        description = project_config.get('description', '') if isinstance(project_config, dict) else getattr(project_config, 'description', '')
+        if 'AI' in description or 'Blockchain' in description:
             recommendations.append("🤖 Advanced technology: Ensure team has required expertise")
             recommendations.append("📚 Invest in training and knowledge transfer")
         

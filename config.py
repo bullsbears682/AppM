@@ -413,6 +413,9 @@ class BaseConfig:
             'cost_multiplier': 0.8,
             'risk_multiplier': 1.3,
             'agility_factor': 1.5,
+            'min_budget': 5000,
+            'max_budget': 100000,
+            'typical_team_size': 5,
             'description': 'Early-stage startups and entrepreneurial ventures'
         },
         'small': {
@@ -421,6 +424,9 @@ class BaseConfig:
             'cost_multiplier': 1.0,
             'risk_multiplier': 1.1,
             'agility_factor': 1.3,
+            'min_budget': 25000,
+            'max_budget': 500000,
+            'typical_team_size': 15,
             'description': 'Small businesses and growing companies'
         },
         'medium': {
@@ -429,6 +435,9 @@ class BaseConfig:
             'cost_multiplier': 1.2,
             'risk_multiplier': 0.9,
             'agility_factor': 1.1,
+            'min_budget': 100000,
+            'max_budget': 2000000,
+            'typical_team_size': 50,
             'description': 'Mid-sized corporations and established businesses'
         },
         'large': {
@@ -437,6 +446,9 @@ class BaseConfig:
             'cost_multiplier': 1.5,
             'risk_multiplier': 0.7,
             'agility_factor': 0.9,
+            'min_budget': 1000000,
+            'max_budget': 25000000,
+            'typical_team_size': 100,
             'description': 'Large corporations and multinational enterprises'
         },
         'enterprise': {
@@ -445,6 +457,9 @@ class BaseConfig:
             'cost_multiplier': 2.0,
             'risk_multiplier': 0.5,
             'agility_factor': 0.7,
+            'min_budget': 5000000,
+            'max_budget': 100000000,
+            'typical_team_size': 200,
             'description': 'Fortune 500 companies and global enterprises'
         }
     }
