@@ -96,18 +96,45 @@ ENABLE_ADVANCED_ANALYTICS=true
 EOF
 fi
 
-# Upgrade pip
-print_info "Upgrading pip..."
-python -m pip install --upgrade pip
+# Upgrade pip (Termux-specific handling)
+print_info "Setting up pip for Termux..."
+# Don't upgrade pip on Termux - it breaks the system
+print_warning "Skipping pip upgrade on Termux (would break python-pip package)"
+pip --version
 
 # Install Python dependencies
 print_info "Installing Python dependencies..."
 if [ -f "requirements-termux.txt" ]; then
     print_info "Using Termux-optimized requirements..."
-    pip install -r requirements-termux.txt
+    # Install dependencies one by one to handle failures gracefully
+    while IFS= read -r package; do
+        # Skip empty lines and comments
+        if [[ ! "$package" =~ ^[[:space:]]*$ ]] && [[ ! "$package" =~ ^[[:space:]]*# ]]; then
+            print_info "Installing $package..."
+            if ! pip install "$package" --no-deps; then
+                print_warning "Failed to install $package, trying without version constraint..."
+                package_name=$(echo "$package" | cut -d'=' -f1)
+                pip install "$package_name" --no-deps || print_warning "Skipped $package_name"
+            fi
+        fi
+    done < requirements-termux.txt
 else
     print_warning "Termux requirements not found, installing core dependencies..."
-    pip install flask flask-cors numpy pandas scipy python-dotenv requests matplotlib
+    # Core dependencies that should work on Termux
+    core_packages="flask flask-cors python-dotenv requests click"
+    for package in $core_packages; do
+        print_info "Installing $package..."
+        pip install "$package" --no-deps || print_warning "Failed to install $package"
+    done
+    
+    # Try scientific packages separately (may need compilation)
+    scientific_packages="numpy pandas scipy matplotlib"
+    for package in $scientific_packages; do
+        print_info "Installing $package..."
+        if ! pip install "$package"; then
+            print_warning "Failed to install $package - some features may be limited"
+        fi
+    done
 fi
 
 # Create necessary directories
