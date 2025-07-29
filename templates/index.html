@@ -1501,12 +1501,28 @@
         .scroll-reveal {
             opacity: 0;
             transform: translateY(50px);
-            transition: var(--transition-neural);
+            transition: var(--transition-spirit);
+            animation: fadeInUp 0.8s ease-out 0.5s forwards;
         }
 
         .scroll-reveal.revealed {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* Fallback animation to ensure content shows up */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Immediate visibility for critical elements */
+        .form-phantom,
+        .phantom-card {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
         }
     </style>
 </head>
@@ -1741,17 +1757,28 @@
         // === QUANTUM INITIALIZATION ===
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Infinex Quantum ROI Calculator - Initializing...');
-            initializeQuantumCanvas();
+            initializePhantomCanvas();
             loadProjectTypesQuantum();
             setupQuantumEventListeners();
             initializeScrollAnimations();
             activateAIInsights();
-            console.log('✨ Quantum ROI Calculator - Ready for Analysis!');
+            
+            // Backup timer to ensure content is visible
+            setTimeout(() => {
+                console.log('🔧 Ensuring content visibility...');
+                document.querySelectorAll('.scroll-reveal').forEach(el => {
+                    el.classList.add('revealed');
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                });
+            }, 1000);
+            
+            console.log('✨ VoidSight Analytics - Ready for Analysis!');
         });
 
-        // === QUANTUM CANVAS BACKGROUND ===
-        function initializeQuantumCanvas() {
-            const canvas = document.getElementById('quantumCanvas');
+        // === PHANTOM CANVAS BACKGROUND ===
+        function initializePhantomCanvas() {
+            const canvas = document.getElementById('phantomCanvas');
             const ctx = canvas.getContext('2d');
             
             function resizeCanvas() {
