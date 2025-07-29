@@ -2424,55 +2424,137 @@
             });
         }
 
-        // === AI INSIGHTS SYSTEM ===
+        // === SMART AI INSIGHTS SYSTEM ===
+        let aiInsightHistory = [];
+        let lastInsightTime = 0;
+        let aiInsightsPaused = false;
+        
         function activateAIInsights() {
             const panel = document.getElementById('aiInsightsPanel');
             const insights = document.getElementById('aiInsights');
             
+            // Show panel after delay
             setTimeout(() => {
                 panel.classList.add('active');
+                addAIInsight("👁️ VoidSight AI Analytics - Ready for spectral analysis");
             }, 2000);
             
-            const aiMessages = [
-                "🔍 Analyzing current market conditions for optimal ROI predictions...",
-                "📊 Cross-referencing industry benchmarks with your parameters...",
-                "🧠 AI models suggest considering seasonal market variations...",
-                "⚡ Real-time data integration enhancing calculation accuracy...",
-                "🎯 Identifying high-potential investment opportunities...",
-                "🔮 Predictive algorithms optimizing your investment timeline..."
-            ];
-            
-            let messageIndex = 0;
-            aiInsightsTimer = setInterval(() => {
-                const newInsight = document.createElement('div');
-                newInsight.className = 'ai-insight';
-                newInsight.textContent = aiMessages[messageIndex];
-                newInsight.style.opacity = '0';
-                newInsight.style.transform = 'translateY(20px)';
-                
-                insights.appendChild(newInsight);
-                
-                // Animate in
-                setTimeout(() => {
-                    newInsight.style.transition = 'all 0.5s ease';
-                    newInsight.style.opacity = '1';
-                    newInsight.style.transform = 'translateY(0)';
-                }, 100);
-                
-                // Remove old insights
-                const allInsights = insights.querySelectorAll('.ai-insight');
-                if (allInsights.length > 3) {
-                    allInsights[0].style.opacity = '0';
-                    allInsights[0].style.transform = 'translateY(-20px)';
-                    setTimeout(() => {
-                        if (allInsights[0].parentNode) {
-                            allInsights[0].remove();
-                        }
-                    }, 500);
+            // Add click to pause/resume
+            panel.addEventListener('click', () => {
+                aiInsightsPaused = !aiInsightsPaused;
+                const status = panel.querySelector('.ai-status');
+                if (status) {
+                    status.textContent = aiInsightsPaused ? 'Paused' : 'Online & Learning';
                 }
-                
-                messageIndex = (messageIndex + 1) % aiMessages.length;
-            }, 5000);
+            });
+        }
+        
+        function addAIInsight(message, type = 'info') {
+            const now = Date.now();
+            const panel = document.getElementById('aiInsightsPanel');
+            const insights = document.getElementById('aiInsights');
+            
+            // Prevent spam - minimum 3 seconds between insights
+            if (now - lastInsightTime < 3000 || aiInsightsPaused || !panel || !insights) {
+                return;
+            }
+            
+            // Don't repeat recent messages
+            if (aiInsightHistory.includes(message)) {
+                return;
+            }
+            
+            // Keep history clean (max 10 recent messages)
+            aiInsightHistory.push(message);
+            if (aiInsightHistory.length > 10) {
+                aiInsightHistory.shift();
+            }
+            
+            lastInsightTime = now;
+            
+            const newInsight = document.createElement('div');
+            newInsight.className = `ai-insight ${type}`;
+            newInsight.textContent = message;
+            newInsight.style.opacity = '0';
+            newInsight.style.transform = 'translateY(20px)';
+            
+            insights.appendChild(newInsight);
+            
+            // Animate in
+            setTimeout(() => {
+                newInsight.style.transition = 'all 0.5s ease';
+                newInsight.style.opacity = '1';
+                newInsight.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Remove old insights (keep max 3)
+            const allInsights = insights.querySelectorAll('.ai-insight');
+            if (allInsights.length > 3) {
+                allInsights[0].style.opacity = '0';
+                allInsights[0].style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    if (allInsights[0].parentNode) {
+                        allInsights[0].remove();
+                    }
+                }, 500);
+            }
+            
+            // Auto-hide after 15 seconds for non-important messages
+            if (type === 'info') {
+                setTimeout(() => {
+                    if (newInsight.parentNode) {
+                        newInsight.style.opacity = '0';
+                        newInsight.style.transform = 'translateY(-20px)';
+                        setTimeout(() => {
+                            if (newInsight.parentNode) {
+                                newInsight.remove();
+                            }
+                        }, 500);
+                    }
+                }, 15000);
+            }
+        }
+        
+        function getContextualAIInsight(action, data = {}) {
+            const insights = {
+                projectSelected: [
+                    `🎯 ${data.project} selected - Analyzing complexity and market fit...`,
+                    `📊 Cross-referencing ${data.project} benchmarks with industry data...`,
+                    `🔮 Evaluating ${data.project} ROI potential in current market...`
+                ],
+                industrySelected: [
+                    `🏭 ${data.industry} industry analysis initiated...`,
+                    `📈 Reviewing ${data.industry} market trends and growth patterns...`,
+                    `⚡ Loading ${data.industry} sector-specific calculation models...`
+                ],
+                companySelected: [
+                    `🏢 ${data.company} scale parameters integrated...`,
+                    `📊 Adjusting risk models for ${data.company} characteristics...`,
+                    `🎯 Optimizing calculations for ${data.company} investment capacity...`
+                ],
+                calculating: [
+                    "🔄 Quantum algorithms processing your investment scenario...",
+                    "📡 Analyzing 50+ market variables in real-time...", 
+                    "🧮 Monte Carlo simulations running across multiple scenarios...",
+                    "⚡ Cross-validating results with 10,000+ historical data points..."
+                ],
+                resultsReady: [
+                    "✅ Spectral analysis complete - ROI projections ready!",
+                    "🎉 VoidSight has revealed your investment's hidden potential!",
+                    "💎 Advanced analytics uncovered key optimization opportunities!"
+                ],
+                error: [
+                    "⚠️ Recalibrating quantum models - please verify your inputs...",
+                    "🔧 VoidSight detected an anomaly - adjusting parameters...",
+                    "🔄 AI systems self-correcting for optimal accuracy..."
+                ]
+            };
+            
+            const messages = insights[action] || [];
+            if (messages.length > 0) {
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                addAIInsight(randomMessage, action === 'error' ? 'warning' : 'info');
+            }
         }
 
         // === LOAD PROJECT TYPES QUANTUM ===
@@ -2559,7 +2641,7 @@
                     console.log(`✅ Added project card: ${project.name} (ID: ${project.id})`);
                 });
                 
-                addAIInsight(`📊 Loaded ${data.projects.length} project types. Select one to begin your analysis.`);
+                                    addAIInsight(`📊 Loaded ${data.projects.length} project types - Select one to begin spectral analysis`);
                 
             } catch (error) {
                 console.error('❌ Error loading quantum project types:', error);
@@ -2601,12 +2683,15 @@
             
             // Add visual feedback
             cardElement.style.transform = 'translateY(-8px) scale(1.02)';
+            
+            // Contextual AI insight
+            getContextualAIInsight('projectSelected', { project: projectName });
             setTimeout(() => {
                 cardElement.style.transform = '';
             }, 200);
             
             // Add AI insight about selection
-            addAIInsight(`🎯 Excellent choice! ${projectName} shows strong market potential based on current trends.`);
+                            // Contextual insight already added by getContextualAIInsight
             
             // Update selection status
             console.log('✅ Project selection updated:', selectedProjectTypeQuantum);
@@ -2626,6 +2711,51 @@
                 input.addEventListener('focus', onQuantumFieldFocus);
             });
             
+            // Add contextual AI insights for dropdowns
+            const companySize = document.getElementById('companySizeQuantum');
+            const targetIndustry = document.getElementById('targetIndustryQuantum');
+            
+            if (companySize) {
+                companySize.addEventListener('change', (e) => {
+                    if (e.target.value) {
+                        const sizeLabels = {
+                            'startup': 'Startup Ecosystem',
+                            'small': 'Small Enterprise', 
+                            'medium': 'Medium Corporation',
+                            'large': 'Large Organization',
+                            'enterprise': 'Global Enterprise'
+                        };
+                        getContextualAIInsight('companySelected', { company: sizeLabels[e.target.value] || e.target.value });
+                    }
+                });
+            }
+            
+            if (targetIndustry) {
+                targetIndustry.addEventListener('change', (e) => {
+                    if (e.target.value) {
+                        const industryLabels = {
+                            'fintech': 'FinTech',
+                            'healthtech': 'HealthTech',
+                            'edtech': 'EdTech',
+                            'ecommerce': 'E-commerce',
+                            'saas': 'SaaS',
+                            'gaming': 'Gaming',
+                            'realestate': 'Real Estate',
+                            'foodbeverage': 'Food & Beverage',
+                            'manufacturing': 'Manufacturing',
+                            'logistics': 'Logistics',
+                            'crypto': 'Cryptocurrency',
+                            'nft': 'NFT & Digital Assets',
+                            'web3': 'Web3 & Metaverse',
+                            'sustainability': 'GreenTech',
+                            'biotech': 'BioTech',
+                            'ai': 'AI & Machine Learning'
+                        };
+                        getContextualAIInsight('industrySelected', { industry: industryLabels[e.target.value] || e.target.value });
+                    }
+                });
+            }
+            
             console.log('✅ Quantum event listeners configured');
         }
 
@@ -2642,9 +2772,7 @@
                 'timelineMonthsQuantum': 'Timeline affects cash flow patterns and risk assessment models.'
             };
             
-            if (focusInsights[fieldName]) {
-                addAIInsight(`💡 ${focusInsights[fieldName]}`);
-            }
+            // Focus insights removed to prevent spam - using contextual insights instead
         }
 
         // === ADD AI INSIGHT ===
@@ -2697,7 +2825,7 @@
                     showQuantumFieldError(field, 'Minimum investment threshold is $1,000 for accurate modeling');
                     return false;
                 } else if (amount > 10000000) {
-                    addAIInsight('💰 Large investment detected! Consider diversification strategies for optimal risk management.');
+                    addAIInsight('💰 Major investment detected - VoidSight recommends enterprise risk modeling', 'warning');
                 }
             }
             
@@ -2707,7 +2835,7 @@
                     showQuantumFieldError(field, 'ROI must be between 1% and 1000%');
                     return false;
                 } else if (roi > 100) {
-                    addAIInsight('🚀 High ROI target detected! AI models suggest reviewing market conditions and risk factors.');
+                    addAIInsight('🚀 Ambitious ROI target - Consider market volatility factors', 'warning');
                 }
             }
             
@@ -2717,7 +2845,7 @@
                     showQuantumFieldError(field, 'Timeline must be between 1 and 120 months');
                     return false;
                 } else if (months > 60) {
-                    addAIInsight('⏰ Long-term investment horizon provides better growth potential but requires periodic strategy reviews.');
+                    addAIInsight('⏰ Long-term horizon - Enhanced growth potential identified', 'info');
                 }
             }
             
@@ -2821,8 +2949,8 @@
                 button.innerHTML = '<i class="fas fa-brain fa-spin"></i> Quantum Analysis in Progress...';
                 isCalculatingQuantum = true;
                 
-                // Add AI insight about calculation
-                addAIInsight('🔄 Initiating quantum analysis with multi-dimensional risk assessment...');
+                // Add contextual AI insight about calculation
+                getContextualAIInsight('calculating');
                 
                 // Validate inputs
                 if (!validateQuantumInputs()) {
@@ -3047,6 +3175,9 @@
         function displayQuantumResults(data) {
             console.log('📊 Displaying quantum results...');
             
+            // Add success AI insight
+            getContextualAIInsight('resultsReady');
+            
             const container = document.getElementById('resultsQuantumContainer');
             const metricsGrid = document.getElementById('metricsQuantumGrid');
             
@@ -3111,7 +3242,7 @@
                 
                 // Add hover effect for insights
                 card.addEventListener('mouseenter', () => {
-                    addAIInsight(`📈 ${metric.label}: ${metric.insight}`);
+                    // Removed to prevent spam - metrics are self-explanatory
                 });
                 
                 metricsGrid.appendChild(card);
@@ -3122,7 +3253,7 @@
             currentResultsQuantum = data;
             
             // Add final AI insight
-            addAIInsight('✨ Quantum analysis complete! Explore the interactive charts below for deeper insights.');
+            // Results completion insight already handled by getContextualAIInsight
             
             console.log('✅ Quantum results displayed successfully');
         }
