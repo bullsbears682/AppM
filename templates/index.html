@@ -1794,13 +1794,44 @@
                     return;
                 }
                 
+                // Get form values
+                const rawTargetIndustry = document.getElementById('targetIndustryQuantum').value;
+                console.log('🏭 Raw target industry value:', rawTargetIndustry);
+                
+                // Map any case variations to correct backend format
+                const industryMapping = {
+                    'fintech': 'fintech',
+                    'healthtech': 'healthtech', 
+                    'edtech': 'edtech',
+                    'ecommerce': 'ecommerce',
+                    'saas': 'saas',
+                    'gaming': 'gaming',
+                    'realestate': 'realEstate',
+                    'realEstate': 'realEstate',
+                    'foodbeverage': 'foodBeverage',
+                    'foodBeverage': 'foodBeverage',
+                    'manufacturing': 'manufacturing',
+                    'logistics': 'logistics',
+                    'crypto': 'crypto',
+                    'nft': 'nft',
+                    'web3': 'web3',
+                    'sustainability': 'sustainability',
+                    'biotech': 'biotech',
+                    'ai': 'ai',
+                    'iot': 'iot',
+                    'blockchain': 'blockchain'
+                };
+                
+                const targetIndustry = industryMapping[rawTargetIndustry] || rawTargetIndustry;
+                console.log('🏭 Mapped target industry:', targetIndustry);
+                
                 // Prepare enhanced data with correct API format
                 const requestData = {
                     company_name: "Quantum Analytics Corp", // Default company name
                     company_size: document.getElementById('companySizeQuantum').value,
-                    current_industry: document.getElementById('targetIndustryQuantum').value, // Use target as current
+                    current_industry: targetIndustry, // Use mapped industry
                     project_type: selectedProjectTypeQuantum,
-                    target_industry: document.getElementById('targetIndustryQuantum').value,
+                    target_industry: targetIndustry, // Use mapped industry
                     currency: "USD", // Default currency
                     custom_investment: parseFloat(document.getElementById('investmentAmountQuantum').value),
                     custom_timeline: parseInt(document.getElementById('timelineMonthsQuantum').value)
@@ -1817,6 +1848,10 @@
                 }
                 if (!requestData.target_industry) {
                     throw new Error('Target industry is required');
+                }
+                if (!industryMapping[rawTargetIndustry] && rawTargetIndustry) {
+                    console.warn('⚠️ Industry not in mapping:', rawTargetIndustry);
+                    addAIInsight(`⚠️ Unknown industry "${rawTargetIndustry}" - using as-is. This might cause validation errors.`);
                 }
                 if (!requestData.custom_investment || requestData.custom_investment < 1000) {
                     throw new Error('Investment amount must be at least $1,000');
