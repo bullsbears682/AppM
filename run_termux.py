@@ -141,9 +141,32 @@ TERMUX_MODE=true
         from app import app, config_class, logger
         logger.info("Starting Business ROI Calculator v2.0 in Termux mode")
         
+            # Try to use smart starter if available
+    if os.path.exists('start_app.py'):
+        print(f"\n🌟 Using smart port detection...")
+        os.system('python3 start_app.py')
+    else:
+        # Fallback to manual port management
+        import socket
+        from contextlib import closing
+        
+        def find_free_port(start_port=5000):
+            for port in range(start_port, start_port + 100):
+                try:
+                    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
+                        result = sock.connect_ex(('localhost', port))
+                        if result != 0:
+                            return port
+                except:
+                    continue
+            return 5000
+        
+        port = find_free_port()
+        
         print(f"\n🌟 Quantum ROI Calculator is starting...")
-        print(f"🌐 Open your browser and go to: http://localhost:5000")
-        print(f"📱 Or from other devices: http://$(hostname -I | awk '{{print $1}}'):5000")
+        print(f"📡 Using port: {port}")
+        print(f"🌐 Open your browser and go to: http://localhost:{port}")
+        print(f"📱 Or from other devices: http://YOUR_IP:{port}")
         print(f"\n🧠 Features Available:")
         print(f"   • AI-Powered ARIA Assistant")
         print(f"   • Quantum-Inspired UI with 3D animations")
@@ -156,7 +179,7 @@ TERMUX_MODE=true
         app.run(
             debug=config_class.DEBUG,
             host=config_class.HOST,
-            port=config_class.PORT,
+            port=port,
             use_reloader=False  # Disable reloader for Termux stability
         )
     except KeyboardInterrupt:
