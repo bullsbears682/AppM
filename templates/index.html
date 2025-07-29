@@ -308,44 +308,75 @@
             justify-content: space-between;
         }
 
-        .quantum-logo {
+        .phantom-logo {
             display: flex;
             align-items: center;
             gap: 1rem;
             font-family: var(--font-display);
             font-size: 1.75rem;
             font-weight: 700;
-            background: var(--holo-primary);
+            background: var(--ethereal-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            transition: var(--transition-quantum);
+            transition: var(--transition-phantom);
+            text-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
         }
 
-        .quantum-logo:hover {
-            transform: scale(1.05);
-            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
+        .phantom-logo:hover {
+            transform: scale(1.08) translateY(-2px);
+            filter: drop-shadow(0 0 25px rgba(168, 85, 247, 0.7));
+            text-shadow: 
+                0 0 20px rgba(168, 85, 247, 0.8),
+                0 0 40px rgba(168, 85, 247, 0.6),
+                0 0 60px rgba(168, 85, 247, 0.4);
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: var(--holo-primary);
+            width: 45px;
+            height: 45px;
+            border-radius: 15px;
+            background: var(--ethereal-primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            animation: pulse-quantum 3s ease-in-out infinite;
+            color: var(--phantom-white);
+            font-size: 1.6rem;
+            animation: pulse-phantom 4s ease-in-out infinite;
+            border: 2px solid rgba(168, 85, 247, 0.3);
+            backdrop-filter: blur(10px);
         }
 
-        @keyframes pulse-quantum {
+        @keyframes pulse-phantom {
             0%, 100% {
-                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+                box-shadow: 
+                    0 0 0 0 rgba(168, 85, 247, 0.8),
+                    inset 0 0 20px rgba(168, 85, 247, 0.2);
+                transform: scale(1);
+            }
+            25% {
+                box-shadow: 
+                    0 0 0 10px rgba(168, 85, 247, 0.4),
+                    inset 0 0 30px rgba(168, 85, 247, 0.3);
+                transform: scale(1.05);
             }
             50% {
-                box-shadow: 0 0 0 20px rgba(139, 92, 246, 0);
+                box-shadow: 
+                    0 0 0 25px rgba(168, 85, 247, 0.1),
+                    inset 0 0 40px rgba(168, 85, 247, 0.4);
+                transform: scale(1.1);
+            }
+            75% {
+                box-shadow: 
+                    0 0 0 15px rgba(168, 85, 247, 0.2),
+                    inset 0 0 35px rgba(168, 85, 247, 0.3);
+                transform: scale(1.03);
             }
         }
 
@@ -356,17 +387,44 @@
         }
 
         .nav-badge {
-            background: var(--holo-secondary);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-size: 0.8rem;
+            background: rgba(168, 85, 247, 0.1);
+            color: var(--text-phantom);
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: var(--transition-quantum);
+            letter-spacing: 1.5px;
+            transition: var(--transition-phantom);
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 4px 15px rgba(168, 85, 247, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-badge.spectral {
+            background: rgba(168, 85, 247, 0.15);
+            border-color: rgba(168, 85, 247, 0.4);
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+        }
+
+        .nav-badge.spirit {
+            background: rgba(76, 110, 245, 0.15);
+            border-color: rgba(76, 110, 245, 0.4);
+            text-shadow: 0 0 10px rgba(76, 110, 245, 0.5);
+        }
+
+        .nav-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 25px rgba(168, 85, 247, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            background: rgba(168, 85, 247, 0.2);
+            border-color: rgba(168, 85, 247, 0.6);
+        }
         }
 
         .nav-badge::before {
@@ -563,57 +621,153 @@
             opacity: 1;
         }
 
-        /* === QUANTUM FORMS === */
-        .form-quantum {
+        /* === PHANTOM CARDS === */
+        .phantom-card {
+            background: var(--bg-shadow);
+            border: 1px solid var(--border-phantom);
+            border-radius: var(--radius-phantom);
+            padding: 2.5rem;
+            transition: var(--transition-phantom);
+            position: relative;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(168, 85, 247, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .phantom-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--ethereal-primary);
+            opacity: 0;
+            transition: opacity 0.7s ease;
+            border-radius: var(--radius-phantom) var(--radius-phantom) 0 0;
+        }
+
+        .phantom-card::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: var(--radius-phantom);
+            padding: 1px;
+            background: linear-gradient(135deg, 
+                rgba(168, 85, 247, 0.3) 0%, 
+                rgba(76, 110, 245, 0.2) 50%, 
+                rgba(18, 184, 163, 0.1) 100%);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.7s ease;
+            pointer-events: none;
+        }
+
+        .phantom-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            border-color: var(--border-phantom);
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.4),
+                0 0 50px rgba(168, 85, 247, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .phantom-card:hover::before,
+        .phantom-card:hover::after {
+            opacity: 1;
+        }
+
+        /* === PHANTOM FORMS === */
+        .form-phantom {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 3.5rem;
             margin-bottom: 4rem;
         }
 
-        .form-section-quantum h3 {
-            color: var(--text-quantum);
-            margin-bottom: 2rem;
-            font-size: 1.5rem;
+        .form-section-phantom h3 {
+            color: var(--text-phantom);
+            margin-bottom: 2.5rem;
+            font-size: 1.6rem;
             font-weight: 700;
             font-family: var(--font-display);
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.2rem;
             position: relative;
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
-        .form-section-quantum h3::after {
+        .form-section-phantom h3::after {
             content: '';
             flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, var(--quantum-violet), transparent);
+            height: 2px;
+            background: linear-gradient(90deg, 
+                var(--phantom-purple) 0%, 
+                var(--phantom-teal) 50%, 
+                transparent 100%);
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
         }
 
         .section-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: var(--holo-primary);
+            width: 45px;
+            height: 45px;
+            border-radius: 15px;
+            background: var(--ethereal-primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.2rem;
+            color: var(--phantom-white);
+            font-size: 1.3rem;
+            border: 2px solid rgba(168, 85, 247, 0.3);
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 20px rgba(168, 85, 247, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            animation: section-icon-glow 3s ease-in-out infinite;
         }
 
-        .form-group-quantum {
-            margin-bottom: 2rem;
+        .section-icon.spectral {
+            background: var(--ethereal-secondary);
+            border-color: rgba(232, 121, 249, 0.4);
+            box-shadow: 
+                0 0 25px rgba(232, 121, 249, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes section-icon-glow {
+            0%, 100% {
+                box-shadow: 
+                    0 0 20px rgba(168, 85, 247, 0.4),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            }
+            50% {
+                box-shadow: 
+                    0 0 30px rgba(168, 85, 247, 0.6),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        .form-group-phantom {
+            margin-bottom: 2.5rem;
             position: relative;
         }
 
-        .form-label-quantum {
+        .form-label-phantom {
             display: block;
-            margin-bottom: 0.75rem;
-            color: var(--text-neural);
+            margin-bottom: 1rem;
+            color: var(--text-spirit);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-family: var(--font-display);
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
             letter-spacing: 1px;
             position: relative;
         }
@@ -1168,13 +1322,14 @@
     </style>
 </head>
 <body>
-    <!-- Quantum Background System -->
-    <canvas class="quantum-canvas" id="quantumCanvas"></canvas>
-    <div class="neural-grid"></div>
-    <div class="quantum-orbs">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
+    <!-- Phantom Background System -->
+    <canvas class="phantom-canvas" id="phantomCanvas"></canvas>
+    <div class="ethereal-grid"></div>
+    <div class="spectral-mist"></div>
+    <div class="phantom-spirits">
+        <div class="spirit spirit-1"></div>
+        <div class="spirit spirit-2"></div>
+        <div class="spirit spirit-3"></div>
     </div>
 
     <!-- Phantom Navigation -->
@@ -1240,21 +1395,21 @@
             </div>
         </section>
 
-        <!-- Configuration Quantum Form -->
-        <div class="form-quantum">
-            <!-- Project Selection Quantum -->
-            <div class="quantum-card scroll-reveal">
-                <div class="form-section-quantum">
+        <!-- Configuration Phantom Form -->
+        <div class="form-phantom">
+            <!-- Project Selection Phantom -->
+            <div class="phantom-card scroll-reveal">
+                <div class="form-section-phantom">
                     <h3>
-                        <div class="section-icon">
-                            <i class="fas fa-rocket"></i>
+                        <div class="section-icon spectral">
+                            <i class="fas fa-magic"></i>
                         </div>
-                        Project Configuration
+                        Ethereal Project Configuration
                     </h3>
                     
-                    <div class="form-group-quantum">
-                        <label class="form-label-quantum">Select Project Type</label>
-                        <div id="projectTypesQuantum" class="project-grid-quantum">
+                    <div class="form-group-phantom">
+                        <label class="form-label-phantom">Select Spectral Project Type</label>
+                        <div id="projectTypesPhantom" class="project-grid-phantom">
                             <!-- Projects will be loaded here -->
                         </div>
                     </div>
