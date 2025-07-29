@@ -168,7 +168,7 @@ class BaseConfig:
             'volatility': 0.4,
             'description': 'Video games and interactive entertainment'
         },
-        'realEstate': {
+        'realestate': {
             'name': 'PropTech & Real Estate',
             'growth_rate': 0.08,
             'risk_factor': 0.4,
@@ -176,7 +176,7 @@ class BaseConfig:
             'volatility': 0.2,
             'description': 'Property technology and real estate innovation'
         },
-        'foodBeverage': {
+        'foodbeverage': {
             'name': 'Food & Beverage Innovation',
             'growth_rate': 0.06,
             'risk_factor': 0.3,

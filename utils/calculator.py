@@ -98,16 +98,16 @@ class EnhancedROICalculator:
             industry_config = Config.INDUSTRIES[industry]
             
             # Base cost calculation
-            base_cost = Decimal(str(project_config.base_cost))
-            company_multiplier = Decimal(str(company_config.multiplier))
-            industry_multiplier = Decimal('1.0') + Decimal(str(industry_config.volatility))
+            base_cost = Decimal(str(self._get_config_value(project_config, 'base_cost', 100000)))
+            company_multiplier = Decimal(str(self._get_config_value(company_config, 'cost_multiplier', 1.0)))
+            industry_multiplier = Decimal('1.0') + Decimal(str(self._get_config_value(industry_config, 'volatility', 0.1)))
             
             # Enhanced cost calculation with multiple factors
             adjusted_base_cost = base_cost * company_multiplier * industry_multiplier
             
             # Additional cost factors
-            complexity_multiplier = self._get_complexity_multiplier(project_config.complexity)
-            regulatory_multiplier = self._get_regulatory_multiplier(industry_config.regulatory_complexity)
+            complexity_multiplier = self._get_complexity_multiplier(self._get_config_value(project_config, 'complexity', 'Medium'))
+            regulatory_multiplier = self._get_regulatory_multiplier(self._get_config_value(industry_config, 'regulatory_complexity', 'Medium'))
             
             # Calculate components
             development_cost = adjusted_base_cost * complexity_multiplier
@@ -116,7 +116,7 @@ class EnhancedROICalculator:
             regulatory_cost = development_cost * regulatory_multiplier
             
             # Risk buffer based on project and industry risk
-            total_risk = Decimal(str(project_config.risk_level)) + Decimal(str(industry_config.risk_factor))
+            total_risk = Decimal(str(self._get_config_value(project_config, 'risk_level', 0.2))) + Decimal(str(self._get_config_value(industry_config, 'risk_factor', 0.1)))
             risk_buffer = development_cost * total_risk * Decimal('0.5')
             
             # Total cost
@@ -130,7 +130,7 @@ class EnhancedROICalculator:
             total_cost_converted = self.convert_currency(total_cost, 'USD', currency)
             
             # Timeline calculation
-            base_timeline = project_config.timeline
+            base_timeline = self._get_config_value(project_config, 'timeline', 6)
             if custom_timeline:
                 timeline_months = custom_timeline
             else:
@@ -173,8 +173,8 @@ class EnhancedROICalculator:
             company_config = Config.COMPANY_SIZES[company_size]
             
             # Base ROI calculation
-            base_roi_multiplier = Decimal(str(project_config.roi_potential))
-            growth_rate = Decimal(str(industry_config.growth_rate))
+            base_roi_multiplier = Decimal(str(self._get_config_value(project_config, 'roi_potential', 2.0)))
+            growth_rate = Decimal(str(self._get_config_value(industry_config, 'growth_rate', 0.1)))
             
             # Realistic revenue calculation
             base_revenue = investment * base_roi_multiplier
@@ -393,10 +393,10 @@ class EnhancedROICalculator:
         industry_config = Config.INDUSTRIES[industry]
         
         # Risk factors should be between 0-1, then scaled to 100
-        company_risk = Decimal(str(company_config.risk_factor)) * Decimal('30')  # Max 30
-        project_risk = Decimal(str(project_config.risk_level)) * Decimal('40')   # Max 40
-        industry_risk = Decimal(str(industry_config.risk_factor)) * Decimal('20') # Max 20
-        market_volatility = Decimal(str(industry_config.volatility)) * Decimal('10') # Max 10
+        company_risk = Decimal(str(self._get_config_value(company_config, 'risk_multiplier', 0.2))) * Decimal('30')  # Max 30
+        project_risk = Decimal(str(self._get_config_value(project_config, 'risk_level', 0.2))) * Decimal('40')   # Max 40
+        industry_risk = Decimal(str(self._get_config_value(industry_config, 'risk_factor', 0.1))) * Decimal('20') # Max 20
+        market_volatility = Decimal(str(self._get_config_value(industry_config, 'volatility', 0.1))) * Decimal('10') # Max 10
         
         total_risk_score = company_risk + project_risk + industry_risk + market_volatility
         
@@ -423,16 +423,26 @@ class EnhancedROICalculator:
         for _ in range(simulations):
             # Add randomness to key parameters
             if NUMPY_AVAILABLE:
-                random_growth = random.gauss(industry_config.growth_rate, industry_config.volatility * 0.3)
-                random_roi = random.gauss(project_config.roi_potential, project_config.risk_level * 0.5)
+                growth_rate = self._get_config_value(industry_config, 'growth_rate', 0.1)
+                volatility = self._get_config_value(industry_config, 'volatility', 0.1)
+                roi_potential = self._get_config_value(project_config, 'roi_potential', 2.0)
+                risk_level = self._get_config_value(project_config, 'risk_level', 0.2)
+                
+                random_growth = random.gauss(growth_rate, volatility * 0.3)
+                random_roi = random.gauss(roi_potential, risk_level * 0.5)
                 random_timeline = random.gauss(timeline_months, timeline_months * 0.1)
             else:
                 # Simplified randomness for Termux compatibility
-                volatility_factor = industry_config.volatility * 0.3
-                random_growth = industry_config.growth_rate + random.uniform(-volatility_factor, volatility_factor)
+                growth_rate = self._get_config_value(industry_config, 'growth_rate', 0.1)
+                volatility = self._get_config_value(industry_config, 'volatility', 0.1)
+                roi_potential = self._get_config_value(project_config, 'roi_potential', 2.0)
+                risk_level = self._get_config_value(project_config, 'risk_level', 0.2)
                 
-                risk_factor = project_config.risk_level * 0.5
-                random_roi = project_config.roi_potential + random.uniform(-risk_factor, risk_factor)
+                volatility_factor = volatility * 0.3
+                random_growth = growth_rate + random.uniform(-volatility_factor, volatility_factor)
+                
+                risk_factor = risk_level * 0.5
+                random_roi = roi_potential + random.uniform(-risk_factor, risk_factor)
                 
                 timeline_factor = timeline_months * 0.1
                 random_timeline = timeline_months + random.uniform(-timeline_factor, timeline_factor)
@@ -486,21 +496,27 @@ class EnhancedROICalculator:
         
         # Growth rate sensitivity
         growth_sensitivity = []
+        base_growth_rate = self._get_config_value(industry_config, 'growth_rate', 0.1)
         for var in variations:
-            modified_growth = industry_config.growth_rate * (1 + var)
-            modified_config = industry_config
-            modified_config.growth_rate = max(0, modified_growth)
-            roi = self._calculate_base_roi(investment, modified_config, project_config, timeline_months)
+            modified_growth = base_growth_rate * (1 + var)
+            modified_growth = max(0, modified_growth)
+            # Create a temporary modified config
+            modified_industry_config = dict(industry_config) if isinstance(industry_config, dict) else industry_config.__dict__.copy()
+            modified_industry_config['growth_rate'] = modified_growth
+            roi = self._calculate_base_roi(investment, modified_industry_config, project_config, timeline_months)
             growth_sensitivity.append(float(roi))
         sensitivity['growth_rate'] = growth_sensitivity
         
         # ROI potential sensitivity
         roi_sensitivity = []
+        base_roi_potential = self._get_config_value(project_config, 'roi_potential', 2.0)
         for var in variations:
-            modified_roi_potential = project_config.roi_potential * (1 + var)
-            modified_config = project_config
-            modified_config.roi_potential = max(0.5, modified_roi_potential)
-            roi = self._calculate_base_roi(investment, industry_config, modified_config, timeline_months)
+            modified_roi_potential = base_roi_potential * (1 + var)
+            modified_roi_potential = max(0.5, modified_roi_potential)
+            # Create a temporary modified config
+            modified_project_config = dict(project_config) if isinstance(project_config, dict) else project_config.__dict__.copy()
+            modified_project_config['roi_potential'] = modified_roi_potential
+            roi = self._calculate_base_roi(investment, industry_config, modified_project_config, timeline_months)
             roi_sensitivity.append(float(roi))
         sensitivity['roi_potential'] = roi_sensitivity
         
@@ -517,11 +533,13 @@ class EnhancedROICalculator:
     
     def _calculate_base_roi(self, investment: Decimal, industry_config, project_config, timeline_months: int) -> Decimal:
         """Calculate realistic base ROI for sensitivity analysis"""
-        base_revenue = investment * Decimal(str(project_config.roi_potential))
+        roi_potential = self._get_config_value(project_config, 'roi_potential', 2.0)
+        base_revenue = investment * Decimal(str(roi_potential))
         
         # Apply realistic growth caps
         max_growth_years = min(timeline_months / 12, 5)
-        capped_growth = min(industry_config.growth_rate, 0.5)
+        growth_rate = self._get_config_value(industry_config, 'growth_rate', 0.1)
+        capped_growth = min(growth_rate, 0.5)
         growth_multiplier = Decimal('1') + (Decimal(str(capped_growth)) * Decimal(str(max_growth_years)))
         projected_revenue = base_revenue * growth_multiplier
         
@@ -554,14 +572,15 @@ class EnhancedROICalculator:
             'Specialized': {'value': 8000000000, 'growth_potential': 'Moderate'}
         }
         
-        market_info = market_size_values.get(industry_config.market_size, market_size_values['Medium'])
+        market_size = self._get_config_value(industry_config, 'market_size', 'Medium')
+        market_info = market_size_values.get(market_size, market_size_values['Medium'])
         
         return {
             'market_size_usd': market_info['value'],
-            'annual_growth_rate': f"{industry_config.growth_rate * 100:.1f}%",
-            'risk_level': self._get_risk_level_description(industry_config.risk_factor),
-            'volatility': f"{industry_config.volatility * 100:.1f}%",
-            'regulatory_complexity': industry_config.regulatory_complexity,
+            'annual_growth_rate': f"{self._get_config_value(industry_config, 'growth_rate', 0.1) * 100:.1f}%",
+            'risk_level': self._get_risk_level_description(self._get_config_value(industry_config, 'risk_factor', 0.1)),
+            'volatility': f"{self._get_config_value(industry_config, 'volatility', 0.1) * 100:.1f}%",
+            'regulatory_complexity': self._get_config_value(industry_config, 'regulatory_complexity', 'Medium'),
             'growth_potential': market_info['growth_potential'],
             'key_trends': self._get_industry_trends(industry),
             'investment_attractiveness': self._calculate_investment_attractiveness(industry_config)
@@ -595,7 +614,10 @@ class EnhancedROICalculator:
     
     def _calculate_investment_attractiveness(self, industry_config) -> str:
         """Calculate overall investment attractiveness"""
-        score = (industry_config.growth_rate * 50) - (industry_config.risk_factor * 30) - (industry_config.volatility * 20)
+        growth_rate = self._get_config_value(industry_config, 'growth_rate', 0.1)
+        risk_factor = self._get_config_value(industry_config, 'risk_factor', 0.1)
+        volatility = self._get_config_value(industry_config, 'volatility', 0.1)
+        score = (growth_rate * 50) - (risk_factor * 30) - (volatility * 20)
         
         if score >= 15:
             return 'Highly Attractive'
@@ -634,10 +656,12 @@ class EnhancedROICalculator:
         
         # Industry-specific recommendations
         industry_config = Config.INDUSTRIES[industry]
-        if industry_config.regulatory_complexity == 'Very High':
+        regulatory_complexity = self._get_config_value(industry_config, 'regulatory_complexity', 'Medium')
+        if regulatory_complexity == 'Very High':
             recommendations.append("📋 High regulatory complexity: Engage compliance experts early")
         
-        if industry_config.volatility > 0.3:
+        volatility = self._get_config_value(industry_config, 'volatility', 0.1)
+        if volatility > 0.3:
             recommendations.append("📈 High market volatility: Monitor market conditions closely")
         
         # Company size specific recommendations
