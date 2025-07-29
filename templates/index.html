@@ -1451,7 +1451,8 @@
                 }
                 
                 const data = await response.json();
-                console.log('✅ Quantum project types loaded:', data.projects.length);
+                console.log('✅ Quantum project types loaded:', data.projects?.length || 0);
+                console.log('📋 Project data:', data);
                 
                 const container = document.getElementById('projectTypesQuantum');
                 if (!container) {
@@ -1461,48 +1462,92 @@
                 
                 container.innerHTML = '';
                 
+                if (!data.projects || data.projects.length === 0) {
+                    console.error('❌ No projects found in response');
+                    container.innerHTML = '<div class="error-quantum">No project types available. Please check the API.</div>';
+                    return;
+                }
+                
                 data.projects.forEach((project, index) => {
                     const card = document.createElement('div');
                     card.className = 'project-card-quantum scroll-reveal';
                     card.style.animationDelay = `${index * 0.1}s`;
                     card.setAttribute('data-project-id', project.id);
+                    card.setAttribute('tabindex', '0'); // Make keyboard accessible
                     card.innerHTML = `
-                        <div class="project-title-quantum">${project.name}</div>
-                        <div class="project-description-quantum">${project.description}</div>
+                        <div class="project-title-quantum">${project.name || 'Unknown Project'}</div>
+                        <div class="project-description-quantum">${project.description || 'No description available'}</div>
                         <div class="project-meta-quantum">
-                            <span class="project-complexity">${project.complexity}</span>
-                            <span class="project-cost">${project.base_cost}</span>
+                            <span class="project-complexity">${project.complexity || 'Medium'}</span>
+                            <span class="project-cost">${project.base_cost || '$50K'}</span>
                         </div>
                     `;
                     
-                    card.addEventListener('click', () => selectProjectTypeQuantum(project.id, card, project.name));
+                    // Add click and keyboard event listeners
+                    const selectHandler = () => selectProjectTypeQuantum(project.id, card, project.name);
+                    card.addEventListener('click', selectHandler);
+                    card.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            selectHandler();
+                        }
+                    });
+                    
                     container.appendChild(card);
+                    console.log(`✅ Added project card: ${project.name} (ID: ${project.id})`);
                 });
+                
+                addAIInsight(`📊 Loaded ${data.projects.length} project types. Select one to begin your analysis.`);
                 
             } catch (error) {
                 console.error('❌ Error loading quantum project types:', error);
-                showQuantumError('Failed to load project types. Please refresh the page.');
+                const container = document.getElementById('projectTypesQuantum');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="error-quantum">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Failed to load project types: ${error.message}
+                            <br><button onclick="loadProjectTypesQuantum()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--quantum-violet); color: white; border: none; border-radius: 8px; cursor: pointer;">Retry</button>
+                        </div>
+                    `;
+                }
+                showQuantumError('Failed to load project types. Please check your connection and try again.');
             }
         }
 
         // === SELECT PROJECT TYPE QUANTUM ===
         function selectProjectTypeQuantum(projectId, cardElement, projectName) {
-            console.log('🎯 Selected quantum project:', projectName);
+            console.log('🎯 Selected quantum project:', projectName, 'ID:', projectId);
+            
+            // Prevent double-click issues
+            if (selectedProjectTypeQuantum === projectId) {
+                console.log('Project already selected');
+                return;
+            }
             
             // Remove previous selection
             document.querySelectorAll('.project-card-quantum').forEach(card => {
                 card.classList.remove('selected');
             });
             
-            // Add selection to clicked card
+            // Add selection to clicked card with visual feedback
             cardElement.classList.add('selected');
             selectedProjectTypeQuantum = projectId;
             
-            // Clear any previous error
+            // Clear any previous errors
             clearQuantumValidationErrors();
+            
+            // Add visual feedback
+            cardElement.style.transform = 'translateY(-8px) scale(1.02)';
+            setTimeout(() => {
+                cardElement.style.transform = '';
+            }, 200);
             
             // Add AI insight about selection
             addAIInsight(`🎯 Excellent choice! ${projectName} shows strong market potential based on current trends.`);
+            
+            // Update selection status
+            console.log('✅ Project selection updated:', selectedProjectTypeQuantum);
         }
 
         // === SETUP QUANTUM EVENT LISTENERS ===
@@ -1721,14 +1766,16 @@
                     return;
                 }
                 
-                // Prepare enhanced data
+                // Prepare enhanced data with correct API format
                 const requestData = {
-                    project_type: selectedProjectTypeQuantum,
+                    company_name: "Quantum Analytics Corp", // Default company name
                     company_size: document.getElementById('companySizeQuantum').value,
+                    current_industry: document.getElementById('targetIndustryQuantum').value, // Use target as current
+                    project_type: selectedProjectTypeQuantum,
                     target_industry: document.getElementById('targetIndustryQuantum').value,
-                    investment_amount: parseFloat(document.getElementById('investmentAmountQuantum').value),
-                    expected_roi: parseFloat(document.getElementById('expectedROIQuantum').value),
-                    timeline_months: parseInt(document.getElementById('timelineMonthsQuantum').value)
+                    currency: "USD", // Default currency
+                    custom_investment: parseFloat(document.getElementById('investmentAmountQuantum').value),
+                    custom_timeline: parseInt(document.getElementById('timelineMonthsQuantum').value)
                 };
                 
                 console.log('📤 Sending quantum calculation request:', requestData);
@@ -1748,8 +1795,8 @@
                 const data = await response.json();
                 console.log('📥 Received quantum response:', data);
                 
-                if (data.error) {
-                    throw new Error(data.validation_error?.message || 'Quantum calculation failed');
+                if (data.error || !response.ok) {
+                    throw new Error(data.validation_error?.message || data.error || 'Quantum calculation failed');
                 }
                 
                 // Display enhanced results
@@ -1835,42 +1882,45 @@
             // Clear previous results
             metricsGrid.innerHTML = '';
             
-            // Enhanced metrics with AI insights
+            // Enhanced metrics with AI insights and error handling
+            const roiData = data.roi_projection || {};
+            const costData = data.cost_analysis || {};
+            
             const metrics = [
                 {
                     icon: 'fas fa-coins',
                     label: 'Total Investment',
-                    value: formatQuantumCurrency(data.roi_projection.total_investment),
+                    value: formatQuantumCurrency(costData.total_cost || roiData.total_investment || 0),
                     insight: 'Initial capital requirement'
                 },
                 {
                     icon: 'fas fa-percentage',
                     label: 'Quantum ROI',
-                    value: `${data.roi_projection.roi_percentage.toFixed(2)}%`,
+                    value: `${(roiData.roi_percentage || 0).toFixed(2)}%`,
                     insight: 'AI-optimized return rate'
                 },
                 {
                     icon: 'fas fa-chart-line',
                     label: 'Projected Revenue',
-                    value: formatQuantumCurrency(data.roi_projection.projected_revenue),
+                    value: formatQuantumCurrency(roiData.projected_revenue || 0),
                     insight: 'Market-adjusted projections'
                 },
                 {
                     icon: 'fas fa-gem',
                     label: 'Net Present Value',
-                    value: formatQuantumCurrency(data.roi_projection.npv),
+                    value: formatQuantumCurrency(roiData.npv || 0),
                     insight: 'Time-value optimized'
                 },
                 {
                     icon: 'fas fa-rocket',
                     label: 'Internal Rate of Return',
-                    value: `${(data.roi_projection.irr * 100).toFixed(2)}%`,
+                    value: `${((roiData.irr || 0) * 100).toFixed(2)}%`,
                     insight: 'Compound growth indicator'
                 },
                 {
                     icon: 'fas fa-hourglass-half',
                     label: 'Payback Period',
-                    value: `${data.roi_projection.payback_period_months} months`,
+                    value: `${roiData.payback_period_months || 0} months`,
                     insight: 'Break-even timeline'
                 }
             ];
@@ -1910,11 +1960,16 @@
         function initializeQuantumCharts(data) {
             // ROI Timeline Chart
             const roiCtx = document.getElementById('roiChart');
-            if (roiCtx && data.roi_projection) {
-                const timeline = Array.from({length: data.roi_projection.payback_period_months + 6}, (_, i) => i + 1);
+            const roiProjection = data.roi_projection || {};
+            
+            if (roiCtx && roiProjection.payback_period_months) {
+                const timelinePeriod = Math.max(roiProjection.payback_period_months || 12, 6);
+                const timeline = Array.from({length: timelinePeriod + 6}, (_, i) => i + 1);
+                const roiPercentage = roiProjection.roi_percentage || 25;
+                
                 const roiData = timeline.map(month => {
-                    const progress = month / data.roi_projection.payback_period_months;
-                    return Math.min(progress * data.roi_projection.roi_percentage, data.roi_projection.roi_percentage);
+                    const progress = month / timelinePeriod;
+                    return Math.min(progress * roiPercentage, roiPercentage);
                 });
 
                 roiChart = new Chart(roiCtx, {
