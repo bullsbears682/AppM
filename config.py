@@ -272,7 +272,7 @@ class BaseConfig:
             'description': 'New Product Development',
             'complexity': 'High',
             'timeline': 12,
-            'base_cost': 150000,
+            'base_cost': 75000,  # Reduced from 150000
             'roi_potential': 2.5,
             'risk_level': 0.3,
             'required_skills': ['Product Manager', 'Software Engineer', 'Designer', 'QA Engineer']
@@ -281,7 +281,7 @@ class BaseConfig:
             'description': 'Digital Transformation',
             'complexity': 'Very High',
             'timeline': 18,
-            'base_cost': 200000,
+            'base_cost': 100000,  # Reduced from 200000
             'roi_potential': 3.0,
             'risk_level': 0.25,
             'required_skills': ['Solution Architect', 'Change Manager', 'Software Engineer', 'Business Analyst']
@@ -290,7 +290,7 @@ class BaseConfig:
             'description': 'Market Expansion',
             'complexity': 'Medium',
             'timeline': 8,
-            'base_cost': 100000,
+            'base_cost': 50000,  # Reduced from 100000
             'roi_potential': 2.2,
             'risk_level': 0.35,
             'required_skills': ['Marketing Manager', 'Sales Representative', 'Market Researcher']
@@ -299,7 +299,7 @@ class BaseConfig:
             'description': 'Technology Upgrade',
             'complexity': 'Medium',
             'timeline': 6,
-            'base_cost': 80000,
+            'base_cost': 40000,  # Reduced from 80000
             'roi_potential': 1.8,
             'risk_level': 0.2,
             'required_skills': ['System Administrator', 'Software Engineer', 'Technical Lead']
@@ -308,7 +308,7 @@ class BaseConfig:
             'description': 'Marketing Campaign',
             'complexity': 'Low',
             'timeline': 4,
-            'base_cost': 50000,
+            'base_cost': 25000,  # Reduced from 50000
             'roi_potential': 1.5,
             'risk_level': 0.25,
             'required_skills': ['Marketing Manager', 'Graphic Designer', 'Content Writer']
@@ -317,7 +317,7 @@ class BaseConfig:
             'description': 'E-commerce Platform',
             'complexity': 'High',
             'timeline': 10,
-            'base_cost': 120000,
+            'base_cost': 60000,  # Reduced from 120000
             'roi_potential': 2.8,
             'risk_level': 0.28,
             'required_skills': ['E-commerce Developer', 'UX Designer', 'Payment Integration Specialist']
@@ -326,7 +326,7 @@ class BaseConfig:
             'description': 'Mobile Application',
             'complexity': 'High',
             'timeline': 8,
-            'base_cost': 90000,
+            'base_cost': 45000,  # Reduced from 90000
             'roi_potential': 2.4,
             'risk_level': 0.32,
             'required_skills': ['Mobile Developer', 'UI/UX Designer', 'Backend Developer']
@@ -335,7 +335,7 @@ class BaseConfig:
             'description': 'AI Integration',
             'complexity': 'Very High',
             'timeline': 14,
-            'base_cost': 180000,
+            'base_cost': 90000,  # Reduced from 180000
             'roi_potential': 3.5,
             'risk_level': 0.4,
             'required_skills': ['AI Engineer', 'Data Scientist', 'ML Engineer', 'Software Architect']

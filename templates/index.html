@@ -2269,7 +2269,7 @@
 
         <!-- Quantum Calculate Button -->
         <div class="calculate-section">
-            <button type="button" class="quantum-btn" onclick="calculateQuantumROI()">
+            <button type="button" id="calculateBtnQuantum" class="quantum-btn" onclick="calculateQuantumROI()">
                 <i class="fas fa-brain"></i>
                 Initiate AI Analysis
             </button>
@@ -3511,17 +3511,28 @@
             if (calculateBtn) {
                 const originalCalculate = window.calculateQuantumROI;
                 
-                window.calculateQuantumROI = function() {
-                    calculateBtn.classList.add('loading');
-                    calculateBtn.innerHTML = '<span>Analyzing...</span>';
-                    showProgress();
-                    
-                    return originalCalculate.apply(this, arguments).finally(() => {
-                        calculateBtn.classList.remove('loading');
-                        calculateBtn.innerHTML = '<i class="fas fa-atom"></i><span>Initiate AI Analysis</span>';
-                        hideProgress();
-                    });
-                };
+                if (originalCalculate) {
+                    window.calculateQuantumROI = async function() {
+                        try {
+                            calculateBtn.classList.add('loading');
+                            calculateBtn.innerHTML = '<span>Analyzing...</span>';
+                            showProgress();
+                            
+                            // Call original function and wait for completion
+                            const result = await originalCalculate.apply(this, arguments);
+                            return result;
+                        } catch (error) {
+                            console.error('Calculation error:', error);
+                            throw error;
+                        } finally {
+                            calculateBtn.classList.remove('loading');
+                            calculateBtn.innerHTML = '<i class="fas fa-brain"></i> Initiate AI Analysis';
+                            hideProgress();
+                        }
+                    };
+                } else {
+                    console.warn('Original calculateQuantumROI function not found');
+                }
             }
         }
         

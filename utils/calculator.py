@@ -102,25 +102,26 @@ class EnhancedROICalculator:
             company_multiplier = Decimal(str(self._get_config_value(company_config, 'cost_multiplier', 1.0)))
             industry_multiplier = Decimal('1.0') + Decimal(str(self._get_config_value(industry_config, 'volatility', 0.1)))
             
-            # Enhanced cost calculation with multiple factors
-            adjusted_base_cost = base_cost * company_multiplier * industry_multiplier
+            # Simplified cost calculation for more reasonable estimates
+            # Apply moderate company multiplier (reduced impact)
+            company_factor = (company_multiplier - Decimal('1.0')) * Decimal('0.5') + Decimal('1.0')  # Reduce company impact by 50%
             
-            # Additional cost factors
-            complexity_multiplier = self._get_complexity_multiplier(self._get_config_value(project_config, 'complexity', 'Medium'))
-            regulatory_multiplier = self._get_regulatory_multiplier(self._get_config_value(industry_config, 'regulatory_complexity', 'Medium'))
+            # Apply minimal industry multiplier
+            industry_factor = Decimal('1.0') + (industry_multiplier - Decimal('1.0')) * Decimal('0.3')  # Reduce industry impact by 70%
             
-            # Calculate components
-            development_cost = adjusted_base_cost * complexity_multiplier
-            infrastructure_cost = development_cost * Decimal('0.15')  # 15% of dev cost
-            maintenance_cost = development_cost * Decimal('0.20')    # 20% annual maintenance
-            regulatory_cost = development_cost * regulatory_multiplier
+            # Calculate development cost with reduced multipliers
+            development_cost = base_cost * company_factor * industry_factor
             
-            # Risk buffer based on project and industry risk
-            total_risk = Decimal(str(self._get_config_value(project_config, 'risk_level', 0.2))) + Decimal(str(self._get_config_value(industry_config, 'risk_factor', 0.1)))
-            risk_buffer = development_cost * total_risk * Decimal('0.5')
+            # Simplified additional costs (much lower)
+            infrastructure_cost = development_cost * Decimal('0.08')  # 8% of dev cost (reduced from 15%)
+            maintenance_cost = development_cost * Decimal('0.12')    # 12% annual maintenance (reduced from 20%)
             
-            # Total cost
-            total_cost = development_cost + infrastructure_cost + maintenance_cost + regulatory_cost + risk_buffer
+            # Minimal regulatory and risk buffers
+            complexity_factor = Decimal('1.1') if self._get_config_value(project_config, 'complexity', 'Medium') == 'High' else Decimal('1.0')
+            risk_factor = Decimal('1.05')  # Fixed 5% risk buffer
+            
+            # Total cost with much lower overhead
+            total_cost = development_cost * complexity_factor * risk_factor + infrastructure_cost + maintenance_cost
             
             # Use custom investment if provided
             if custom_investment:
@@ -135,8 +136,12 @@ class EnhancedROICalculator:
                 timeline_months = custom_timeline
             else:
                 # Adjust timeline based on company size and complexity
-                size_factor = {'startup': 1.2, 'small': 1.0, 'medium': 0.9, 'enterprise': 0.8}
+                size_factor = {'startup': 1.2, 'small': 1.0, 'medium': 0.9, 'large': 0.85, 'enterprise': 0.8}
                 timeline_months = int(base_timeline * size_factor[company_size])
+            
+            # Calculate simple regulatory and risk costs for breakdown
+            regulatory_cost = development_cost * Decimal('0.02')  # 2% regulatory cost
+            risk_buffer = development_cost * Decimal('0.03')      # 3% risk buffer
             
             return {
                 'total_cost': total_cost_converted,
@@ -151,10 +156,10 @@ class EnhancedROICalculator:
                 'currency': currency,
                 'base_cost_usd': base_cost,
                 'multipliers': {
-                    'company': float(company_multiplier),
-                    'industry': float(industry_multiplier),
-                    'complexity': float(complexity_multiplier),
-                    'regulatory': float(regulatory_multiplier)
+                    'company': float(company_factor),
+                    'industry': float(industry_factor),
+                    'complexity': float(complexity_factor),
+                    'risk': float(risk_factor)
                 }
             }
             
