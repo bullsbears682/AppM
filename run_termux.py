@@ -49,10 +49,53 @@ def check_and_install_dependencies():
             print("⚠️  NumPy installation failed - using simplified calculations")
             print("💡 App will still work with most features!")
 
+def setup_repository():
+    """Setup the repository if not already present"""
+    if not os.path.exists('app.py'):
+        print("📥 Repository not found locally, cloning...")
+        subprocess.run([
+            'git', 'clone', 'https://github.com/bullsbears682/AppM.git', '.'
+        ], check=False)
+        
+        if not os.path.exists('app.py'):
+            print("❌ Failed to clone repository. Trying alternative method...")
+            # Try downloading individual files
+            files_to_download = [
+                ('https://raw.githubusercontent.com/bullsbears682/AppM/main/app.py', 'app.py'),
+                ('https://raw.githubusercontent.com/bullsbears682/AppM/main/config.py', 'config.py'),
+                ('https://raw.githubusercontent.com/bullsbears682/AppM/main/templates/index.html', 'templates/index.html'),
+                ('https://raw.githubusercontent.com/bullsbears682/AppM/main/utils/__init__.py', 'utils/__init__.py'),
+                ('https://raw.githubusercontent.com/bullsbears682/AppM/main/utils/validators.py', 'utils/validators.py'),
+                ('https://raw.githubusercontent.com/bullsbears682/AppM/main/utils/calculator.py', 'utils/calculator.py'),
+                ('https://raw.githubusercontent.com/bullsbears682/AppM/main/utils/cache.py', 'utils/cache.py'),
+                ('https://raw.githubusercontent.com/bullsbears682/AppM/main/utils/rate_limiter.py', 'utils/rate_limiter.py'),
+                ('https://raw.githubusercontent.com/bullsbears682/AppM/main/utils/export.py', 'utils/export.py'),
+            ]
+            
+            os.makedirs('templates', exist_ok=True)
+            os.makedirs('utils', exist_ok=True)
+            
+            try:
+                import urllib.request
+                for url, filename in files_to_download:
+                    print(f"📄 Downloading {filename}...")
+                    try:
+                        urllib.request.urlretrieve(url, filename)
+                    except Exception as e:
+                        print(f"⚠️  Failed to download {filename}: {e}")
+            except Exception as e:
+                print(f"❌ Download failed: {e}")
+                print("🔧 Please run this from the AppM directory or install git:")
+                print("   pkg install git && git clone https://github.com/bullsbears682/AppM.git && cd AppM")
+                sys.exit(1)
+
 def main():
     """Main launcher function"""
-    print("🚀 Starting Business ROI Calculator v2.0 for Termux - Enhanced Edition")
-    print("=" * 50)
+    print("🚀 Starting Business ROI Calculator v2.0 for Termux - Quantum Edition")
+    print("=" * 60)
+    
+    # Setup repository if needed
+    setup_repository()
     
     # Check dependencies
     check_and_install_dependencies()
@@ -68,25 +111,48 @@ def main():
             f.write("""# Termux Configuration for ROI Calculator v2.0
 FLASK_ENV=development
 DEBUG=True
-SECRET_KEY=termux-dev-key-change-in-production
+SECRET_KEY=termux-quantum-key-change-in-production
 HOST=0.0.0.0
 PORT=5000
 ENABLE_CORS=True
 LOG_LEVEL=WARNING
 CALCULATION_PRECISION=2
+TERMUX_MODE=true
 """)
     
     print("\n🎯 Configuration:")
     print("   • URL: http://localhost:5000")
-    print("   • Mode: Termux-optimized")
-    print("   • Features: All enhanced v2.0 features")
+    print("   • Mode: Termux-optimized with Quantum UI")
+    print("   • Features: AI-powered insights, 3D animations")
     print("   • Calculations: Advanced financial modeling")
-    print("\n⏳ Starting server...")
+    print("\n⏳ Starting quantum server...")
+    
+    # Ensure we can import the app
+    if not os.path.exists('app.py'):
+        print("❌ app.py not found! Please run from the AppM directory:")
+        print("   cd AppM && python3 run_termux.py")
+        sys.exit(1)
+    
+    # Add current directory to Python path
+    sys.path.insert(0, os.getcwd())
     
     # Import and run the main application
     try:
         from app import app, config_class, logger
         logger.info("Starting Business ROI Calculator v2.0 in Termux mode")
+        
+        print(f"\n🌟 Quantum ROI Calculator is starting...")
+        print(f"🌐 Open your browser and go to: http://localhost:5000")
+        print(f"📱 Or from other devices: http://$(hostname -I | awk '{{print $1}}'):5000")
+        print(f"\n🧠 Features Available:")
+        print(f"   • AI-Powered ARIA Assistant")
+        print(f"   • Quantum-Inspired UI with 3D animations")
+        print(f"   • Interactive data visualizations")
+        print(f"   • Advanced financial modeling")
+        print(f"   • Real-time insights and recommendations")
+        print(f"\nPress Ctrl+C to stop the server")
+        print("=" * 60)
+        
         app.run(
             debug=config_class.DEBUG,
             host=config_class.HOST,
@@ -94,10 +160,23 @@ CALCULATION_PRECISION=2
             use_reloader=False  # Disable reloader for Termux stability
         )
     except KeyboardInterrupt:
-        print("\n👋 ROI Calculator stopped")
+        print("\n👋 Quantum ROI Calculator stopped")
+    except ImportError as e:
+        print(f"\n❌ Import error: {e}")
+        print("\n🔧 Troubleshooting steps:")
+        print("1. Make sure you're in the AppM directory:")
+        print("   cd AppM && python3 run_termux.py")
+        print("2. Or run the one-command installer:")
+        print("   curl -fsSL https://raw.githubusercontent.com/bullsbears682/AppM/main/install.sh | bash")
+        sys.exit(1)
     except Exception as e:
         print(f"\n❌ Error starting application: {e}")
-        print("\n🔧 Try running: pip install --break-system-packages Flask")
+        print("\n🔧 Quick fixes:")
+        print("1. Install Flask: pip install --break-system-packages Flask")
+        print("2. Try the one-command installer:")
+        print("   curl -fsSL https://raw.githubusercontent.com/bullsbears682/AppM/main/install.sh | bash")
+        print("3. Manual setup:")
+        print("   pkg install git && git clone https://github.com/bullsbears682/AppM.git && cd AppM && python3 run_termux.py")
         sys.exit(1)
 
 if __name__ == '__main__':
