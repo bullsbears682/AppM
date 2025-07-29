@@ -391,31 +391,9 @@ class BusinessValidator:
             else:
                 return getattr(config, key, default)
         
-        # Check if investment is within company size budget range
-        if investment_amount and company_config:
-            min_budget = get_config_value(company_config, 'min_budget', 1000)
-            max_budget = get_config_value(company_config, 'max_budget', 10000000)
-            
-            if investment_amount < min_budget:
-                raise BusinessLogicError(
-                    f"Investment amount is below typical budget range for {company_size} companies",
-                    {
-                        'min_budget': min_budget,
-                        'max_budget': max_budget,
-                        'investment': float(investment_amount)
-                    }
-                )
-            
-            if investment_amount > max_budget * 5:  # More flexibility for large investments
-                raise BusinessLogicError(
-                    f"Investment amount is significantly above typical budget range for {company_size} companies",
-                    {
-                        'min_budget': min_budget,
-                        'max_budget': max_budget,
-                        'investment': float(investment_amount),
-                        'note': 'Consider selecting a larger company size or breaking into phases'
-                    }
-                )
+        # Investment amount is now completely optional - no validation constraints
+        # Users can input any amount or leave it empty for flexible calculations
+        # This allows for proof-of-concept, pilot projects, or custom budget scenarios
         
         # Check industry-project compatibility
         high_risk_projects = ['blockchain_platform', 'ai_integration', 'crypto']

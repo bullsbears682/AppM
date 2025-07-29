@@ -162,7 +162,7 @@ class EnhancedROICalculator:
             logger.error(f"Error calculating project cost: {str(e)}")
             raise ValidationError(f"Failed to calculate project cost: {str(e)}")
     
-    def calculate_enhanced_roi_projection(self, investment: Decimal, industry: str, 
+    def calculate_enhanced_roi_projection(self, investment: Optional[Decimal], industry: str, 
                                         project_type: str, timeline_months: int,
                                         currency: str, company_size: str) -> ROIResult:
         """Calculate enhanced ROI with Monte Carlo simulation and advanced metrics"""
@@ -171,6 +171,11 @@ class EnhancedROICalculator:
             industry_config = Config.INDUSTRIES[industry]
             project_config = Config.PROJECT_TYPES[project_type]
             company_config = Config.COMPANY_SIZES[company_size]
+            
+            # Handle optional investment: use estimated project cost if not provided
+            if investment is None or investment == 0:
+                investment = self.calculate_project_cost(company_size, project_type, industry, timeline_months)
+                logger.info(f"Using estimated project cost: {investment}")
             
             # Base ROI calculation
             base_roi_multiplier = Decimal(str(self._get_config_value(project_config, 'roi_potential', 2.0)))

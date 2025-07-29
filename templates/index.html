@@ -856,6 +856,41 @@
             position: relative;
         }
 
+        .form-label-quantum {
+            display: block;
+            margin-bottom: 1rem;
+            color: var(--text-spirit);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-family: var(--font-display);
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .optional-badge {
+            background: rgba(168, 85, 247, 0.2);
+            color: var(--phantom-purple);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: lowercase;
+            margin-left: 0.5rem;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            text-shadow: none;
+        }
+
+        .field-hint {
+            font-size: 0.8rem;
+            color: var(--text-ethereal);
+            margin-top: 0.5rem;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
         .form-input-quantum {
             width: 100%;
             padding: 1.25rem 1.5rem;
@@ -1687,8 +1722,9 @@
                     </h3>
                     
                     <div class="form-group-quantum">
-                        <label for="investmentAmountQuantum" class="form-label-quantum">Investment Capital ($)</label>
-                        <input type="number" id="investmentAmountQuantum" class="form-input-quantum" min="1000" step="1000" placeholder="100000" required>
+                        <label for="investmentAmountQuantum" class="form-label-quantum">Investment Capital ($) <span class="optional-badge">Optional</span></label>
+                        <input type="number" id="investmentAmountQuantum" class="form-input-quantum" min="0" step="1000" placeholder="Leave empty for estimated cost">
+                        <div class="field-hint">💡 Leave empty to use estimated project cost based on your selections</div>
                     </div>
 
                     <div class="form-group-quantum">
@@ -2298,16 +2334,29 @@
                 console.log('🏭 Mapped target industry:', targetIndustry);
                 
                 // Prepare enhanced data with correct API format
+                // Handle optional investment amount
+                const investmentValue = document.getElementById('investmentAmountQuantum').value.trim();
+                const hasCustomInvestment = investmentValue && !isNaN(parseFloat(investmentValue)) && parseFloat(investmentValue) > 0;
+                
                 const requestData = {
-                    company_name: "Quantum Analytics Corp", // Default company name
+                    company_name: "VoidSight Analytics Corp", // Updated company name
                     company_size: document.getElementById('companySizeQuantum').value,
                     current_industry: targetIndustry, // Use mapped industry
                     project_type: selectedProjectTypeQuantum,
                     target_industry: targetIndustry, // Use mapped industry
-                    currency: "USD", // Default currency
-                    custom_investment: parseFloat(document.getElementById('investmentAmountQuantum').value),
-                    custom_timeline: parseInt(document.getElementById('timelineMonthsQuantum').value)
+                    currency: "USD" // Default currency
                 };
+                
+                // Only include custom_investment if user provided a value
+                if (hasCustomInvestment) {
+                    requestData.custom_investment = parseFloat(investmentValue);
+                    console.log('💰 Using custom investment:', requestData.custom_investment);
+                } else {
+                    console.log('💡 No investment provided - will use estimated project cost');
+                }
+                
+                // Add timeline
+                requestData.custom_timeline = parseInt(document.getElementById('timelineMonthsQuantum').value);
                 
                 console.log('📤 Sending quantum calculation request:', requestData);
                 
@@ -2418,13 +2467,14 @@
                 isValid = false;
             }
             
-            // Validate form fields
-            const requiredFields = ['companySizeQuantum', 'targetIndustryQuantum', 'investmentAmountQuantum', 'expectedROIQuantum', 'timelineMonthsQuantum'];
+            // Validate form fields (investment is now optional)
+            const requiredFields = ['companySizeQuantum', 'targetIndustryQuantum', 'expectedROIQuantum', 'timelineMonthsQuantum'];
+            const optionalFields = ['investmentAmountQuantum'];
             
             requiredFields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 const value = field ? field.value.trim() : '';
-                console.log(`📋 Field ${fieldId}:`, value);
+                console.log(`📋 Required field ${fieldId}:`, value);
                 
                 if (!value) {
                     console.error(`❌ Field ${fieldId} is empty`);
@@ -2440,6 +2490,24 @@
                         isValid = false;
                     } else {
                         console.log(`✅ Field ${fieldId} is valid`);
+                    }
+                }
+            });
+            
+            // Validate optional fields (only if they have values)
+            optionalFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const value = field ? field.value.trim() : '';
+                console.log(`📋 Optional field ${fieldId}:`, value || 'empty (will use estimated cost)');
+                
+                if (value) {
+                    // Trigger field validation only if there's a value
+                    const event = { target: field };
+                    if (!validateQuantumField(event)) {
+                        console.error(`❌ Optional field ${fieldId} validation failed`);
+                        isValid = false;
+                    } else {
+                        console.log(`✅ Optional field ${fieldId} is valid`);
                     }
                 }
             });
