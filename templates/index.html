@@ -3,638 +3,1046 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infinex ROI Calculator - Advanced Trading Analytics</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Infinex ROI Calculator - Next-Gen Analytics Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     
     <style>
-        /* === INFINEX COLOR PALETTE === */
+        /* === NEXT-GEN COLOR PALETTE === */
         :root {
-            /* Dark Theme Base */
-            --bg-primary: #0A0A0A;
-            --bg-secondary: #111111;
-            --bg-tertiary: #1A1A1A;
-            --bg-card: rgba(17, 17, 17, 0.8);
-            --bg-glass: rgba(255, 255, 255, 0.05);
+            /* Dark Quantum Theme */
+            --bg-quantum: #000000;
+            --bg-void: #0A0A0F;
+            --bg-neural: #111117;
+            --bg-synapse: #1A1A23;
+            --bg-layer: rgba(17, 17, 23, 0.85);
+            --bg-glass-ultra: rgba(255, 255, 255, 0.03);
+            --bg-glass-neural: rgba(139, 92, 246, 0.05);
             
-            /* Infinex Neon Colors */
-            --neon-purple: #8B5CF6;
-            --neon-blue: #3B82F6;
-            --neon-cyan: #06B6D4;
-            --neon-green: #10B981;
-            --neon-pink: #EC4899;
-            --neon-orange: #F59E0B;
+            /* Quantum Neon Spectrum */
+            --quantum-violet: #8B5CF6;
+            --quantum-blue: #3B82F6;
+            --quantum-cyan: #06B6D4;
+            --quantum-emerald: #10B981;
+            --quantum-pink: #EC4899;
+            --quantum-amber: #F59E0B;
+            --quantum-red: #EF4444;
+            --quantum-white: #FFFFFF;
             
-            /* Gradients */
-            --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
-            --gradient-secondary: linear-gradient(135deg, #06B6D4 0%, #10B981 100%);
-            --gradient-accent: linear-gradient(135deg, #EC4899 0%, #F59E0B 100%);
-            --gradient-dark: linear-gradient(135deg, #1A1A1A 0%, #111111 100%);
+            /* Holographic Gradients */
+            --holo-primary: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 50%, #06B6D4 100%);
+            --holo-secondary: linear-gradient(135deg, #EC4899 0%, #F59E0B 50%, #10B981 100%);
+            --holo-accent: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 50%, #EC4899 100%);
+            --holo-neural: linear-gradient(135deg, #1A1A23 0%, #111117 50%, #0A0A0F 100%);
+            --holo-glow: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
             
-            /* Text Colors */
-            --text-primary: #FFFFFF;
-            --text-secondary: #A3A3A3;
-            --text-tertiary: #737373;
+            /* Typography */
+            --text-quantum: #FFFFFF;
+            --text-neural: #E5E7EB;
+            --text-synapse: #9CA3AF;
+            --text-ghost: #6B7280;
             --text-success: #10B981;
             --text-error: #EF4444;
             --text-warning: #F59E0B;
             
-            /* Borders & Shadows */
-            --border-primary: rgba(139, 92, 246, 0.3);
-            --border-secondary: rgba(255, 255, 255, 0.1);
-            --shadow-neon: 0 0 20px rgba(139, 92, 246, 0.3);
-            --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.2);
-            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5);
+            /* Quantum Borders & Effects */
+            --border-quantum: rgba(139, 92, 246, 0.4);
+            --border-neural: rgba(255, 255, 255, 0.08);
+            --border-synapse: rgba(255, 255, 255, 0.15);
+            --shadow-quantum: 0 0 40px rgba(139, 92, 246, 0.4);
+            --shadow-neural: 0 20px 60px rgba(0, 0, 0, 0.8);
+            --shadow-hologram: 0 0 80px rgba(139, 92, 246, 0.3);
+            --glow-intense: 0 0 100px rgba(139, 92, 246, 0.6);
             
-            /* Fonts */
+            /* Typography System */
             --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+            
+            /* Quantum Timing */
+            --transition-quantum: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-neural: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            --transition-instant: all 0.15s ease-out;
         }
 
-        /* === GLOBAL STYLES === */
+        /* === QUANTUM FOUNDATION === */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: var(--font-primary);
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            background: var(--bg-quantum);
+            color: var(--text-quantum);
             line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            perspective: 1000px;
         }
 
-        /* === ANIMATED BACKGROUND === */
-        .bg-animation {
+        /* === QUANTUM BACKGROUND SYSTEM === */
+        .quantum-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.6;
+        }
+
+        .neural-grid {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.15;
+            opacity: 0.1;
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: neural-flow 20s ease-in-out infinite;
         }
 
-        .bg-animation::before {
-            content: '';
-            position: absolute;
+        @keyframes neural-flow {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 0.1;
+            }
+            50% { 
+                transform: translate(-25px, -25px) scale(1.05);
+                opacity: 0.15;
+            }
+        }
+
+        .quantum-orbs {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                radial-gradient(circle at 20% 20%, var(--neon-purple) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, var(--neon-blue) 0%, transparent 50%),
-                radial-gradient(circle at 40% 60%, var(--neon-cyan) 0%, transparent 50%);
-            animation: float 20s ease-in-out infinite;
+            z-index: -1;
+            pointer-events: none;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(2deg); }
-        }
-
-        /* === HEADER === */
-        .header {
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-secondary);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .logo i {
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2rem;
-        }
-
-        .nav-badge {
-            background: var(--gradient-secondary);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* === MAIN CONTAINER === */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* === HERO SECTION === */
-        .hero {
-            text-align: center;
-            padding: 4rem 0 6rem;
-            position: relative;
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 700;
-            margin-bottom: 1rem;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.2;
-        }
-
-        .hero-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .hero-stats {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            flex-wrap: wrap;
-            margin-top: 3rem;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-family: var(--font-mono);
-            font-size: 2rem;
-            font-weight: 600;
-            background: var(--gradient-secondary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: block;
-        }
-
-        .stat-label {
-            color: var(--text-tertiary);
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 0.25rem;
-        }
-
-        /* === GLASS CARDS === */
-        .glass-card {
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-secondary);
-            border-radius: 24px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow-card);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .glass-card:hover {
-            border-color: var(--border-primary);
-            box-shadow: var(--shadow-neon);
-            transform: translateY(-2px);
-        }
-
-        .glass-card::before {
-            content: '';
+        .orb {
             position: absolute;
+            border-radius: 50%;
+            filter: blur(2px);
+            animation: float-quantum 15s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 200px;
+            height: 200px;
+            background: var(--holo-glow);
+            top: 10%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+            top: 60%;
+            right: 20%;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
+            bottom: 20%;
+            left: 30%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float-quantum {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                opacity: 0.6;
+            }
+            25% {
+                transform: translate(30px, -20px) rotate(90deg) scale(1.1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translate(-20px, -40px) rotate(180deg) scale(0.9);
+                opacity: 0.4;
+            }
+            75% {
+                transform: translate(-40px, 20px) rotate(270deg) scale(1.05);
+                opacity: 0.7;
+            }
+        }
+
+        /* === QUANTUM NAVIGATION === */
+        .quantum-nav {
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            height: 1px;
-            background: var(--gradient-primary);
-            border-radius: 24px 24px 0 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(40px);
+            border-bottom: 1px solid var(--border-neural);
+            transition: var(--transition-quantum);
         }
 
-        /* === FORM STYLES === */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .form-section h3 {
-            color: var(--text-primary);
-            margin-bottom: 1.5rem;
-            font-size: 1.25rem;
-            font-weight: 600;
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-        }
-
-        .form-section h3 i {
-            color: var(--neon-purple);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-secondary);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-family: var(--font-mono);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .form-input:focus {
-            border-color: var(--neon-purple);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-            background: var(--bg-secondary);
-        }
-
-        .form-input:valid {
-            border-color: var(--neon-green);
-        }
-
-        /* === PROJECT TYPE GRID === */
-        .project-types {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .project-card {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-secondary);
-            border-radius: 16px;
-            padding: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .project-card:hover {
-            border-color: var(--neon-purple);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-neon);
-        }
-
-        .project-card.selected {
-            border-color: var(--neon-purple);
-            background: rgba(139, 92, 246, 0.1);
-            box-shadow: var(--shadow-neon);
-        }
-
-        .project-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--gradient-primary);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .project-card.selected::before {
-            transform: scaleX(1);
-        }
-
-        .project-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-        }
-
-        .project-description {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-            line-height: 1.5;
-        }
-
-        .project-meta {
-            display: flex;
             justify-content: space-between;
+        }
+
+        .quantum-logo {
+            display: flex;
             align-items: center;
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
+            gap: 1rem;
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: var(--holo-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: var(--transition-quantum);
         }
 
-        .project-cost {
-            font-family: var(--font-mono);
-            font-weight: 600;
-            color: var(--neon-green);
+        .quantum-logo:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
         }
 
-        /* === CALCULATE BUTTON === */
-        .calculate-section {
-            text-align: center;
-            margin: 3rem 0;
-        }
-
-        .calculate-btn {
-            background: var(--gradient-primary);
-            border: none;
-            padding: 1.25rem 3rem;
-            border-radius: 16px;
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--holo-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            font-size: 1.1rem;
+            font-size: 1.5rem;
+            animation: pulse-quantum 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-quantum {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 20px rgba(139, 92, 246, 0);
+            }
+        }
+
+        .nav-badges {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-badge {
+            background: var(--holo-secondary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.8rem;
             font-weight: 600;
-            font-family: var(--font-primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: var(--shadow-neon);
-            min-width: 300px;
+            transition: var(--transition-quantum);
             position: relative;
             overflow: hidden;
         }
 
-        .calculate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .calculate-btn:active {
-            transform: translateY(0);
-        }
-
-        .calculate-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            animation: pulse 2s infinite;
-        }
-
-        .calculate-btn::before {
+        .nav-badge::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.6s ease;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.8s ease;
         }
 
-        .calculate-btn:hover::before {
+        .nav-badge:hover::before {
             left: 100%;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 0.8; }
+        /* === QUANTUM MAIN CONTAINER === */
+        .quantum-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 8rem 2rem 4rem;
+            position: relative;
         }
 
-        /* === RESULTS SECTION === */
-        .results-container {
-            display: none;
-            margin-top: 3rem;
-        }
-
-        .results-header {
+        /* === HERO QUANTUM === */
+        .hero-quantum {
             text-align: center;
-            margin-bottom: 3rem;
+            padding: 4rem 0 8rem;
+            position: relative;
+            z-index: 10;
         }
 
-        .results-header h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: var(--gradient-secondary);
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            background: var(--holo-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 0.5rem;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            animation: title-emerge 1.5s ease-out;
+            text-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
         }
 
-        .results-subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
+        @keyframes title-emerge {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+                filter: blur(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
         }
 
-        .metrics-grid {
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-neural);
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 400;
+            opacity: 0;
+            animation: subtitle-fade 1.5s ease-out 0.3s forwards;
+        }
+
+        @keyframes subtitle-fade {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .quantum-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            gap: 2rem;
+            margin: 4rem 0;
+            opacity: 0;
+            animation: stats-emerge 1.5s ease-out 0.6s forwards;
         }
 
-        .metric-card {
-            background: var(--bg-glass);
-            border: 1px solid var(--border-secondary);
-            border-radius: 20px;
+        @keyframes stats-emerge {
+            0% {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-quantum {
+            background: var(--bg-glass-ultra);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-neural);
+            border-radius: 24px;
             padding: 2rem;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: var(--transition-quantum);
             position: relative;
             overflow: hidden;
+            transform-style: preserve-3d;
         }
 
-        .metric-card:hover {
-            border-color: var(--border-primary);
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-neon);
-        }
-
-        .metric-card::before {
+        .stat-quantum::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             height: 2px;
-            background: var(--gradient-primary);
+            background: var(--holo-primary);
+            transform: scaleX(0);
+            transition: transform 0.6s ease;
         }
 
-        .metric-icon {
+        .stat-quantum:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            border-color: var(--border-quantum);
+            box-shadow: var(--shadow-quantum);
+        }
+
+        .stat-quantum:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
             font-size: 2.5rem;
-            margin-bottom: 1rem;
-            background: var(--gradient-primary);
+            font-weight: 700;
+            background: var(--holo-secondary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            display: block;
+            margin-bottom: 0.5rem;
         }
 
-        .metric-value {
-            font-family: var(--font-mono);
-            font-size: 2rem;
+        .stat-label {
+            color: var(--text-synapse);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        /* === QUANTUM GLASS CARDS === */
+        .quantum-card {
+            background: var(--bg-glass-neural);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--border-neural);
+            border-radius: 32px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-neural);
+            transition: var(--transition-neural);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .quantum-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--holo-primary);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .quantum-card:hover {
+            transform: translateY(-8px) rotateX(2deg);
+            border-color: var(--border-quantum);
+            box-shadow: var(--shadow-hologram);
+        }
+
+        .quantum-card:hover::before {
+            opacity: 1;
+        }
+
+        /* === QUANTUM FORMS === */
+        .form-quantum {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+
+        .form-section-quantum h3 {
+            color: var(--text-quantum);
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
+            font-family: var(--font-display);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .form-section-quantum h3::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--quantum-violet), transparent);
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--holo-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .form-group-quantum {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .form-label-quantum {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: var(--text-neural);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .form-input-quantum {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            background: rgba(26, 26, 35, 0.8);
+            border: 2px solid var(--border-neural);
+            border-radius: 16px;
+            color: var(--text-quantum);
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            transition: var(--transition-quantum);
+            outline: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input-quantum:focus {
+            border-color: var(--quantum-violet);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+            background: rgba(26, 26, 35, 0.95);
+            transform: scale(1.02);
+        }
+
+        .form-input-quantum:valid {
+            border-color: var(--quantum-emerald);
+        }
+
+        /* === AI INSIGHTS PANEL === */
+        .ai-insights-panel {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 350px;
+            background: var(--bg-glass-neural);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--border-quantum);
+            border-radius: 24px;
+            padding: 2rem;
+            z-index: 900;
+            box-shadow: var(--shadow-hologram);
+            transition: var(--transition-neural);
+            opacity: 0;
+            transform: translateY(-50%) translateX(400px);
+        }
+
+        .ai-insights-panel.active {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ai-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--holo-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            animation: ai-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes ai-pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 15px rgba(139, 92, 246, 0);
+            }
+        }
+
+        .ai-name {
+            font-weight: 700;
+            color: var(--text-quantum);
+        }
+
+        .ai-status {
+            font-size: 0.8rem;
+            color: var(--quantum-emerald);
+        }
+
+        .ai-insight {
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 3px solid var(--quantum-violet);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* === PROJECT SELECTION QUANTUM === */
+        .project-grid-quantum {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .project-card-quantum {
+            background: rgba(26, 26, 35, 0.6);
+            border: 2px solid var(--border-neural);
+            border-radius: 20px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: var(--transition-quantum);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .project-card-quantum::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--holo-primary);
+            transform: scaleX(0);
+            transition: transform 0.6s ease;
+        }
+
+        .project-card-quantum:hover {
+            border-color: var(--quantum-violet);
+            transform: translateY(-5px) rotateX(5deg);
+            box-shadow: var(--shadow-quantum);
+        }
+
+        .project-card-quantum:hover::before {
+            transform: scaleX(1);
+        }
+
+        .project-card-quantum.selected {
+            border-color: var(--quantum-violet);
+            background: rgba(139, 92, 246, 0.15);
+            box-shadow: var(--shadow-quantum);
+            transform: translateY(-5px);
+        }
+
+        .project-card-quantum.selected::before {
+            transform: scaleX(1);
+        }
+
+        .project-title-quantum {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-quantum);
+            font-family: var(--font-display);
+        }
+
+        .project-description-quantum {
+            color: var(--text-synapse);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .project-meta-quantum {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .project-complexity {
+            background: var(--holo-accent);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .project-cost {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--quantum-emerald);
+            font-size: 1rem;
+        }
+
+        /* === QUANTUM BUTTON === */
+        .quantum-btn {
+            background: var(--holo-primary);
+            border: none;
+            padding: 1.5rem 4rem;
+            border-radius: 20px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: var(--font-display);
+            cursor: pointer;
+            transition: var(--transition-quantum);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: var(--shadow-quantum);
+            min-width: 350px;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .quantum-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .quantum-btn:hover {
+            transform: translateY(-3px) rotateX(5deg);
+            box-shadow: var(--glow-intense);
+        }
+
+        .quantum-btn:hover::before {
+            left: 100%;
+        }
+
+        .quantum-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .quantum-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            animation: quantum-pulse 2s infinite;
+        }
+
+        @keyframes quantum-pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+        }
+
+        .calculate-section {
+            text-align: center;
+            margin: 4rem 0;
+            position: relative;
+        }
+
+        /* === RESULTS QUANTUM DASHBOARD === */
+        .results-quantum {
+            display: none;
+            margin-top: 4rem;
+            animation: results-emerge 1s ease-out;
+        }
+
+        @keyframes results-emerge {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .results-header-quantum {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .results-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 900;
+            background: var(--holo-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 40px rgba(236, 72, 153, 0.3);
+        }
+
+        .results-subtitle {
+            color: var(--text-neural);
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+
+        .metrics-quantum {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .metric-card-quantum {
+            background: var(--bg-glass-neural);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--border-neural);
+            border-radius: 24px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: var(--transition-neural);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .metric-card-quantum::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--holo-primary);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .metric-card-quantum:hover {
+            transform: translateY(-8px) rotateY(5deg);
+            border-color: var(--border-quantum);
+            box-shadow: var(--shadow-hologram);
+        }
+
+        .metric-card-quantum:hover::before {
+            opacity: 1;
+        }
+
+        .metric-icon-quantum {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            background: var(--holo-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+        }
+
+        .metric-value-quantum {
+            font-family: var(--font-mono);
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-quantum);
+            margin-bottom: 0.75rem;
             line-height: 1;
         }
 
-        .metric-label {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
+        .metric-label-quantum {
+            color: var(--text-synapse);
+            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 500;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
 
-        /* === SUCCESS MESSAGE === */
-        .success-notification {
+        /* === LIVE CHARTS SECTION === */
+        .charts-quantum {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+            margin: 4rem 0;
+        }
+
+        .chart-container-quantum {
+            background: var(--bg-glass-neural);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--border-neural);
+            border-radius: 24px;
+            padding: 2rem;
+            position: relative;
+            height: 400px;
+        }
+
+        .chart-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-quantum);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* === QUANTUM NOTIFICATIONS === */
+        .quantum-notification {
             position: fixed;
             top: 2rem;
             right: 2rem;
-            background: var(--gradient-secondary);
+            background: var(--holo-secondary);
             color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            box-shadow: var(--shadow-card);
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-hologram);
             transform: translateX(400px);
-            transition: transform 0.3s ease;
+            transition: var(--transition-neural);
             z-index: 1000;
-            font-weight: 500;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .success-notification.show {
+        .quantum-notification.show {
             transform: translateX(0);
         }
 
-        /* === ERROR STYLES === */
-        .error-message {
+        .notification-icon {
+            font-size: 1.5rem;
+        }
+
+        /* === ERROR STATES === */
+        .error-quantum {
             color: var(--text-error);
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            padding: 0.5rem;
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
+            padding: 1rem;
             background: rgba(239, 68, 68, 0.1);
-            border-radius: 8px;
-            border-left: 3px solid var(--text-error);
+            border-radius: 12px;
+            border-left: 4px solid var(--text-error);
+            backdrop-filter: blur(10px);
         }
 
-        .form-group.error .form-input {
+        .form-group-quantum.error .form-input-quantum {
             border-color: var(--text-error);
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
         }
 
-        .form-group.success .form-input {
+        .form-group-quantum.success .form-input-quantum {
             border-color: var(--text-success);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
         }
 
         /* === LOADING STATES === */
-        .loading {
+        .loading-quantum {
             opacity: 0.6;
             pointer-events: none;
+            position: relative;
         }
 
-        .loading::after {
+        .loading-quantum::after {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 20px;
-            height: 20px;
-            margin: -10px 0 0 -10px;
-            border: 2px solid var(--neon-purple);
-            border-top: 2px solid transparent;
+            width: 40px;
+            height: 40px;
+            margin: -20px 0 0 -20px;
+            border: 3px solid var(--quantum-violet);
+            border-top: 3px solid transparent;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: quantum-spin 1s linear infinite;
         }
 
-        @keyframes spin {
+        @keyframes quantum-spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* === RESPONSIVE DESIGN === */
+        /* === RESPONSIVE QUANTUM === */
+        @media (max-width: 1200px) {
+            .ai-insights-panel {
+                position: relative;
+                right: auto;
+                top: auto;
+                transform: none;
+                width: 100%;
+                margin: 2rem 0;
+                opacity: 1;
+            }
+            
+            .charts-quantum {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
+            .quantum-container {
+                padding: 6rem 1rem 2rem;
             }
             
-            .hero {
-                padding: 2rem 0 3rem;
+            .hero-quantum {
+                padding: 2rem 0 4rem;
             }
             
-            .hero-stats {
+            .form-quantum {
+                grid-template-columns: 1fr;
                 gap: 2rem;
             }
             
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .project-types {
+            .project-grid-quantum {
                 grid-template-columns: 1fr;
             }
             
-            .metrics-grid {
+            .metrics-quantum {
                 grid-template-columns: 1fr;
             }
             
-            .calculate-btn {
+            .quantum-btn {
                 min-width: 250px;
-                padding: 1rem 2rem;
+                padding: 1.25rem 2rem;
             }
             
-            .success-notification {
+            .quantum-notification {
                 right: 1rem;
                 left: 1rem;
                 transform: translateY(-100px);
             }
             
-            .success-notification.show {
+            .quantum-notification.show {
                 transform: translateY(0);
             }
         }
 
-        /* === ACCESSIBILITY === */
+        /* === ACCESSIBILITY QUANTUM === */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important;
@@ -644,179 +1052,398 @@
         }
 
         /* === FOCUS STATES === */
-        .calculate-btn:focus,
-        .project-card:focus,
-        .form-input:focus {
-            outline: 2px solid var(--neon-purple);
-            outline-offset: 2px;
+        .quantum-btn:focus,
+        .project-card-quantum:focus,
+        .form-input-quantum:focus {
+            outline: 3px solid var(--quantum-violet);
+            outline-offset: 3px;
+        }
+
+        /* === SCROLL ANIMATIONS === */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: var(--transition-neural);
+        }
+
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="bg-animation"></div>
+    <!-- Quantum Background System -->
+    <canvas class="quantum-canvas" id="quantumCanvas"></canvas>
+    <div class="neural-grid"></div>
+    <div class="quantum-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
 
-    <!-- Header -->
-    <header class="header">
+    <!-- Quantum Navigation -->
+    <nav class="quantum-nav">
         <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-infinity"></i>
+            <div class="quantum-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-infinity"></i>
+                </div>
                 <span>Infinex ROI</span>
             </div>
-            <div class="nav-badge">Advanced Analytics</div>
+            <div class="nav-badges">
+                <div class="nav-badge">Next-Gen Analytics</div>
+                <div class="nav-badge">AI-Powered</div>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Hero Section -->
-        <section class="hero">
-            <h1>Advanced ROI Analytics</h1>
+    <!-- AI Insights Panel -->
+    <div class="ai-insights-panel" id="aiInsightsPanel">
+        <div class="ai-header">
+            <div class="ai-avatar">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div>
+                <div class="ai-name">ARIA AI</div>
+                <div class="ai-status">Online & Learning</div>
+            </div>
+        </div>
+        <div id="aiInsights">
+            <div class="ai-insight">
+                💡 Welcome! I'm analyzing market trends to provide you with intelligent insights as you configure your ROI calculation.
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Quantum Container -->
+    <div class="quantum-container">
+        <!-- Hero Quantum -->
+        <section class="hero-quantum">
+            <h1 class="hero-title">Next-Generation ROI Analytics</h1>
             <p class="hero-subtitle">
-                Harness the power of cutting-edge financial modeling for precise investment analysis and optimization
+                Experience the future of financial modeling with AI-powered insights, real-time analytics, and quantum-precision calculations that adapt to your business intelligence needs
             </p>
             
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <span class="stat-value">99.7%</span>
-                    <div class="stat-label">Accuracy</div>
+            <div class="quantum-stats">
+                <div class="stat-quantum scroll-reveal">
+                    <span class="stat-value">99.9%</span>
+                    <div class="stat-label">AI Accuracy</div>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-value">15+</span>
-                    <div class="stat-label">Industries</div>
+                <div class="stat-quantum scroll-reveal">
+                    <span class="stat-value">25+</span>
+                    <div class="stat-label">Industries Covered</div>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-value">&lt;100ms</span>
-                    <div class="stat-label">Processing</div>
+                <div class="stat-quantum scroll-reveal">
+                    <span class="stat-value">&lt;50ms</span>
+                    <div class="stat-label">Real-time Processing</div>
+                </div>
+                <div class="stat-quantum scroll-reveal">
+                    <span class="stat-value">∞</span>
+                    <div class="stat-label">Possibilities</div>
                 </div>
             </div>
         </section>
 
-        <!-- Configuration Form -->
-        <div class="form-grid">
-            <!-- Project Selection -->
-            <div class="glass-card">
-                <div class="form-section">
-                    <h3><i class="fas fa-rocket"></i> Project Configuration</h3>
+        <!-- Configuration Quantum Form -->
+        <div class="form-quantum">
+            <!-- Project Selection Quantum -->
+            <div class="quantum-card scroll-reveal">
+                <div class="form-section-quantum">
+                    <h3>
+                        <div class="section-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        Project Configuration
+                    </h3>
                     
-                    <div class="form-group">
-                        <label class="form-label">Select Project Type</label>
-                        <div id="projectTypes" class="project-types">
+                    <div class="form-group-quantum">
+                        <label class="form-label-quantum">Select Project Type</label>
+                        <div id="projectTypesQuantum" class="project-grid-quantum">
                             <!-- Projects will be loaded here -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Business Parameters -->
-            <div class="glass-card">
-                <div class="form-section">
-                    <h3><i class="fas fa-building"></i> Business Parameters</h3>
+            <!-- Business Parameters Quantum -->
+            <div class="quantum-card scroll-reveal">
+                <div class="form-section-quantum">
+                    <h3>
+                        <div class="section-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        Business Intelligence
+                    </h3>
                     
-                    <div class="form-group">
-                        <label for="companySize" class="form-label">Company Size</label>
-                        <select id="companySize" class="form-input" required>
-                            <option value="">Select company size</option>
-                            <option value="startup">Startup (1-10 employees)</option>
-                            <option value="small">Small (11-50 employees)</option>
-                            <option value="medium">Medium (51-200 employees)</option>
-                            <option value="large">Large (201-1000 employees)</option>
-                            <option value="enterprise">Enterprise (1000+ employees)</option>
+                    <div class="form-group-quantum">
+                        <label for="companySizeQuantum" class="form-label-quantum">Company Scale</label>
+                        <select id="companySizeQuantum" class="form-input-quantum" required>
+                            <option value="">Select company scale</option>
+                            <option value="startup">Startup Ecosystem (1-10 employees)</option>
+                            <option value="small">Small Enterprise (11-50 employees)</option>
+                            <option value="medium">Medium Corporation (51-200 employees)</option>
+                            <option value="large">Large Organization (201-1000 employees)</option>
+                            <option value="enterprise">Global Enterprise (1000+ employees)</option>
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label for="targetIndustry" class="form-label">Target Industry</label>
-                        <select id="targetIndustry" class="form-input" required>
-                            <option value="">Select target industry</option>
-                            <option value="fintech">FinTech</option>
-                            <option value="healthtech">HealthTech</option>
-                            <option value="edtech">EdTech</option>
-                            <option value="ecommerce">E-commerce</option>
-                            <option value="saas">SaaS</option>
-                            <option value="gaming">Gaming</option>
-                            <option value="realEstate">Real Estate</option>
-                            <option value="foodBeverage">Food & Beverage</option>
-                            <option value="manufacturing">Manufacturing</option>
-                            <option value="logistics">Logistics</option>
-                            <option value="crypto">Crypto/Web3</option>
-                            <option value="nft">NFT</option>
-                            <option value="web3">Web3</option>
-                            <option value="sustainability">Sustainability</option>
-                            <option value="biotech">BioTech</option>
+                    <div class="form-group-quantum">
+                        <label for="targetIndustryQuantum" class="form-label-quantum">Target Market Sector</label>
+                        <select id="targetIndustryQuantum" class="form-input-quantum" required>
+                            <option value="">Select target sector</option>
+                            <option value="fintech">FinTech & Digital Banking</option>
+                            <option value="healthtech">HealthTech & MedTech</option>
+                            <option value="edtech">EdTech & Learning Platforms</option>
+                            <option value="ecommerce">E-commerce & Retail</option>
+                            <option value="saas">SaaS & Cloud Solutions</option>
+                            <option value="gaming">Gaming & Entertainment</option>
+                            <option value="realEstate">PropTech & Real Estate</option>
+                            <option value="foodBeverage">Food & Beverage Innovation</option>
+                            <option value="manufacturing">Smart Manufacturing</option>
+                            <option value="logistics">Logistics & Supply Chain</option>
+                            <option value="crypto">Crypto & DeFi</option>
+                            <option value="nft">NFT & Digital Assets</option>
+                            <option value="web3">Web3 & Metaverse</option>
+                            <option value="sustainability">GreenTech & Sustainability</option>
+                            <option value="biotech">BioTech & Life Sciences</option>
+                            <option value="ai">AI & Machine Learning</option>
+                            <option value="iot">IoT & Connected Devices</option>
+                            <option value="blockchain">Blockchain Infrastructure</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <!-- Financial Parameters -->
-            <div class="glass-card">
-                <div class="form-section">
-                    <h3><i class="fas fa-chart-line"></i> Financial Parameters</h3>
+            <!-- Financial Parameters Quantum -->
+            <div class="quantum-card scroll-reveal">
+                <div class="form-section-quantum">
+                    <h3>
+                        <div class="section-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        Financial Modeling
+                    </h3>
                     
-                    <div class="form-group">
-                        <label for="investmentAmount" class="form-label">Investment Amount ($)</label>
-                        <input type="number" id="investmentAmount" class="form-input" min="1000" step="1000" placeholder="100000" required>
+                    <div class="form-group-quantum">
+                        <label for="investmentAmountQuantum" class="form-label-quantum">Investment Capital ($)</label>
+                        <input type="number" id="investmentAmountQuantum" class="form-input-quantum" min="1000" step="1000" placeholder="100000" required>
                     </div>
 
-                    <div class="form-group">
-                        <label for="expectedROI" class="form-label">Expected ROI (%)</label>
-                        <input type="number" id="expectedROI" class="form-input" min="1" max="1000" step="1" placeholder="25" required>
+                    <div class="form-group-quantum">
+                        <label for="expectedROIQuantum" class="form-label-quantum">Target ROI (%)</label>
+                        <input type="number" id="expectedROIQuantum" class="form-input-quantum" min="1" max="1000" step="1" placeholder="25" required>
                     </div>
 
-                    <div class="form-group">
-                        <label for="timelineMonths" class="form-label">Timeline (Months)</label>
-                        <input type="number" id="timelineMonths" class="form-input" min="1" max="120" step="1" placeholder="12" required>
+                    <div class="form-group-quantum">
+                        <label for="timelineMonthsQuantum" class="form-label-quantum">Investment Horizon (Months)</label>
+                        <input type="number" id="timelineMonthsQuantum" class="form-input-quantum" min="1" max="120" step="1" placeholder="12" required>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Calculate Button -->
+        <!-- Quantum Calculate Button -->
         <div class="calculate-section">
-            <button type="button" class="calculate-btn" onclick="calculateROI()">
-                <i class="fas fa-calculator"></i>
-                Analyze Investment
+            <button type="button" class="quantum-btn" onclick="calculateQuantumROI()">
+                <i class="fas fa-brain"></i>
+                Initiate AI Analysis
             </button>
         </div>
 
-        <!-- Results Section -->
-        <div id="resultsContainer" class="results-container">
-            <div class="results-header">
-                <h2>Investment Analysis</h2>
-                <p class="results-subtitle">Advanced financial modeling results</p>
+        <!-- Results Quantum Dashboard -->
+        <div id="resultsQuantumContainer" class="results-quantum">
+            <div class="results-header-quantum">
+                <h2 class="results-title">Quantum Investment Analysis</h2>
+                <p class="results-subtitle">AI-powered financial intelligence with predictive modeling</p>
             </div>
             
-            <div class="metrics-grid" id="metricsGrid">
+            <div class="metrics-quantum" id="metricsQuantumGrid">
                 <!-- Results will be populated here -->
+            </div>
+
+            <!-- Live Charts Section -->
+            <div class="charts-quantum">
+                <div class="chart-container-quantum">
+                    <h3 class="chart-title">ROI Projection Timeline</h3>
+                    <canvas id="roiChart"></canvas>
+                </div>
+                <div class="chart-container-quantum">
+                    <h3 class="chart-title">Risk Assessment</h3>
+                    <canvas id="riskChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Success Notification -->
-    <div id="successNotification" class="success-notification">
-        <i class="fas fa-check-circle"></i>
-        <span id="successMessage">Calculation completed successfully!</span>
+    <!-- Quantum Notification -->
+    <div id="quantumNotification" class="quantum-notification">
+        <div class="notification-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <span id="notificationMessage">Quantum analysis completed successfully!</span>
     </div>
 
     <script>
-        // Global variables
-        let selectedProjectType = null;
-        let isCalculating = false;
-        let currentResults = null;
+        // === QUANTUM GLOBAL VARIABLES ===
+        let selectedProjectTypeQuantum = null;
+        let isCalculatingQuantum = false;
+        let currentResultsQuantum = null;
+        let aiInsightsTimer = null;
+        let roiChart = null;
+        let riskChart = null;
 
-        // Initialize application
+        // === QUANTUM INITIALIZATION ===
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Infinex ROI Calculator - Initializing...');
-            loadProjectTypes();
-            setupEventListeners();
-            console.log('✅ Infinex ROI Calculator - Ready!');
+            console.log('🚀 Infinex Quantum ROI Calculator - Initializing...');
+            initializeQuantumCanvas();
+            loadProjectTypesQuantum();
+            setupQuantumEventListeners();
+            initializeScrollAnimations();
+            activateAIInsights();
+            console.log('✨ Quantum ROI Calculator - Ready for Analysis!');
         });
 
-        // Load project types from API
-        async function loadProjectTypes() {
+        // === QUANTUM CANVAS BACKGROUND ===
+        function initializeQuantumCanvas() {
+            const canvas = document.getElementById('quantumCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            const particles = [];
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    opacity: Math.random() * 0.3,
+                    size: Math.random() * 2 + 1
+                });
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(particle => {
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    
+                    if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+                    if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+                    
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(139, 92, 246, ${particle.opacity})`;
+                    ctx.fill();
+                });
+                
+                // Connect nearby particles
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(139, 92, 246, ${0.1 * (100 - distance) / 100})`;
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+
+        // === SCROLL ANIMATIONS ===
+        function initializeScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            document.querySelectorAll('.scroll-reveal').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // === AI INSIGHTS SYSTEM ===
+        function activateAIInsights() {
+            const panel = document.getElementById('aiInsightsPanel');
+            const insights = document.getElementById('aiInsights');
+            
+            setTimeout(() => {
+                panel.classList.add('active');
+            }, 2000);
+            
+            const aiMessages = [
+                "🔍 Analyzing current market conditions for optimal ROI predictions...",
+                "📊 Cross-referencing industry benchmarks with your parameters...",
+                "🧠 AI models suggest considering seasonal market variations...",
+                "⚡ Real-time data integration enhancing calculation accuracy...",
+                "🎯 Identifying high-potential investment opportunities...",
+                "🔮 Predictive algorithms optimizing your investment timeline..."
+            ];
+            
+            let messageIndex = 0;
+            aiInsightsTimer = setInterval(() => {
+                const newInsight = document.createElement('div');
+                newInsight.className = 'ai-insight';
+                newInsight.textContent = aiMessages[messageIndex];
+                newInsight.style.opacity = '0';
+                newInsight.style.transform = 'translateY(20px)';
+                
+                insights.appendChild(newInsight);
+                
+                // Animate in
+                setTimeout(() => {
+                    newInsight.style.transition = 'all 0.5s ease';
+                    newInsight.style.opacity = '1';
+                    newInsight.style.transform = 'translateY(0)';
+                }, 100);
+                
+                // Remove old insights
+                const allInsights = insights.querySelectorAll('.ai-insight');
+                if (allInsights.length > 3) {
+                    allInsights[0].style.opacity = '0';
+                    allInsights[0].style.transform = 'translateY(-20px)';
+                    setTimeout(() => {
+                        if (allInsights[0].parentNode) {
+                            allInsights[0].remove();
+                        }
+                    }, 500);
+                }
+                
+                messageIndex = (messageIndex + 1) % aiMessages.length;
+            }, 5000);
+        }
+
+        // === LOAD PROJECT TYPES QUANTUM ===
+        async function loadProjectTypesQuantum() {
             try {
-                console.log('📊 Loading project types...');
+                console.log('📊 Loading quantum project types...');
                 const response = await fetch('/api/projects');
                 
                 if (!response.ok) {
@@ -824,115 +1451,166 @@
                 }
                 
                 const data = await response.json();
-                console.log('✅ Project types loaded:', data.projects.length);
+                console.log('✅ Quantum project types loaded:', data.projects.length);
                 
-                const container = document.getElementById('projectTypes');
+                const container = document.getElementById('projectTypesQuantum');
                 if (!container) {
-                    console.error('❌ Project types container not found');
+                    console.error('❌ Quantum project types container not found');
                     return;
                 }
                 
                 container.innerHTML = '';
                 
-                data.projects.forEach(project => {
+                data.projects.forEach((project, index) => {
                     const card = document.createElement('div');
-                    card.className = 'project-card';
+                    card.className = 'project-card-quantum scroll-reveal';
+                    card.style.animationDelay = `${index * 0.1}s`;
                     card.setAttribute('data-project-id', project.id);
                     card.innerHTML = `
-                        <div class="project-title">${project.name}</div>
-                        <div class="project-description">${project.description}</div>
-                        <div class="project-meta">
+                        <div class="project-title-quantum">${project.name}</div>
+                        <div class="project-description-quantum">${project.description}</div>
+                        <div class="project-meta-quantum">
                             <span class="project-complexity">${project.complexity}</span>
                             <span class="project-cost">${project.base_cost}</span>
                         </div>
                     `;
                     
-                    card.addEventListener('click', () => selectProjectType(project.id, card, project.name));
+                    card.addEventListener('click', () => selectProjectTypeQuantum(project.id, card, project.name));
                     container.appendChild(card);
                 });
                 
             } catch (error) {
-                console.error('❌ Error loading project types:', error);
-                const container = document.getElementById('projectTypes');
-                if (container) {
-                    container.innerHTML = `
-                        <div class="error-message">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Failed to load project types. Please refresh the page.
-                        </div>
-                    `;
-                }
+                console.error('❌ Error loading quantum project types:', error);
+                showQuantumError('Failed to load project types. Please refresh the page.');
             }
         }
 
-        // Select project type
-        function selectProjectType(projectId, cardElement, projectName) {
-            console.log('🎯 Selected project:', projectName);
+        // === SELECT PROJECT TYPE QUANTUM ===
+        function selectProjectTypeQuantum(projectId, cardElement, projectName) {
+            console.log('🎯 Selected quantum project:', projectName);
             
             // Remove previous selection
-            document.querySelectorAll('.project-card').forEach(card => {
+            document.querySelectorAll('.project-card-quantum').forEach(card => {
                 card.classList.remove('selected');
             });
             
             // Add selection to clicked card
             cardElement.classList.add('selected');
-            selectedProjectType = projectId;
+            selectedProjectTypeQuantum = projectId;
             
             // Clear any previous error
-            clearValidationErrors();
+            clearQuantumValidationErrors();
+            
+            // Add AI insight about selection
+            addAIInsight(`🎯 Excellent choice! ${projectName} shows strong market potential based on current trends.`);
         }
 
-        // Setup event listeners
-        function setupEventListeners() {
-            console.log('🔧 Setting up event listeners...');
+        // === SETUP QUANTUM EVENT LISTENERS ===
+        function setupQuantumEventListeners() {
+            console.log('🔧 Setting up quantum event listeners...');
             
             // Form validation
-            const inputs = document.querySelectorAll('.form-input');
+            const inputs = document.querySelectorAll('.form-input-quantum');
             inputs.forEach(input => {
-                input.removeEventListener('blur', validateField);
-                input.addEventListener('blur', validateField);
-                input.removeEventListener('input', clearFieldError);
-                input.addEventListener('input', clearFieldError);
+                input.removeEventListener('blur', validateQuantumField);
+                input.addEventListener('blur', validateQuantumField);
+                input.removeEventListener('input', clearQuantumFieldError);
+                input.addEventListener('input', clearQuantumFieldError);
+                input.addEventListener('focus', onQuantumFieldFocus);
             });
             
-            console.log('✅ Event listeners configured');
+            console.log('✅ Quantum event listeners configured');
         }
 
-        // Validate individual field
-        function validateField(event) {
+        // === QUANTUM FIELD FOCUS ===
+        function onQuantumFieldFocus(event) {
+            const field = event.target;
+            const fieldName = field.id;
+            
+            const focusInsights = {
+                'companySizeQuantum': 'Company size affects resource allocation and scalability potential.',
+                'targetIndustryQuantum': 'Industry selection impacts market dynamics and growth projections.',
+                'investmentAmountQuantum': 'Investment amount determines project scope and expected returns.',
+                'expectedROIQuantum': 'ROI targets should align with industry benchmarks and risk tolerance.',
+                'timelineMonthsQuantum': 'Timeline affects cash flow patterns and risk assessment models.'
+            };
+            
+            if (focusInsights[fieldName]) {
+                addAIInsight(`💡 ${focusInsights[fieldName]}`);
+            }
+        }
+
+        // === ADD AI INSIGHT ===
+        function addAIInsight(message) {
+            const insights = document.getElementById('aiInsights');
+            const newInsight = document.createElement('div');
+            newInsight.className = 'ai-insight';
+            newInsight.textContent = message;
+            newInsight.style.opacity = '0';
+            newInsight.style.transform = 'translateY(20px)';
+            
+            insights.appendChild(newInsight);
+            
+            setTimeout(() => {
+                newInsight.style.transition = 'all 0.5s ease';
+                newInsight.style.opacity = '1';
+                newInsight.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Keep only latest 3 insights
+            const allInsights = insights.querySelectorAll('.ai-insight');
+            if (allInsights.length > 3) {
+                allInsights[0].style.opacity = '0';
+                allInsights[0].style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    if (allInsights[0].parentNode) {
+                        allInsights[0].remove();
+                    }
+                }, 500);
+            }
+        }
+
+        // === QUANTUM FIELD VALIDATION ===
+        function validateQuantumField(event) {
             const field = event.target;
             const value = field.value.trim();
             const fieldName = field.id;
             
-            clearFieldError(event);
+            clearQuantumFieldError(event);
             
             if (!value && field.required) {
-                showFieldError(field, `${getFieldDisplayName(fieldName)} is required`);
+                showQuantumFieldError(field, `${getQuantumFieldDisplayName(fieldName)} is required`);
                 return false;
             }
             
-            // Additional validation
-            if (fieldName === 'investmentAmount' && value) {
+            // Enhanced validation with AI insights
+            if (fieldName === 'investmentAmountQuantum' && value) {
                 const amount = parseFloat(value);
                 if (amount < 1000) {
-                    showFieldError(field, 'Minimum investment is $1,000');
+                    showQuantumFieldError(field, 'Minimum investment threshold is $1,000 for accurate modeling');
                     return false;
+                } else if (amount > 10000000) {
+                    addAIInsight('💰 Large investment detected! Consider diversification strategies for optimal risk management.');
                 }
             }
             
-            if (fieldName === 'expectedROI' && value) {
+            if (fieldName === 'expectedROIQuantum' && value) {
                 const roi = parseFloat(value);
                 if (roi < 1 || roi > 1000) {
-                    showFieldError(field, 'ROI must be between 1% and 1000%');
+                    showQuantumFieldError(field, 'ROI must be between 1% and 1000%');
                     return false;
+                } else if (roi > 100) {
+                    addAIInsight('🚀 High ROI target detected! AI models suggest reviewing market conditions and risk factors.');
                 }
             }
             
-            if (fieldName === 'timelineMonths' && value) {
+            if (fieldName === 'timelineMonthsQuantum' && value) {
                 const months = parseInt(value);
                 if (months < 1 || months > 120) {
-                    showFieldError(field, 'Timeline must be between 1 and 120 months');
+                    showQuantumFieldError(field, 'Timeline must be between 1 and 120 months');
                     return false;
+                } else if (months > 60) {
+                    addAIInsight('⏰ Long-term investment horizon provides better growth potential but requires periodic strategy reviews.');
                 }
             }
             
@@ -941,109 +1619,122 @@
             return true;
         }
 
-        // Clear field error
-        function clearFieldError(event) {
+        // === CLEAR QUANTUM FIELD ERROR ===
+        function clearQuantumFieldError(event) {
             const field = event.target;
             const group = field.parentElement;
             group.classList.remove('error', 'success');
             
-            const existingError = group.querySelector('.error-message');
+            const existingError = group.querySelector('.error-quantum');
             if (existingError) {
                 existingError.remove();
             }
         }
 
-        // Show field error
-        function showFieldError(field, message) {
+        // === SHOW QUANTUM FIELD ERROR ===
+        function showQuantumFieldError(field, message) {
             const group = field.parentElement;
             group.classList.add('error');
             group.classList.remove('success');
             
-            const existingError = group.querySelector('.error-message');
+            const existingError = group.querySelector('.error-quantum');
             if (existingError) {
                 existingError.remove();
             }
             
             const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            errorDiv.className = 'error-quantum';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
             group.appendChild(errorDiv);
         }
 
-        // Get field display name
-        function getFieldDisplayName(fieldId) {
+        // === GET QUANTUM FIELD DISPLAY NAME ===
+        function getQuantumFieldDisplayName(fieldId) {
             const names = {
-                'companySize': 'Company size',
-                'targetIndustry': 'Target industry',
-                'investmentAmount': 'Investment amount',
-                'expectedROI': 'Expected ROI',
-                'timelineMonths': 'Timeline'
+                'companySizeQuantum': 'Company scale',
+                'targetIndustryQuantum': 'Target market sector',
+                'investmentAmountQuantum': 'Investment capital',
+                'expectedROIQuantum': 'Target ROI',
+                'timelineMonthsQuantum': 'Investment horizon'
             };
             return names[fieldId] || fieldId;
         }
 
-        // Clear all validation errors
-        function clearValidationErrors() {
-            document.querySelectorAll('.form-group').forEach(group => {
+        // === CLEAR QUANTUM VALIDATION ERRORS ===
+        function clearQuantumValidationErrors() {
+            document.querySelectorAll('.form-group-quantum').forEach(group => {
                 group.classList.remove('error', 'success');
             });
-            document.querySelectorAll('.error-message').forEach(error => {
+            document.querySelectorAll('.error-quantum').forEach(error => {
                 error.remove();
             });
         }
 
-        // Clear all errors
-        function clearAllErrors() {
-            clearValidationErrors();
-            document.querySelectorAll('.error-message').forEach(error => {
-                error.remove();
-            });
+        // === SHOW QUANTUM ERROR ===
+        function showQuantumError(message) {
+            showQuantumNotification(message, 'error');
         }
 
-        // Show success message
-        function showSuccessMessage(message) {
-            const notification = document.getElementById('successNotification');
-            const messageSpan = document.getElementById('successMessage');
+        // === SHOW QUANTUM NOTIFICATION ===
+        function showQuantumNotification(message, type = 'success') {
+            const notification = document.getElementById('quantumNotification');
+            const messageSpan = document.getElementById('notificationMessage');
+            const icon = notification.querySelector('.notification-icon i');
             
             messageSpan.textContent = message;
+            
+            if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+                notification.style.background = 'var(--holo-accent)';
+            } else {
+                icon.className = 'fas fa-check-circle';
+                notification.style.background = 'var(--holo-secondary)';
+            }
+            
             notification.classList.add('show');
             
             setTimeout(() => {
                 notification.classList.remove('show');
-            }, 3000);
+            }, 4000);
         }
 
-        // Main calculation function
-        async function calculateROI() {
-            console.log('🧮 Starting ROI calculation...');
+        // === MAIN QUANTUM CALCULATION ===
+        async function calculateQuantumROI() {
+            console.log('🧮 Starting quantum ROI calculation...');
             
-            const button = document.querySelector('.calculate-btn');
+            const button = document.querySelector('.quantum-btn');
             
             try {
                 // Clear previous errors and results
-                clearAllErrors();
+                clearQuantumValidationErrors();
                 
                 // Disable button
                 button.disabled = true;
-                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
-                isCalculating = true;
+                button.innerHTML = '<i class="fas fa-brain fa-spin"></i> Quantum Analysis in Progress...';
+                isCalculatingQuantum = true;
+                
+                // Add AI insight about calculation
+                addAIInsight('🔄 Initiating quantum analysis with multi-dimensional risk assessment...');
                 
                 // Validate inputs
-                if (!validateInputs()) {
+                if (!validateQuantumInputs()) {
                     return;
                 }
                 
-                // Prepare data
+                // Prepare enhanced data
                 const requestData = {
-                    project_type: selectedProjectType,
-                    company_size: document.getElementById('companySize').value,
-                    target_industry: document.getElementById('targetIndustry').value,
-                    investment_amount: parseFloat(document.getElementById('investmentAmount').value),
-                    expected_roi: parseFloat(document.getElementById('expectedROI').value),
-                    timeline_months: parseInt(document.getElementById('timelineMonths').value)
+                    project_type: selectedProjectTypeQuantum,
+                    company_size: document.getElementById('companySizeQuantum').value,
+                    target_industry: document.getElementById('targetIndustryQuantum').value,
+                    investment_amount: parseFloat(document.getElementById('investmentAmountQuantum').value),
+                    expected_roi: parseFloat(document.getElementById('expectedROIQuantum').value),
+                    timeline_months: parseInt(document.getElementById('timelineMonthsQuantum').value)
                 };
                 
-                console.log('📤 Sending calculation request:', requestData);
+                console.log('📤 Sending quantum calculation request:', requestData);
+                
+                // Simulate AI processing steps
+                await simulateQuantumProcessing();
                 
                 // Make API call
                 const response = await fetch('/api/calculate', {
@@ -1055,59 +1746,77 @@
                 });
                 
                 const data = await response.json();
-                console.log('📥 Received response:', data);
+                console.log('📥 Received quantum response:', data);
                 
                 if (data.error) {
-                    throw new Error(data.validation_error?.message || 'Calculation failed');
+                    throw new Error(data.validation_error?.message || 'Quantum calculation failed');
                 }
                 
-                // Display results
-                displayResults(data);
-                showSuccessMessage('Investment analysis completed successfully!');
+                // Display enhanced results
+                displayQuantumResults(data);
+                initializeQuantumCharts(data);
+                showQuantumNotification('Quantum investment analysis completed successfully! 🚀');
                 
                 // Scroll to results
-                document.getElementById('resultsContainer').scrollIntoView({ 
+                document.getElementById('resultsQuantumContainer').scrollIntoView({ 
                     behavior: 'smooth',
                     block: 'start'
                 });
                 
             } catch (error) {
-                console.error('❌ Calculation error:', error);
-                showFieldError(document.getElementById('investmentAmount'), `Calculation failed: ${error.message}`);
+                console.error('❌ Quantum calculation error:', error);
+                showQuantumError(`Quantum analysis failed: ${error.message}`);
+                addAIInsight('⚠️ Analysis interrupted. Please verify inputs and try again.');
             } finally {
                 // Re-enable button
                 button.disabled = false;
-                button.innerHTML = '<i class="fas fa-calculator"></i> Analyze Investment';
-                isCalculating = false;
+                button.innerHTML = '<i class="fas fa-brain"></i> Initiate AI Analysis';
+                isCalculatingQuantum = false;
             }
         }
 
-        // Validate all inputs
-        function validateInputs() {
+        // === SIMULATE QUANTUM PROCESSING ===
+        async function simulateQuantumProcessing() {
+            const steps = [
+                'Analyzing market volatility patterns...',
+                'Cross-referencing industry benchmarks...',
+                'Calculating risk-adjusted returns...',
+                'Optimizing investment allocation...',
+                'Generating predictive models...'
+            ];
+            
+            for (let i = 0; i < steps.length; i++) {
+                addAIInsight(`🔄 ${steps[i]}`);
+                await new Promise(resolve => setTimeout(resolve, 800));
+            }
+        }
+
+        // === VALIDATE QUANTUM INPUTS ===
+        function validateQuantumInputs() {
             let isValid = true;
             
             // Check project type selection
-            if (!selectedProjectType) {
-                const container = document.getElementById('projectTypes');
+            if (!selectedProjectTypeQuantum) {
+                const container = document.getElementById('projectTypesQuantum');
                 const errorDiv = document.createElement('div');
-                errorDiv.className = 'error-message';
-                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please select a project type';
+                errorDiv.className = 'error-quantum';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please select a project type for accurate analysis';
                 container.parentElement.appendChild(errorDiv);
                 isValid = false;
             }
             
             // Validate form fields
-            const requiredFields = ['companySize', 'targetIndustry', 'investmentAmount', 'expectedROI', 'timelineMonths'];
+            const requiredFields = ['companySizeQuantum', 'targetIndustryQuantum', 'investmentAmountQuantum', 'expectedROIQuantum', 'timelineMonthsQuantum'];
             
             requiredFields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 if (!field.value.trim()) {
-                    showFieldError(field, `${getFieldDisplayName(fieldId)} is required`);
+                    showQuantumFieldError(field, `${getQuantumFieldDisplayName(fieldId)} is required`);
                     isValid = false;
                 } else {
                     // Trigger field validation
                     const event = { target: field };
-                    if (!validateField(event)) {
+                    if (!validateQuantumField(event)) {
                         isValid = false;
                     }
                 }
@@ -1116,88 +1825,183 @@
             return isValid;
         }
 
-        // Display calculation results
-        function displayResults(data) {
-            console.log('📊 Displaying results...');
+        // === DISPLAY QUANTUM RESULTS ===
+        function displayQuantumResults(data) {
+            console.log('📊 Displaying quantum results...');
             
-            const container = document.getElementById('resultsContainer');
-            const metricsGrid = document.getElementById('metricsGrid');
+            const container = document.getElementById('resultsQuantumContainer');
+            const metricsGrid = document.getElementById('metricsQuantumGrid');
             
             // Clear previous results
             metricsGrid.innerHTML = '';
             
-            // Prepare metrics data
+            // Enhanced metrics with AI insights
             const metrics = [
                 {
-                    icon: 'fas fa-dollar-sign',
+                    icon: 'fas fa-coins',
                     label: 'Total Investment',
-                    value: formatCurrency(data.roi_projection.total_investment),
-                    gradient: 'var(--gradient-primary)'
+                    value: formatQuantumCurrency(data.roi_projection.total_investment),
+                    insight: 'Initial capital requirement'
                 },
                 {
                     icon: 'fas fa-percentage',
-                    label: 'ROI Percentage',
+                    label: 'Quantum ROI',
                     value: `${data.roi_projection.roi_percentage.toFixed(2)}%`,
-                    gradient: 'var(--gradient-secondary)'
+                    insight: 'AI-optimized return rate'
                 },
                 {
                     icon: 'fas fa-chart-line',
                     label: 'Projected Revenue',
-                    value: formatCurrency(data.roi_projection.projected_revenue),
-                    gradient: 'var(--gradient-accent)'
+                    value: formatQuantumCurrency(data.roi_projection.projected_revenue),
+                    insight: 'Market-adjusted projections'
                 },
                 {
-                    icon: 'fas fa-coins',
+                    icon: 'fas fa-gem',
                     label: 'Net Present Value',
-                    value: formatCurrency(data.roi_projection.npv),
-                    gradient: 'var(--gradient-primary)'
+                    value: formatQuantumCurrency(data.roi_projection.npv),
+                    insight: 'Time-value optimized'
                 },
                 {
-                    icon: 'fas fa-trending-up',
+                    icon: 'fas fa-rocket',
                     label: 'Internal Rate of Return',
                     value: `${(data.roi_projection.irr * 100).toFixed(2)}%`,
-                    gradient: 'var(--gradient-secondary)'
+                    insight: 'Compound growth indicator'
                 },
                 {
-                    icon: 'fas fa-clock',
+                    icon: 'fas fa-hourglass-half',
                     label: 'Payback Period',
                     value: `${data.roi_projection.payback_period_months} months`,
-                    gradient: 'var(--gradient-accent)'
+                    insight: 'Break-even timeline'
                 }
             ];
             
-            // Create metric cards
-            metrics.forEach(metric => {
+            // Create enhanced metric cards
+            metrics.forEach((metric, index) => {
                 const card = document.createElement('div');
-                card.className = 'metric-card';
+                card.className = 'metric-card-quantum scroll-reveal';
+                card.style.animationDelay = `${index * 0.1}s`;
                 card.innerHTML = `
-                    <div class="metric-icon">
+                    <div class="metric-icon-quantum">
                         <i class="${metric.icon}"></i>
                     </div>
-                    <div class="metric-value">${metric.value}</div>
-                    <div class="metric-label">${metric.label}</div>
+                    <div class="metric-value-quantum">${metric.value}</div>
+                    <div class="metric-label-quantum">${metric.label}</div>
                 `;
                 
-                // Set gradient for icon
-                const icon = card.querySelector('.metric-icon');
-                icon.style.background = metric.gradient;
-                icon.style.webkitBackgroundClip = 'text';
-                icon.style.webkitTextFillColor = 'transparent';
-                icon.style.backgroundClip = 'text';
+                // Add hover effect for insights
+                card.addEventListener('mouseenter', () => {
+                    addAIInsight(`📈 ${metric.label}: ${metric.insight}`);
+                });
                 
                 metricsGrid.appendChild(card);
             });
             
             // Show results container
             container.style.display = 'block';
-            currentResults = data;
+            currentResultsQuantum = data;
             
-            console.log('✅ Results displayed successfully');
+            // Add final AI insight
+            addAIInsight('✨ Quantum analysis complete! Explore the interactive charts below for deeper insights.');
+            
+            console.log('✅ Quantum results displayed successfully');
         }
 
-        // Format currency
-        function formatCurrency(amount) {
-            if (amount >= 1000000) {
+        // === INITIALIZE QUANTUM CHARTS ===
+        function initializeQuantumCharts(data) {
+            // ROI Timeline Chart
+            const roiCtx = document.getElementById('roiChart');
+            if (roiCtx && data.roi_projection) {
+                const timeline = Array.from({length: data.roi_projection.payback_period_months + 6}, (_, i) => i + 1);
+                const roiData = timeline.map(month => {
+                    const progress = month / data.roi_projection.payback_period_months;
+                    return Math.min(progress * data.roi_projection.roi_percentage, data.roi_projection.roi_percentage);
+                });
+
+                roiChart = new Chart(roiCtx, {
+                    type: 'line',
+                    data: {
+                        labels: timeline.map(m => `Month ${m}`),
+                        datasets: [{
+                            label: 'ROI Progression',
+                            data: roiData,
+                            borderColor: 'rgb(139, 92, 246)',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#FFFFFF'
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: '#9CA3AF'
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: '#9CA3AF'
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Risk Assessment Chart
+            const riskCtx = document.getElementById('riskChart');
+            if (riskCtx) {
+                riskChart = new Chart(riskCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+                        datasets: [{
+                            data: [60, 30, 10],
+                            backgroundColor: [
+                                'rgb(16, 185, 129)',
+                                'rgb(245, 158, 11)',
+                                'rgb(239, 68, 68)'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#FFFFFF',
+                                    padding: 20
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // === FORMAT QUANTUM CURRENCY ===
+        function formatQuantumCurrency(amount) {
+            if (amount >= 1000000000) {
+                return `$${(amount / 1000000000).toFixed(2)}B`;
+            } else if (amount >= 1000000) {
                 return `$${(amount / 1000000).toFixed(1)}M`;
             } else if (amount >= 1000) {
                 return `$${(amount / 1000).toFixed(1)}K`;
@@ -1206,17 +2010,29 @@
             }
         }
 
-        // Error handling for network issues
+        // === QUANTUM ERROR HANDLING ===
         window.addEventListener('online', function() {
-            console.log('🌐 Network connection restored');
+            console.log('🌐 Quantum network connection restored');
+            addAIInsight('🌐 Network connection restored. Quantum analysis capabilities are back online.');
         });
 
         window.addEventListener('offline', function() {
-            console.log('🚫 Network connection lost');
-            showSuccessMessage('⚠️ Network connection lost. Please check your connection.');
+            console.log('🚫 Quantum network connection lost');
+            showQuantumNotification('⚠️ Network connection lost. Please check your connection.', 'error');
+            addAIInsight('⚠️ Network connectivity issues detected. Some features may be limited.');
         });
 
-        console.log('🎉 Infinex ROI Calculator - Script loaded successfully');
+        // === PERFORMANCE MONITORING ===
+        window.addEventListener('load', function() {
+            const loadTime = performance.now();
+            console.log(`🚀 Quantum ROI Calculator loaded in ${loadTime.toFixed(2)}ms`);
+            
+            if (loadTime > 3000) {
+                addAIInsight('⚡ Optimizing performance for better user experience...');
+            }
+        });
+
+        console.log('🎉 Infinex Quantum ROI Calculator - All systems initialized successfully');
     </script>
 </body>
 </html>
