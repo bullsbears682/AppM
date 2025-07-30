@@ -1243,13 +1243,15 @@
             height: 100%;
             z-index: 2000;
             display: none;
-            animation: fadeIn 0.3s ease-out;
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
         }
 
         .ai-popup-modal.show {
-            display: flex;
+            display: flex !important;
             align-items: center;
             justify-content: center;
+            opacity: 1;
         }
 
         .ai-popup-backdrop {
@@ -2805,9 +2807,12 @@
                 Initiate AI Analysis
             </button>
             
-            <!-- Debug Test Button -->
+            <!-- Debug Test Buttons -->
             <button type="button" style="margin-left: 1rem; padding: 0.75rem 1rem; background: #EF4444; color: white; border: none; border-radius: 8px; cursor: pointer;" onclick="testDirectCalculation()">
                 🔧 Test Direct API
+            </button>
+            <button type="button" style="margin-left: 0.5rem; padding: 0.75rem 1rem; background: #9333EA; color: white; border: none; border-radius: 8px; cursor: pointer;" onclick="openAIPopup()">
+                🤖 Test AI Popup
             </button>
         </div>
 
@@ -2909,9 +2914,19 @@
 
         // === AI POPUP SYSTEM ===
         function openAIPopup() {
+            console.log('🤖 Opening AI popup...');
             const modal = document.getElementById('aiPopupModal');
+            console.log('🤖 Modal element found:', !!modal);
+            
+            if (!modal) {
+                console.error('❌ AI popup modal not found!');
+                alert('AI popup not available. Please refresh the page.');
+                return;
+            }
+            
             modal.classList.add('show');
             aiPopupOpen = true;
+            console.log('🤖 AI popup opened successfully');
             
             // Reset notification count
             aiNotificationCount = 0;
@@ -2919,9 +2934,15 @@
         }
 
         function closeAIPopup() {
+            console.log('🤖 Closing AI popup...');
             const modal = document.getElementById('aiPopupModal');
-            modal.classList.remove('show');
-            aiPopupOpen = false;
+            if (modal) {
+                modal.classList.remove('show');
+                aiPopupOpen = false;
+                console.log('🤖 AI popup closed successfully');
+            } else {
+                console.error('❌ AI popup modal not found for closing!');
+            }
         }
 
         function clearAIInsights() {
@@ -3003,11 +3024,15 @@
             
             // Volatility buttons
             const volatilityButtons = document.querySelectorAll('.volatility-btn');
-            volatilityButtons.forEach(btn => {
+            console.log('🎯 Found volatility buttons:', volatilityButtons.length);
+            volatilityButtons.forEach((btn, index) => {
+                console.log(`🔘 Button ${index}:`, btn.dataset.volatility, btn.classList.contains('active'));
                 btn.addEventListener('click', function() {
+                    console.log('🔘 Volatility button clicked:', this.dataset.volatility);
                     volatilityButtons.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     selectedVolatility = this.dataset.volatility;
+                    console.log('🎯 Selected volatility updated to:', selectedVolatility);
                     updateScenarioPreview();
                 });
             });
@@ -3936,13 +3961,19 @@
                 }
                 if (!industryMapping[rawTargetIndustry] && rawTargetIndustry) {
                     console.warn('⚠️ Industry not in mapping:', rawTargetIndustry);
-                    addAIInsight(`⚠️ Unknown industry "${rawTargetIndustry}" - using as-is. This might cause validation errors.`);
+                    try {
+                        addAIInsight(`⚠️ Unknown industry "${rawTargetIndustry}" - using as-is. This might cause validation errors.`);
+                    } catch (e) {
+                        console.warn('Could not add AI insight:', e);
+                    }
                 }
-                if (!requestData.custom_investment || requestData.custom_investment < 1000) {
-                    throw new Error('Investment amount must be at least $1,000');
+                
+                // Optional validation - only check if values are provided
+                if (requestData.custom_investment && requestData.custom_investment < 1000) {
+                    throw new Error('Investment amount must be at least $1,000 if provided');
                 }
-                if (!requestData.custom_timeline || requestData.custom_timeline < 1) {
-                    throw new Error('Timeline must be at least 1 month');
+                if (requestData.custom_timeline && requestData.custom_timeline < 1) {
+                    throw new Error('Timeline must be at least 1 month if provided');
                 }
                 
                 // Simulate AI processing steps
