@@ -9,6 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         /* === ENTERPRISE DESIGN SYSTEM === */
@@ -1694,6 +1696,9 @@
 
                  // Display calculation results with comprehensive scenario analysis
          function displayResults(results) {
+             // Store results in state for PDF export
+             VoidSightApp.state.results = results;
+             
              const resultsContent = document.getElementById('resultsContent');
              const scenarioAnalysis = results.scenario_analysis;
              
@@ -2140,21 +2145,49 @@
                      </div>
                  </div>
 
-                 <!-- Interactive Timeline Controls -->
-                 <div style="margin-top: var(--space-6); display: flex; gap: var(--space-3); flex-wrap: wrap;">
-                     <button onclick="highlightPhase('development')" style="padding: var(--space-2) var(--space-4); background: var(--primary-600); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease;" 
-                             onmouseover="this.style.background='var(--primary-500)'" onmouseout="this.style.background='var(--primary-600)'">
-                         📅 Development Phase
-                     </button>
-                     <button onclick="highlightPhase('financial')" style="padding: var(--space-2) var(--space-4); background: var(--accent-600); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease;"
-                             onmouseover="this.style.background='var(--accent-500)'" onmouseout="this.style.background='var(--accent-600)'">
-                         💰 Financial Milestones
-                     </button>
-                     <button onclick="highlightPhase('all')" style="padding: var(--space-2) var(--space-4); background: var(--secondary-600); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease;"
-                             onmouseover="this.style.background='var(--secondary-500)'" onmouseout="this.style.background='var(--secondary-600)'">
-                         🔍 Show All
-                     </button>
-                 </div>
+                                   <!-- Interactive Timeline Controls -->
+                  <div style="margin-top: var(--space-6); display: flex; gap: var(--space-3); flex-wrap: wrap;">
+                      <button onclick="highlightPhase('development')" style="padding: var(--space-2) var(--space-4); background: var(--primary-600); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease;" 
+                              onmouseover="this.style.background='var(--primary-500)'" onmouseout="this.style.background='var(--primary-600)'">
+                          📅 Development Phase
+                      </button>
+                      <button onclick="highlightPhase('financial')" style="padding: var(--space-2) var(--space-4); background: var(--accent-600); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease;"
+                              onmouseover="this.style.background='var(--accent-500)'" onmouseout="this.style.background='var(--accent-600)'">
+                          💰 Financial Milestones
+                      </button>
+                      <button onclick="highlightPhase('all')" style="padding: var(--space-2) var(--space-4); background: var(--secondary-600); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease;"
+                              onmouseover="this.style.background='var(--secondary-500)'" onmouseout="this.style.background='var(--secondary-600)'">
+                          🔍 Show All
+                      </button>
+                  </div>
+
+                  <!-- PDF Export Controls -->
+                  <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--bg-primary); border: 1px solid var(--glass-border); border-radius: var(--radius-lg);">
+                      <h4 style="color: var(--primary-200); margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-2);">
+                          <i class="fas fa-file-pdf"></i>
+                          Export Professional Report
+                      </h4>
+                      <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+                          <button onclick="exportToPDF('executive')" style="padding: var(--space-3) var(--space-4); background: #dc2626; color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: var(--space-2); transition: all 0.3s ease;"
+                                  onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
+                              <i class="fas fa-file-pdf"></i>
+                              📊 Executive Summary PDF
+                          </button>
+                          <button onclick="exportToPDF('detailed')" style="padding: var(--space-3) var(--space-4); background: #7c3aed; color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: var(--space-2); transition: all 0.3s ease;"
+                                  onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">
+                              <i class="fas fa-chart-bar"></i>
+                              📈 Detailed Analysis PDF
+                          </button>
+                          <button onclick="exportToPDF('presentation')" style="padding: var(--space-3) var(--space-4); background: #059669; color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: var(--space-2); transition: all 0.3s ease;"
+                                  onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'">
+                              <i class="fas fa-presentation"></i>
+                              🎯 Presentation PDF
+                          </button>
+                      </div>
+                      <div style="margin-top: var(--space-3); font-size: 0.85rem; color: var(--secondary-400);">
+                          Professional PDF reports with charts, timeline, and comprehensive analysis
+                      </div>
+                  </div>
              `;
 
              mobileLog('📅 Interactive timeline created with ' + milestones.length + ' milestones');
@@ -2183,8 +2216,230 @@
                  }
              });
 
-             mobileLog('📅 Timeline filtered for: ' + phase);
-         }
+                           mobileLog('📅 Timeline filtered for: ' + phase);
+          }
+
+          // PDF Export functionality
+          async function exportToPDF(reportType) {
+              try {
+                  mobileLog(`📄 Starting ${reportType} PDF export...`);
+                  
+                  // Check if jsPDF is available
+                  if (typeof window.jspdf === 'undefined') {
+                      throw new Error('PDF library not loaded');
+                  }
+
+                  const { jsPDF } = window.jspdf;
+                  const doc = new jsPDF('p', 'mm', 'a4');
+                  
+                  // Get current results data
+                  const resultsData = VoidSightApp.state.results;
+                  if (!resultsData) {
+                      throw new Error('No calculation results available for export');
+                  }
+
+                  // Generate PDF based on report type
+                  switch (reportType) {
+                      case 'executive':
+                          await generateExecutiveSummary(doc, resultsData);
+                          break;
+                      case 'detailed':
+                          await generateDetailedAnalysis(doc, resultsData);
+                          break;
+                      case 'presentation':
+                          await generatePresentationReport(doc, resultsData);
+                          break;
+                      default:
+                          await generateExecutiveSummary(doc, resultsData);
+                  }
+
+                  // Save the PDF
+                  const filename = `VoidSight_ROI_${reportType}_${new Date().toISOString().split('T')[0]}.pdf`;
+                  doc.save(filename);
+                  
+                  mobileLog(`✅ PDF exported successfully: ${filename}`);
+                  showAlert(`PDF report exported successfully!`, 'success');
+
+              } catch (error) {
+                  console.error('PDF Export Error:', error);
+                  mobileLog(`❌ PDF export failed: ${error.message}`);
+                  showAlert(`PDF export failed: ${error.message}`, 'error');
+              }
+          }
+
+          // Generate Executive Summary PDF
+          async function generateExecutiveSummary(doc, results) {
+              // Header
+              doc.setFontSize(24);
+              doc.setFont('helvetica', 'bold');
+              doc.setTextColor(16, 185, 129);
+              doc.text('VoidSight Analytics', 20, 30);
+              
+              doc.setFontSize(18);
+              doc.setTextColor(0, 0, 0);
+              doc.text('Executive ROI Summary', 20, 45);
+              
+              // Project Info
+              doc.setFontSize(12);
+              doc.setFont('helvetica', 'normal');
+              doc.text(`Project: ${results.project_name}`, 20, 60);
+              doc.text(`Analysis Date: ${new Date().toLocaleDateString()}`, 20, 70);
+              doc.text(`Timeline: ${results.timeline_months} months`, 20, 80);
+              
+              // Key Metrics Box
+              doc.setFillColor(240, 249, 255);
+              doc.rect(20, 90, 170, 60, 'F');
+              doc.setFont('helvetica', 'bold');
+              doc.text('Key Financial Metrics', 25, 105);
+              
+              doc.setFont('helvetica', 'normal');
+              doc.text(`ROI: ${results.roi_percentage}%`, 25, 120);
+              doc.text(`Investment: $${results.total_investment.toLocaleString()}`, 25, 130);
+              doc.text(`Expected Return: $${results.total_return.toLocaleString()}`, 25, 140);
+              doc.text(`Payback Period: ${results.payback_period} months`, 100, 120);
+              doc.text(`Risk Score: ${results.risk_score}/100`, 100, 130);
+              doc.text(`Confidence: ${results.confidence_level}%`, 100, 140);
+              
+              // Scenario Analysis
+              doc.setFont('helvetica', 'bold');
+              doc.text('Scenario Analysis', 20, 170);
+              
+              const scenarios = results.scenario_analysis;
+              doc.setFont('helvetica', 'normal');
+              doc.text(`Analysis Type: ${scenarios.analysis_type.replace('_', ' ').toUpperCase()}`, 20, 185);
+              doc.text(`Total Scenarios: ${scenarios.total_scenarios.toLocaleString()}`, 20, 195);
+              doc.text(`Success Probability: ${scenarios.success_probability}%`, 20, 205);
+              
+              doc.text(`Best Case ROI: ${scenarios.best_case.roi_percentage.toFixed(1)}%`, 20, 220);
+              doc.text(`Most Likely ROI: ${scenarios.most_likely.roi_percentage.toFixed(1)}%`, 20, 230);
+              doc.text(`Worst Case ROI: ${scenarios.worst_case.roi_percentage.toFixed(1)}%`, 20, 240);
+              
+              // Footer
+              doc.setFontSize(10);
+              doc.setTextColor(128, 128, 128);
+              doc.text('Generated by VoidSight Analytics - Enterprise ROI Intelligence Platform', 20, 280);
+          }
+
+          // Generate Detailed Analysis PDF
+          async function generateDetailedAnalysis(doc, results) {
+              // Page 1 - Overview
+              await generateExecutiveSummary(doc, results);
+              
+              // Page 2 - Detailed Breakdown
+              doc.addPage();
+              doc.setFontSize(18);
+              doc.setFont('helvetica', 'bold');
+              doc.setTextColor(0, 0, 0);
+              doc.text('Detailed Financial Analysis', 20, 30);
+              
+              // Investment Breakdown
+              doc.setFontSize(14);
+              doc.text('Investment Breakdown', 20, 50);
+              doc.setFontSize(12);
+              doc.setFont('helvetica', 'normal');
+              
+              doc.text(`Total Investment: $${results.total_investment.toLocaleString()}`, 20, 65);
+              doc.text(`Monthly Investment: $${Math.round(results.total_investment / results.timeline_months).toLocaleString()}`, 20, 75);
+              doc.text(`Expected Monthly Return: $${results.monthly_return.toLocaleString()}`, 20, 85);
+              doc.text(`Net Profit: $${results.net_profit.toLocaleString()}`, 20, 95);
+              
+              // Risk Analysis
+              doc.setFont('helvetica', 'bold');
+              doc.text('Risk Analysis', 20, 115);
+              doc.setFont('helvetica', 'normal');
+              
+              const riskDist = results.scenario_analysis.risk_distribution;
+              doc.text(`Low Risk Scenarios: ${riskDist.low}%`, 20, 130);
+              doc.text(`Medium Risk Scenarios: ${riskDist.medium}%`, 20, 140);
+              doc.text(`High Risk Scenarios: ${riskDist.high}%`, 20, 150);
+              
+              // Timeline Milestones
+              doc.setFont('helvetica', 'bold');
+              doc.text('Project Timeline Milestones', 20, 170);
+              doc.setFont('helvetica', 'normal');
+              
+              const milestones = [
+                  `Project Launch: Month 0`,
+                  `First Quarter: Month ${Math.ceil(results.timeline_months * 0.25)}`,
+                  `Midpoint: Month ${Math.ceil(results.timeline_months * 0.5)}`,
+                  `Break-Even: Month ${results.payback_period}`,
+                  `Final Phase: Month ${Math.ceil(results.timeline_months * 0.75)}`,
+                  `Completion: Month ${results.timeline_months}`
+              ];
+              
+              milestones.forEach((milestone, index) => {
+                  doc.text(milestone, 20, 185 + (index * 10));
+              });
+              
+              // Footer
+              doc.setFontSize(10);
+              doc.setTextColor(128, 128, 128);
+              doc.text('Page 2 - Detailed Analysis | VoidSight Analytics', 20, 280);
+          }
+
+          // Generate Presentation Report PDF
+          async function generatePresentationReport(doc, results) {
+              // Page 1 - Title Slide
+              doc.setFillColor(16, 185, 129);
+              doc.rect(0, 0, 210, 60, 'F');
+              
+              doc.setFontSize(32);
+              doc.setFont('helvetica', 'bold');
+              doc.setTextColor(255, 255, 255);
+              doc.text('ROI Analysis', 20, 35);
+              doc.text('Presentation', 20, 50);
+              
+              doc.setFontSize(16);
+              doc.setTextColor(0, 0, 0);
+              doc.text(`${results.project_name}`, 20, 80);
+              doc.text(`${new Date().toLocaleDateString()}`, 20, 95);
+              
+              // Key Highlights
+              doc.setFontSize(20);
+              doc.setFont('helvetica', 'bold');
+              doc.text('Key Highlights', 20, 120);
+              
+              doc.setFontSize(16);
+              doc.setFont('helvetica', 'normal');
+              doc.text(`• ${results.roi_percentage}% Expected ROI`, 25, 140);
+              doc.text(`• $${results.total_investment.toLocaleString()} Total Investment`, 25, 155);
+              doc.text(`• ${results.payback_period} Month Payback Period`, 25, 170);
+              doc.text(`• ${results.scenario_analysis.success_probability}% Success Probability`, 25, 185);
+              doc.text(`• ${results.scenario_analysis.total_scenarios.toLocaleString()} Scenarios Analyzed`, 25, 200);
+              
+              // Recommendation
+              doc.setFontSize(18);
+              doc.setFont('helvetica', 'bold');
+              doc.setTextColor(16, 185, 129);
+              const recommendation = results.roi_percentage > 100 ? 'RECOMMENDED' : 'REQUIRES REVIEW';
+              doc.text(`Recommendation: ${recommendation}`, 20, 230);
+              
+              // Page 2 - Charts and Visual Data
+              doc.addPage();
+              doc.setFontSize(18);
+              doc.setFont('helvetica', 'bold');
+              doc.setTextColor(0, 0, 0);
+              doc.text('Visual Analysis', 20, 30);
+              
+              // Try to capture chart if available
+              try {
+                  const chartCanvas = document.getElementById('roiChart');
+                  if (chartCanvas && typeof html2canvas !== 'undefined') {
+                      const chartImage = await html2canvas(chartCanvas);
+                      const chartDataURL = chartImage.toDataURL('image/png');
+                      doc.addImage(chartDataURL, 'PNG', 20, 50, 170, 100);
+                      doc.text('ROI Projection Chart', 20, 160);
+                  }
+              } catch (error) {
+                  console.warn('Could not capture chart:', error);
+                  doc.text('Chart capture not available', 20, 50);
+              }
+              
+              // Footer
+              doc.setFontSize(10);
+              doc.setTextColor(128, 128, 128);
+              doc.text('Presentation Report | VoidSight Analytics', 20, 280);
+          }
 
         // Show alert message
         function showAlert(message, type = 'info') {
