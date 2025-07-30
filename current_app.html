@@ -2648,33 +2648,9 @@
                         <div id="projectTypesPhantom" class="project-grid-phantom">
                             <!-- Projects will be loaded here -->
                         </div>
-                        <div style="text-align: center; margin: 20px 0;">
-                            <button onclick="createBulletproofProjects()" style="
-                                margin: 5px; 
-                                padding: 12px 20px; 
-                                background: linear-gradient(135deg, #9333EA, #7C3AED); 
-                                color: white; 
-                                border: none; 
-                                border-radius: 10px; 
-                                font-weight: 600;
-                                cursor: pointer;
-                                transition: all 0.3s ease;
-                                font-size: 14px;
-                            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">🚀 Load VoidSight Projects</button>
-                            
-                            <button onclick="testContainer()" style="
-                                margin: 5px; 
-                                padding: 12px 20px; 
-                                background: linear-gradient(135deg, #14B8A6, #06B6D4); 
-                                color: white; 
-                                border: none; 
-                                border-radius: 10px; 
-                                font-weight: 600;
-                                cursor: pointer;
-                                transition: all 0.3s ease;
-                                font-size: 14px;
-                            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">🔍 System Check</button>
-                        </div>
+                        <button onclick="loadProjectTypesQuantum()" style="margin: 10px; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px;">🔄 Force Load Projects</button>
+                        <button onclick="createManualProjects()" style="margin: 10px; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px;">⚡ Manual Projects</button>
+                        <button onclick="testContainer()" style="margin: 10px; padding: 10px; background: #ffc107; color: black; border: none; border-radius: 5px;">🔍 Test Container</button>
                     </div>
                 </div>
             </div>
@@ -3504,77 +3480,33 @@
             }, 2500);
         }
 
-        // === QUANTUM INITIALIZATION V2.0 ===
+        // === QUANTUM INITIALIZATION ===
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 VoidSight Analytics V2.0 - Initializing...');
-            console.log('🛠️ Enhanced bulletproof initialization starting...');
+            console.log('🚀 VoidSight Analytics - Initializing...');
+            console.log('📱 Force loading projects immediately...');
             
-            // Initialize core systems first
-            try {
-                initializePhantomCanvas();
-                console.log('✅ Phantom canvas initialized');
-            } catch (error) {
-                console.error('❌ Phantom canvas error:', error);
-            }
-            
-            try {
-                setupQuantumEventListeners();
-                console.log('✅ Event listeners setup');
-            } catch (error) {
-                console.error('❌ Event listeners error:', error);
-            }
-            
-            try {
-                initializeScrollAnimations();
-                console.log('✅ Scroll animations initialized');
-            } catch (error) {
-                console.error('❌ Scroll animations error:', error);
-            }
-            
-            try {
-                activateAIInsights();
-                console.log('✅ AI insights activated');
-            } catch (error) {
-                console.error('❌ AI insights error:', error);
-            }
-            
-            try {
-                initializeScenarioControls();
-                console.log('✅ Scenario controls initialized');
-            } catch (error) {
-                console.error('❌ Scenario controls error:', error);
-            }
-            
-            // Enhanced bulletproof project loading
-            console.log('📊 Starting bulletproof project loading sequence...');
-            
-            // Immediate attempt
+            // Force load projects with timeout fallback
             setTimeout(() => {
-                console.log('⚡ Immediate: Loading projects...');
+                console.log('⚡ Timeout: Loading projects...');
                 loadProjectTypesQuantum();
             }, 100);
             
-            // Fallback attempts with exponential backoff
             setTimeout(() => {
-                if (!projectsLoaded) {
-                    console.log('⚡ Fallback 1: Loading projects...');
-                    createBulletproofProjects();
-                }
+                console.log('⚡ Fallback: Loading projects...');
+                loadProjectTypesQuantum();
+            }, 500);
+            
+            setTimeout(() => {
+                console.log('⚡ Final attempt: Loading projects...');
+                loadProjectTypesQuantum();
             }, 1000);
             
-            setTimeout(() => {
-                if (!projectsLoaded) {
-                    console.log('⚡ Fallback 2: Force loading projects...');
-                    createBulletproofProjects();
-                }
-            }, 3000);
-            
-            setTimeout(() => {
-                if (!projectsLoaded) {
-                    console.log('⚡ Final fallback: Guaranteed project loading...');
-                    createBulletproofProjects();
-                }
-            }, 5000);
+            initializePhantomCanvas();
+            loadProjectTypesQuantum();
+            setupQuantumEventListeners();
+            initializeScrollAnimations();
+            activateAIInsights();
+            initializeScenarioControls();
             
             // Initialize bulletproof controls with multiple delays
             setTimeout(initializeBulletproofControls, 100);
@@ -5152,372 +5084,6 @@
             }
         `;
         document.head.appendChild(style);
-
-        // === BULLETPROOF PROJECT LOADING SYSTEM V2.0 ===
-        let projectLoadAttempts = 0;
-        let projectsLoaded = false;
-        const maxLoadAttempts = 5;
-        
-        // Enhanced project data with guaranteed fallbacks
-        const GUARANTEED_PROJECTS = [
-            {
-                id: 'web_application',
-                name: 'Web Application',
-                description: 'Modern responsive web application with advanced features',
-                complexity: 'High',
-                base_cost: '$75,000',
-                timeline: '6-8 months',
-                roi_potential: '250%'
-            },
-            {
-                id: 'mobile_app_development',
-                name: 'Mobile App Development',
-                description: 'Native iOS and Android mobile application',
-                complexity: 'High',
-                base_cost: '$85,000',
-                timeline: '8-10 months',
-                roi_potential: '300%'
-            },
-            {
-                id: 'ai_integration',
-                name: 'AI Integration',
-                description: 'Artificial intelligence and machine learning integration',
-                complexity: 'Very High',
-                base_cost: '$120,000',
-                timeline: '10-12 months',
-                roi_potential: '400%'
-            },
-            {
-                id: 'ecommerce_platform',
-                name: 'E-commerce Platform',
-                description: 'Complete online shopping platform with payment integration',
-                complexity: 'High',
-                base_cost: '$95,000',
-                timeline: '8-10 months',
-                roi_potential: '350%'
-            },
-            {
-                id: 'digital_transformation',
-                name: 'Digital Transformation',
-                description: 'Complete digital transformation and process automation',
-                complexity: 'Very High',
-                base_cost: '$150,000',
-                timeline: '12-18 months',
-                roi_potential: '500%'
-            },
-            {
-                id: 'cloud_migration',
-                name: 'Cloud Migration',
-                description: 'Migrate existing systems to cloud infrastructure',
-                complexity: 'Medium',
-                base_cost: '$65,000',
-                timeline: '4-6 months',
-                roi_potential: '200%'
-            }
-        ];
-
-        // === BULLETPROOF PROJECT CREATION ===
-        function createBulletproofProjects(projects = GUARANTEED_PROJECTS) {
-            console.log('🛠️ Creating bulletproof projects...');
-            
-            const container = document.getElementById('projectTypesPhantom');
-            if (!container) {
-                console.error('❌ Project container not found!');
-                return false;
-            }
-
-            // Clear container with loading animation
-            container.innerHTML = `
-                <div class="loading-projects" style="
-                    text-align: center; 
-                    padding: 40px; 
-                    color: #64ffda; 
-                    background: rgba(100, 255, 218, 0.05);
-                    border: 1px solid rgba(100, 255, 218, 0.2);
-                    border-radius: 15px;
-                    margin: 20px 0;
-                ">
-                    <div style="font-size: 24px; margin-bottom: 15px;">🚀</div>
-                    <div style="font-size: 18px; font-weight: 600;">Loading VoidSight Projects...</div>
-                    <div style="font-size: 14px; margin-top: 10px; opacity: 0.7;">Initializing spectral analysis engine</div>
-                </div>
-            `;
-
-            // Create projects with delay for better UX
-            setTimeout(() => {
-                container.innerHTML = '';
-                
-                projects.forEach((project, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'project-card-phantom enhanced-project-card';
-                    card.setAttribute('data-project-id', project.id);
-                    card.setAttribute('tabindex', '0');
-                    card.style.animationDelay = `${index * 0.1}s`;
-                    
-                    // Enhanced inline styles for guaranteed visibility
-                    card.style.cssText = `
-                        background: linear-gradient(135deg, rgba(20, 20, 25, 0.95) 0%, rgba(30, 30, 38, 0.95) 100%);
-                        border: 2px solid rgba(100, 255, 218, 0.3);
-                        border-radius: 20px;
-                        padding: 25px;
-                        margin-bottom: 20px;
-                        cursor: pointer;
-                        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                        position: relative;
-                        overflow: hidden;
-                        backdrop-filter: blur(15px);
-                        box-shadow: 
-                            0 8px 32px rgba(10, 10, 15, 0.4),
-                            inset 0 1px 0 rgba(255, 255, 255, 0.05);
-                        transform: translateY(0);
-                        opacity: 1;
-                        display: block !important;
-                        visibility: visible !important;
-                    `;
-                    
-                    card.innerHTML = `
-                        <div class="project-glow" style="
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 4px;
-                            background: linear-gradient(90deg, #9333EA, #7C3AED, #6366F1, #3B82F6, #06B6D4);
-                            border-radius: 20px 20px 0 0;
-                        "></div>
-                        
-                        <div class="project-content" style="position: relative; z-index: 2;">
-                            <div class="project-title-phantom" style="
-                                font-size: 22px;
-                                font-weight: 700;
-                                color: #F8FAFC;
-                                margin-bottom: 12px;
-                                font-family: 'Orbitron', monospace;
-                            ">${project.name}</div>
-                            
-                            <div class="project-description-phantom" style="
-                                color: #CBD5E1;
-                                margin-bottom: 20px;
-                                font-size: 16px;
-                                line-height: 1.5;
-                            ">${project.description}</div>
-                            
-                            <div class="project-meta-phantom" style="
-                                display: grid;
-                                grid-template-columns: 1fr 1fr;
-                                gap: 15px;
-                            ">
-                                <div class="meta-item" style="
-                                    background: rgba(147, 51, 234, 0.2);
-                                    padding: 8px 12px;
-                                    border-radius: 8px;
-                                    text-align: center;
-                                ">
-                                    <div style="font-size: 12px; color: #94A3B8; margin-bottom: 4px;">Complexity</div>
-                                    <div style="color: #F59E0B; font-weight: 600;">${project.complexity}</div>
-                                </div>
-                                
-                                <div class="meta-item" style="
-                                    background: rgba(6, 182, 212, 0.2);
-                                    padding: 8px 12px;
-                                    border-radius: 8px;
-                                    text-align: center;
-                                ">
-                                    <div style="font-size: 12px; color: #94A3B8; margin-bottom: 4px;">Investment</div>
-                                    <div style="color: #14B8A6; font-weight: 600;">${project.base_cost}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="project-stats" style="
-                                margin-top: 15px;
-                                display: flex;
-                                justify-content: space-between;
-                                font-size: 14px;
-                            ">
-                                <span style="color: #64748B;">Timeline: <strong style="color: #CBD5E1;">${project.timeline}</strong></span>
-                                <span style="color: #64748B;">ROI: <strong style="color: #22D3EE;">${project.roi_potential}</strong></span>
-                            </div>
-                        </div>
-                        
-                        <div class="selection-indicator" style="
-                            position: absolute;
-                            top: 15px;
-                            right: 15px;
-                            width: 20px;
-                            height: 20px;
-                            border: 2px solid rgba(100, 255, 218, 0.5);
-                            border-radius: 50%;
-                            opacity: 0;
-                            transition: all 0.3s ease;
-                        "></div>
-                    `;
-                    
-                    // Enhanced interaction handlers
-                    const selectHandler = () => {
-                        selectProjectTypeQuantum(project.id, card, project.name);
-                    };
-                    
-                    // Multiple event listeners for maximum compatibility
-                    card.addEventListener('click', selectHandler);
-                    card.addEventListener('touchend', selectHandler);
-                    card.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            selectHandler();
-                        }
-                    });
-                    
-                    // Enhanced hover effects
-                    card.addEventListener('mouseenter', () => {
-                        card.style.transform = 'translateY(-5px) scale(1.02)';
-                        card.style.borderColor = 'rgba(100, 255, 218, 0.6)';
-                        card.style.boxShadow = `
-                            0 12px 40px rgba(10, 10, 15, 0.6),
-                            0 0 20px rgba(100, 255, 218, 0.3),
-                            inset 0 1px 0 rgba(255, 255, 255, 0.1)
-                        `;
-                        const indicator = card.querySelector('.selection-indicator');
-                        if (indicator) indicator.style.opacity = '1';
-                    });
-                    
-                    card.addEventListener('mouseleave', () => {
-                        card.style.transform = 'translateY(0) scale(1)';
-                        card.style.borderColor = 'rgba(100, 255, 218, 0.3)';
-                        card.style.boxShadow = `
-                            0 8px 32px rgba(10, 10, 15, 0.4),
-                            inset 0 1px 0 rgba(255, 255, 255, 0.05)
-                        `;
-                        const indicator = card.querySelector('.selection-indicator');
-                        if (indicator) indicator.style.opacity = '0';
-                    });
-                    
-                    // Add to container
-                    container.appendChild(card);
-                    console.log(`✅ Enhanced project card created: ${project.name}`);
-                });
-                
-                // Success notification
-                const successDiv = document.createElement('div');
-                successDiv.style.cssText = `
-                    text-align: center;
-                    padding: 20px;
-                    margin: 20px 0;
-                    background: rgba(20, 184, 166, 0.1);
-                    border: 1px solid rgba(20, 184, 166, 0.3);
-                    border-radius: 15px;
-                    color: #14B8A6;
-                    font-weight: 600;
-                `;
-                successDiv.innerHTML = `✅ ${projects.length} VoidSight projects loaded successfully! Click any project to begin spectral analysis.`;
-                container.appendChild(successDiv);
-                
-                projectsLoaded = true;
-                console.log(`🎉 Bulletproof projects created successfully: ${projects.length} projects`);
-                
-                // Add AI insight
-                setTimeout(() => {
-                    addAIInsight(`🚀 VoidSight project portfolio loaded - ${projects.length} spectral analysis options available`);
-                }, 1000);
-                
-            }, 800); // Delay for loading animation
-            
-            return true;
-        }
-
-        // === BULLETPROOF API LOADING WITH FALLBACKS ===
-        async function loadProjectTypesQuantum() {
-            projectLoadAttempts++;
-            console.log(`📊 Loading quantum project types... (Attempt ${projectLoadAttempts}/${maxLoadAttempts})`);
-            
-            if (projectsLoaded) {
-                console.log('✅ Projects already loaded');
-                return;
-            }
-            
-            const container = document.getElementById('projectTypesPhantom');
-            if (!container) {
-                console.error('❌ Project container not found!');
-                createBulletproofProjects(); // Fallback
-                return;
-            }
-            
-            try {
-                console.log('🌐 Attempting API fetch...');
-                const response = await fetch('/api/projects', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Cache-Control': 'no-cache'
-                    },
-                    timeout: 10000
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                console.log('✅ API response received:', data);
-                
-                if (!data.projects || !Array.isArray(data.projects) || data.projects.length === 0) {
-                    throw new Error('No projects found in API response');
-                }
-                
-                // Use API data but enhance it
-                const enhancedProjects = data.projects.map(project => ({
-                    ...project,
-                    timeline: project.timeline || '6-8 months',
-                    roi_potential: project.roi_potential || '250%'
-                }));
-                
-                createBulletproofProjects(enhancedProjects);
-                console.log('🎉 API projects loaded successfully');
-                
-            } catch (error) {
-                console.error('❌ API loading failed:', error);
-                
-                if (projectLoadAttempts < maxLoadAttempts) {
-                    console.log(`🔄 Retrying in ${projectLoadAttempts * 1000}ms...`);
-                    setTimeout(loadProjectTypesQuantum, projectLoadAttempts * 1000);
-                    return;
-                }
-                
-                console.log('🛠️ Using bulletproof fallback projects');
-                createBulletproofProjects();
-            }
-        }
-
-        // === ENHANCED MANUAL PROJECT CREATION ===
-        function createManualProjects() {
-            console.log('🔧 Creating manual projects...');
-            projectsLoaded = false; // Reset flag
-            createBulletproofProjects();
-        }
-        
-        // === ENHANCED CONTAINER TESTING ===
-        function testContainer() {
-            const container = document.getElementById('projectTypesPhantom');
-            
-            if (!container) {
-                alert('❌ Container not found with ID: projectTypesPhantom');
-                console.error('❌ Project container missing from DOM');
-                return;
-            }
-            
-            const info = {
-                exists: !!container,
-                id: container.id,
-                className: container.className,
-                childCount: container.children.length,
-                innerHTML: container.innerHTML.substring(0, 200),
-                styles: window.getComputedStyle(container),
-                visibility: window.getComputedStyle(container).visibility,
-                display: window.getComputedStyle(container).display
-            };
-            
-            console.log('📋 Container analysis:', info);
-            alert(`✅ Container found!\n\nID: ${info.id}\nClass: ${info.className}\nChildren: ${info.childCount}\nVisibility: ${info.visibility}\nDisplay: ${info.display}`);
-        }
     </script>
 </body>
 </html>
