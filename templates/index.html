@@ -1559,17 +1559,17 @@
                  const baseCost = parseFloat(data.custom_investment) || project.baseCost || 100000;
                  const timeline = parseInt(data.custom_timeline) || 12;
                  
-                 // Base scenario - realistic ROI ranges
+                 // Base scenario - realistic business ROI ranges
                  const projectROIRanges = {
-                     'web_application': { min: 15, max: 80 },      // 15-80% ROI for web apps
-                     'mobile_application': { min: 10, max: 60 },  // 10-60% ROI for mobile apps
-                     'ai_integration': { min: 25, max: 120 },     // 25-120% ROI for AI (high risk/reward)
-                     'ecommerce_platform': { min: 20, max: 85 },  // 20-85% ROI for e-commerce
-                     'digital_transformation': { min: 30, max: 150 }, // 30-150% ROI for digital transform
-                     'cloud_infrastructure': { min: 18, max: 70 } // 18-70% ROI for cloud infrastructure
+                     'web_application': { min: 8, max: 25 },      // 8-25% ROI for web apps (realistic)
+                     'mobile_application': { min: 5, max: 20 },  // 5-20% ROI for mobile apps
+                     'ai_integration': { min: 12, max: 35 },     // 12-35% ROI for AI projects
+                     'ecommerce_platform': { min: 10, max: 30 }, // 10-30% ROI for e-commerce
+                     'digital_transformation': { min: 15, max: 40 }, // 15-40% ROI for digital transform
+                     'cloud_infrastructure': { min: 6, max: 18 } // 6-18% ROI for cloud infrastructure
                  };
                  
-                 const roiRange = projectROIRanges[data.project_type] || { min: 20, max: 80 };
+                                    const roiRange = projectROIRanges[data.project_type] || { min: 8, max: 25 };
                  const baseROI = Math.round(roiRange.min + Math.random() * (roiRange.max - roiRange.min));
                  const riskFactor = (data.risk_tolerance || 50) / 100;
                  const volatilityImpact = getVolatilityImpact(data.volatility || 'medium');
@@ -1809,14 +1809,14 @@
 
            // Calculate realistic profit with all business expenses and factors
            function calculateRealisticProfit(baseCost, baseROI, timeline, data) {
-               // Project complexity cost multipliers
+               // Project complexity cost multipliers (realistic industry data)
                const complexityMultipliers = {
-                   'web_application': 1.15,        // 15% cost overrun typical
-                   'mobile_application': 1.25,     // 25% cost overrun typical
-                   'ai_integration': 1.40,         // 40% cost overrun typical (high complexity)
-                   'ecommerce_platform': 1.20,    // 20% cost overrun typical
-                   'digital_transformation': 1.35, // 35% cost overrun typical
-                   'cloud_infrastructure': 1.10   // 10% cost overrun typical
+                   'web_application': 1.25,        // 25% cost overrun typical
+                   'mobile_application': 1.35,     // 35% cost overrun typical (platform complexity)
+                   'ai_integration': 1.60,         // 60% cost overrun typical (high complexity/unknowns)
+                   'ecommerce_platform': 1.30,    // 30% cost overrun typical (integration complexity)
+                   'digital_transformation': 1.50, // 50% cost overrun typical (change resistance)
+                   'cloud_infrastructure': 1.20   // 20% cost overrun typical (migration complexity)
                };
 
                // Company size affects cost efficiency
@@ -1839,17 +1839,17 @@
                // Step 3: Calculate gross profit (revenue minus actual costs)
                const grossProfit = expectedRevenue - actualProjectCost;
 
-               // Step 4: Calculate operating expenses as percentage of revenue (not investment)
+               // Step 4: Calculate realistic operating expenses (industry averages)
                const operatingCostRates = {
-                   'web_application': 0.12,        // 12% of revenue annually
-                   'mobile_application': 0.15,     // 15% of revenue annually
-                   'ai_integration': 0.18,         // 18% of revenue annually
-                   'ecommerce_platform': 0.14,    // 14% of revenue annually
-                   'digital_transformation': 0.10, // 10% of revenue annually
-                   'cloud_infrastructure': 0.08   // 8% of revenue annually
+                   'web_application': 0.35,        // 35% of revenue (hosting, maintenance, support)
+                   'mobile_application': 0.40,     // 40% of revenue (app store fees, updates, support)
+                   'ai_integration': 0.45,         // 45% of revenue (compute costs, data, infrastructure)
+                   'ecommerce_platform': 0.38,    // 38% of revenue (payment processing, inventory, support)
+                   'digital_transformation': 0.30, // 30% of revenue (change management, training)
+                   'cloud_infrastructure': 0.25   // 25% of revenue (maintenance, monitoring)
                };
 
-               const operatingRate = operatingCostRates[data.project_type] || 0.12;
+               const operatingRate = operatingCostRates[data.project_type] || 0.35;
                const annualOperatingCosts = expectedRevenue * operatingRate;
                const totalOperatingCosts = Math.round(annualOperatingCosts * (timeline / 12));
 
@@ -1954,20 +1954,16 @@
                              <strong>$${results.total_return.toLocaleString()}</strong>
                          </div>
                          <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
-                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Operating Costs (15-25% annually):</span>
-                             <span style="color: var(--error-400);">-$${Math.round((results.total_return - results.total_investment) * 0.18).toLocaleString()}</span>
+                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Operating Costs (25-45% of revenue):</span>
+                             <span style="color: var(--error-400);">-$${Math.round(results.total_return * 0.35).toLocaleString()}</span>
                          </div>
                          <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
-                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Corporate Taxes (25-30%):</span>
-                             <span style="color: var(--error-400);">-$${Math.round((results.total_return - results.total_investment) * 0.27).toLocaleString()}</span>
+                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Corporate Taxes (25-30% of profit):</span>
+                             <span style="color: var(--error-400);">-$${Math.round(Math.max(0, (results.total_return - results.total_investment - results.total_return * 0.35)) * 0.27).toLocaleString()}</span>
                          </div>
                          <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
-                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Project Overruns (10-40%):</span>
-                             <span style="color: var(--error-400);">-$${Math.round(results.total_investment * 0.15).toLocaleString()}</span>
-                         </div>
-                         <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
-                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Risk Buffer (3-5%):</span>
-                             <span style="color: var(--error-400);">-$${Math.round(results.total_investment * 0.04).toLocaleString()}</span>
+                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Project Overruns (20-60% typical):</span>
+                             <span style="color: var(--error-400);">Already included in total investment</span>
                          </div>
                          <div style="border-top: 2px solid var(--glass-border); padding-top: var(--space-3); display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem;">
                              <span style="color: var(--primary-200);"><i class="fas fa-equals"></i> Actual Net Profit:</span>
