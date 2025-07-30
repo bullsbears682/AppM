@@ -2648,6 +2648,7 @@
                         <div id="projectTypesPhantom" class="project-grid-phantom">
                             <!-- Projects will be loaded here -->
                         </div>
+                        <button onclick="loadProjectTypesQuantum()" style="margin: 10px; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px;">🔄 Force Load Projects</button>
                     </div>
                 </div>
             </div>
@@ -3480,6 +3481,24 @@
         // === QUANTUM INITIALIZATION ===
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 VoidSight Analytics - Initializing...');
+            console.log('📱 Force loading projects immediately...');
+            
+            // Force load projects with timeout fallback
+            setTimeout(() => {
+                console.log('⚡ Timeout: Loading projects...');
+                loadProjectTypesQuantum();
+            }, 100);
+            
+            setTimeout(() => {
+                console.log('⚡ Fallback: Loading projects...');
+                loadProjectTypesQuantum();
+            }, 500);
+            
+            setTimeout(() => {
+                console.log('⚡ Final attempt: Loading projects...');
+                loadProjectTypesQuantum();
+            }, 1000);
+            
             initializePhantomCanvas();
             loadProjectTypesQuantum();
             setupQuantumEventListeners();
@@ -3770,6 +3789,13 @@
         async function loadProjectTypesQuantum() {
             try {
                 console.log('📊 Loading quantum project types...');
+                
+                // Add visual loading indicator
+                const container = document.getElementById('projectTypesPhantom');
+                if (container) {
+                    container.innerHTML = '<div style="text-align:center; padding:20px; color:#64ffda;">⚡ Loading projects...</div>';
+                }
+                
                 const response = await fetch('/api/projects');
                 
                 if (!response.ok) {
