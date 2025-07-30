@@ -16,6 +16,52 @@
 
 ---
 
+## 🔒 CRITICAL SECURITY REQUIREMENTS
+
+### ⚠️ BEFORE PRODUCTION DEPLOYMENT
+**These security measures are MANDATORY for production:**
+
+1. **Environment Variables** (Never use default values):
+   ```bash
+   # Generate secure keys
+   SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_urlsafe(32))")
+   JWT_SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_urlsafe(32))")
+   DB_PASSWORD=$(python3 -c "import secrets; print(secrets.token_urlsafe(16))")
+   ```
+
+2. **Security Configuration**:
+   ```bash
+   # Required for production
+   FLASK_ENV=production
+   DEBUG=False
+   WTF_CSRF_ENABLED=True
+   ```
+
+3. **Database Security**:
+   - Use PostgreSQL with encrypted connections
+   - Create dedicated database user with limited privileges
+   - Never use default passwords
+
+4. **Network Security**:
+   - Enable HTTPS with valid SSL certificates
+   - Use reverse proxy (Nginx) with security headers
+   - Implement rate limiting and DDoS protection
+
+5. **Monitoring & Logging**:
+   - Enable application logging
+   - Monitor for security events
+   - Set up alerts for failed authentication
+
+### 🚨 Security Checklist
+- [ ] All environment variables set with secure values
+- [ ] DEBUG=False in production
+- [ ] CSRF protection enabled
+- [ ] HTTPS configured
+- [ ] Database credentials secured
+- [ ] Monitoring and logging active
+
+---
+
 ## 🔧 Quick Production Setup
 
 ### Option 1: Docker Deployment (Recommended)

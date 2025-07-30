@@ -1,4 +1,4 @@
-# Enterprise Infinex ROI Calculator - Production Stack
+# VoidSight Analytics - Enterprise ROI Intelligence Platform
 # Complete containerized deployment with all enterprise services
 
 version: '3.8'
@@ -12,11 +12,11 @@ services:
       args:
         - BUILD_ENV=production
         - VERSION=3.0.0
-    container_name: infinex-roi-app
+    container_name: voidsight-analytics-app
     restart: unless-stopped
     environment:
       - FLASK_ENV=production
-      - DATABASE_URL=postgresql://infinex:${DB_PASSWORD}@postgres:5432/infinex_roi
+      - DATABASE_URL=postgresql://voidsight:${DB_PASSWORD}@postgres:5432/voidsight_analytics
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=${SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
@@ -33,7 +33,7 @@ services:
       - app_logs:/app/logs
       - app_static:/app/static
     networks:
-      - infinex_network
+      - voidsight_network
     depends_on:
       - postgres
       - redis
@@ -47,10 +47,10 @@ services:
   # Database
   postgres:
     image: postgres:15-alpine
-    container_name: infinex-roi-postgres
+    container_name: voidsight-analytics-postgres
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=infinex_roi
+      - POSTGRES_DB=voidsight_analytics
       - POSTGRES_USER=infinex
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
@@ -60,7 +60,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - infinex_network
+      - voidsight_network
     command: >
       postgres 
       -c shared_preload_libraries=pg_stat_statements 
@@ -75,7 +75,7 @@ services:
   # Redis Cache & Session Store
   redis:
     image: redis:7-alpine
-    container_name: infinex-roi-redis
+    container_name: voidsight-analytics-redis
     restart: unless-stopped
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     ports:
@@ -84,7 +84,7 @@ services:
       - redis_data:/data
       - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
     networks:
-      - infinex_network
+      - voidsight_network
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
       interval: 30s
@@ -105,7 +105,7 @@ services:
       - app_static:/var/www/static
       - nginx_logs:/var/log/nginx
     networks:
-      - infinex_network
+      - voidsight_network
     depends_on:
       - app
     healthcheck:
@@ -124,7 +124,7 @@ services:
     command: celery -A app.celery worker --loglevel=info --concurrency=4
     environment:
       - FLASK_ENV=production
-      - DATABASE_URL=postgresql://infinex:${DB_PASSWORD}@postgres:5432/infinex_roi
+      - DATABASE_URL=postgresql://voidsight:${DB_PASSWORD}@postgres:5432/voidsight_analytics
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=${SECRET_KEY}
       - MAIL_SERVER=${MAIL_SERVER}
@@ -134,7 +134,7 @@ services:
       - app_uploads:/app/uploads
       - app_logs:/app/logs
     networks:
-      - infinex_network
+      - voidsight_network
     depends_on:
       - postgres
       - redis
@@ -149,13 +149,13 @@ services:
     command: celery -A app.celery beat --loglevel=info
     environment:
       - FLASK_ENV=production
-      - DATABASE_URL=postgresql://infinex:${DB_PASSWORD}@postgres:5432/infinex_roi
+      - DATABASE_URL=postgresql://voidsight:${DB_PASSWORD}@postgres:5432/voidsight_analytics
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=${SECRET_KEY}
     volumes:
       - celery_beat_data:/app/celerybeat-schedule
     networks:
-      - infinex_network
+      - voidsight_network
     depends_on:
       - postgres
       - redis
@@ -174,7 +174,7 @@ services:
     ports:
       - "5555:5555"
     networks:
-      - infinex_network
+      - voidsight_network
     depends_on:
       - redis
 
@@ -189,7 +189,7 @@ services:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     networks:
-      - infinex_network
+      - voidsight_network
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -214,7 +214,7 @@ services:
       - ./docker/grafana/provisioning:/etc/grafana/provisioning
       - ./docker/grafana/dashboards:/var/lib/grafana/dashboards
     networks:
-      - infinex_network
+      - voidsight_network
     depends_on:
       - prometheus
 
@@ -232,7 +232,7 @@ services:
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
-      - infinex_network
+      - voidsight_network
 
   # Log Management - Logstash
   logstash:
@@ -243,7 +243,7 @@ services:
       - ./docker/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - app_logs:/var/log/app
     networks:
-      - infinex_network
+      - voidsight_network
     depends_on:
       - elasticsearch
 
@@ -257,7 +257,7 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     networks:
-      - infinex_network
+      - voidsight_network
     depends_on:
       - elasticsearch
 
@@ -272,7 +272,7 @@ services:
       - backup_data:/backup
       - ./docker/backup/backup.sh:/backup.sh
     networks:
-      - infinex_network
+      - voidsight_network
     depends_on:
       - postgres
     command: /bin/sh -c "chmod +x /backup.sh && /backup.sh"
@@ -288,7 +288,7 @@ services:
       - "1025:1025"  # SMTP
       - "8025:8025"  # Web UI
     networks:
-      - infinex_network
+      - voidsight_network
     profiles:
       - development
 
@@ -305,7 +305,7 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
-      - infinex_network
+      - voidsight_network
     depends_on:
       - postgres
     profiles:
@@ -325,7 +325,7 @@ services:
     volumes:
       - minio_data:/data
     networks:
-      - infinex_network
+      - voidsight_network
     command: server /data --console-address ":9001"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
@@ -335,7 +335,7 @@ services:
 
 # Networks
 networks:
-  infinex_network:
+  voidsight_network:
     driver: bridge
     ipam:
       config:

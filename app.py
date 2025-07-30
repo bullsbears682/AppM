@@ -16,9 +16,10 @@ from dotenv import load_dotenv
 try:
     from config import get_config
 except ImportError:
-    print("Warning: Using basic configuration")
+    import logging
+    logging.warning("Using basic configuration - production features disabled")
     class BasicConfig:
-        SECRET_KEY = "termux-fallback-key"
+        SECRET_KEY = os.environ.get('SECRET_KEY') or secrets.token_urlsafe(32)
         HOST = "0.0.0.0"
         PORT = 5000
         DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
@@ -34,7 +35,7 @@ try:
         BusinessValidator, handle_validation_errors, DataSanitizer
     )
 except ImportError:
-    print("Warning: Using basic validation")
+    logging.warning("Using basic validation - comprehensive validation disabled")
     class ValidationError(Exception): pass
     class BusinessLogicError(Exception): pass
     class APIValidator: pass
@@ -47,7 +48,7 @@ except ImportError:
 try:
     from utils.calculator import EnhancedROICalculator
 except ImportError:
-    print("Warning: Using basic calculator")
+    logging.warning("Using basic calculator - enhanced features disabled")
     class EnhancedROICalculator:
         def calculate_roi(self, **kwargs):
             # Realistic business ROI calculation 
@@ -147,7 +148,7 @@ except ImportError:
 try:
     from utils.cache import calculation_cache
 except ImportError:
-    print("Warning: Using basic cache")
+    logging.warning("Using basic cache - Redis caching disabled")
     class BasicCache:
         def get(self, key): return None
         def set(self, key, value, timeout=None): pass
@@ -157,7 +158,7 @@ except ImportError:
 try:
     from utils.rate_limiter import rate_limit, calculation_limiter, api_limiter
 except ImportError:
-    print("Warning: Disabling rate limiting")
+    logging.warning("Rate limiting disabled - production deployment not recommended")
     def rate_limit(*args, **kwargs): return lambda f: f
     calculation_limiter = rate_limit
     api_limiter = rate_limit
@@ -165,7 +166,7 @@ except ImportError:
 try:
     from utils.export import ReportGenerator
 except ImportError:
-    print("Warning: Using basic export")
+    logging.warning("Using basic export - advanced export features disabled")
     class ReportGenerator:
         def generate_report(self, data, format='json'):
             return {'message': 'Export not available in basic mode'}
@@ -180,7 +181,7 @@ config_class = get_config()
 # Check for Termux environment and adjust accordingly
 TERMUX_MODE = os.environ.get('PREFIX') is not None
 if TERMUX_MODE:
-    print("🚀 Running in Termux mode - using simplified configuration")
+    logging.info("🚀 Running in Termux mode - using simplified configuration")
 
 # Setup logging
 logging.basicConfig(

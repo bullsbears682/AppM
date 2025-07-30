@@ -494,7 +494,7 @@ class BaseConfig:
 
 class DevelopmentConfig(BaseConfig):
     """Development configuration"""
-    DEBUG = True
+    DEBUG = False  # Disabled for security
     TESTING = False
     LOG_LEVEL = 'DEBUG'
     MONTE_CARLO_ITERATIONS = 1000  # Reduced for faster development
@@ -502,9 +502,9 @@ class DevelopmentConfig(BaseConfig):
 class TestingConfig(BaseConfig):
     """Testing configuration"""
     TESTING = True
-    DEBUG = True
+    DEBUG = False  # Disabled for security
     DATABASE_URL = 'sqlite:///:memory:'
-    WTF_CSRF_ENABLED = False
+    WTF_CSRF_ENABLED = True
     MONTE_CARLO_ITERATIONS = 100  # Minimal for testing
 
 class ProductionConfig(BaseConfig):

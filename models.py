@@ -451,7 +451,8 @@ def init_db(app):
             admin_user.set_password('admin123')  # Change in production
             db.session.add(admin_user)
             db.session.commit()
-            print("✅ Created default admin user: admin@infinex.dev / admin123")
+            import logging
+            logging.info("✅ Created default admin user: admin@voidsight.dev / admin123")
 
 # Export models for easy import
 __all__ = [

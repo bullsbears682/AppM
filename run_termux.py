@@ -108,10 +108,10 @@ def main():
     if not os.path.exists('.env'):
         print("📝 Creating Termux-optimized configuration...")
         with open('.env', 'w') as f:
-            f.write("""# Termux Configuration for ROI Calculator v2.0
-FLASK_ENV=development
-DEBUG=True
-SECRET_KEY=termux-quantum-key-change-in-production
+            f.write(f"""# Termux Configuration for ROI Calculator v2.0
+FLASK_ENV=production
+DEBUG=False
+SECRET_KEY={secrets.token_urlsafe(32)}
 HOST=0.0.0.0
 PORT=5000
 ENABLE_CORS=True

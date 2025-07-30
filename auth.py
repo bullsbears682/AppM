@@ -590,7 +590,7 @@ def create_api_key():
             }), 400
         
         # Generate API key
-        key = f"infinex_{secrets.token_urlsafe(32)}"
+        key = f"voidsight_{secrets.token_urlsafe(32)}"
         key_hash = generate_password_hash(key)
         key_prefix = key[:12] + "..."
         

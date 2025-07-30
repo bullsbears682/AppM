@@ -109,9 +109,9 @@ def setup_from_github():
 def create_config():
     """Create optimized configuration"""
     config_content = """# Termux Quantum Configuration
-FLASK_ENV=development
-DEBUG=True
-SECRET_KEY=termux-quantum-infinex-2024
+FLASK_ENV=production
+DEBUG=False
+SECRET_KEY={secrets.token_urlsafe(32)}
 HOST=0.0.0.0
 PORT=5000
 ENABLE_CORS=True
