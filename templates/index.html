@@ -1847,20 +1847,27 @@
 
            // Calculate realistic profit with all business expenses and factors
            function calculateRealisticProfit(baseCost, baseROI, timeline, data) {
-               // Project complexity cost multipliers (realistic industry data)
-               const complexityMultipliers = {
-                   'web_application': 1.25,        // 25% cost overrun typical
-                   'mobile_application': 1.35,     // 35% cost overrun typical (platform complexity)
-                   'ai_integration': 1.60,         // 60% cost overrun typical (high complexity/unknowns)
-                   'ecommerce_platform': 1.30,    // 30% cost overrun typical (integration complexity)
-                   'digital_transformation': 1.50, // 50% cost overrun typical (change resistance)
-                   'cloud_infrastructure': 1.20   // 20% cost overrun typical (migration complexity)
+               // Project complexity cost multipliers (realistic and investment-scaled)
+               const baseComplexityMultipliers = {
+                   'web_application': 1.10,        // 10% cost overrun typical for web apps
+                   'mobile_application': 1.15,     // 15% cost overrun typical for mobile apps
+                   'ai_integration': 1.30,         // 30% cost overrun typical for AI (reduced from 60%)
+                   'ecommerce_platform': 1.15,    // 15% cost overrun typical for e-commerce
+                   'digital_transformation': 1.25, // 25% cost overrun typical (reduced from 50%)
+                   'cloud_infrastructure': 1.10   // 10% cost overrun typical for cloud
                };
+               
+               // Scale complexity based on investment size (larger projects = more overrun risk)
+               const investmentScale = baseCost < 10000 ? 0.8 : baseCost < 100000 ? 1.0 : 1.2;
+               const complexityMultipliers = {};
+               for (const [key, value] of Object.entries(baseComplexityMultipliers)) {
+                   complexityMultipliers[key] = 1 + (value - 1) * investmentScale;
+               }
 
-               // Company size affects cost efficiency
+               // Company size affects cost efficiency (startups can be MORE efficient for small projects)
                const companySizeEfficiency = {
-                   'startup': 1.20,      // 20% higher costs (inefficiency)
-                   'small': 1.10,        // 10% higher costs
+                   'startup': baseCost < 25000 ? 0.95 : 1.05,    // Startups efficient on small projects, less so on large
+                   'small': 1.02,        // 2% higher costs (slight inefficiency)
                    'medium': 1.0,        // Baseline
                    'large': 0.95,        // 5% lower costs (economies of scale)
                    'enterprise': 0.90    // 10% lower costs (best practices)
@@ -1877,17 +1884,20 @@
                // Step 3: Calculate gross profit (revenue minus actual costs)
                const grossProfit = expectedRevenue - actualProjectCost;
 
-               // Step 4: Calculate realistic operating expenses (as % of PROFIT, not revenue)
-               const operatingCostRates = {
-                   'web_application': 0.15,        // 15% of gross profit (hosting, maintenance, support)
-                   'mobile_application': 0.18,     // 18% of gross profit (app store fees, updates, support)
-                   'ai_integration': 0.22,         // 22% of gross profit (compute costs, data, infrastructure)
-                   'ecommerce_platform': 0.16,    // 16% of gross profit (payment processing, inventory, support)
-                   'digital_transformation': 0.12, // 12% of gross profit (change management, training)
-                   'cloud_infrastructure': 0.10   // 10% of gross profit (maintenance, monitoring)
+               // Step 4: Calculate realistic operating expenses (scaled by investment size)
+               const baseOperatingRates = {
+                   'web_application': 0.08,        // 8% of gross profit (hosting, maintenance, support)
+                   'mobile_application': 0.10,     // 10% of gross profit (app store fees, updates, support)
+                   'ai_integration': 0.12,         // 12% of gross profit (compute costs, data, infrastructure)
+                   'ecommerce_platform': 0.09,    // 9% of gross profit (payment processing, inventory, support)
+                   'digital_transformation': 0.06, // 6% of gross profit (change management, training)
+                   'cloud_infrastructure': 0.05   // 5% of gross profit (maintenance, monitoring)
                };
 
-               const operatingRate = operatingCostRates[data.project_type] || 0.15;
+               // Lower operating costs for smaller investments (easier to manage)
+               const operatingScale = baseCost < 10000 ? 0.5 : baseCost < 50000 ? 0.8 : 1.0;
+               const operatingRate = (baseOperatingRates[data.project_type] || 0.08) * operatingScale;
+               
                // Apply operating costs as percentage of gross profit for the project duration
                const totalOperatingCosts = Math.round(Math.max(0, grossProfit) * operatingRate * (timeline / 12));
 
@@ -1992,8 +2002,8 @@
                              <strong>$${results.total_return.toLocaleString()}</strong>
                          </div>
                          <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
-                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Operating Costs (10-22% of profit):</span>
-                             <span style="color: var(--error-400);">-$${(results.breakdown?.operatingCosts || Math.round((results.total_return - results.total_investment) * 0.15)).toLocaleString()}</span>
+                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Operating Costs (2-12% of profit):</span>
+                             <span style="color: var(--error-400);">-$${(results.breakdown?.operatingCosts || Math.round((results.total_return - results.total_investment) * 0.08)).toLocaleString()}</span>
                          </div>
                          <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
                              <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Corporate Taxes (15-30% of profit):</span>
