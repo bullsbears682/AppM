@@ -3088,8 +3088,24 @@
                 }
                 
                 // Display enhanced results
-                displayQuantumResults(data);
-                initializeQuantumCharts(data);
+                console.log('📊 About to display results...');
+                try {
+                    displayQuantumResults(data);
+                    console.log('✅ Results displayed successfully');
+                } catch (displayError) {
+                    console.error('❌ Error in displayQuantumResults:', displayError);
+                    throw new Error(`Results display failed: ${displayError.message}`);
+                }
+                
+                console.log('📈 About to initialize charts...');
+                try {
+                    initializeQuantumCharts(data);
+                    console.log('✅ Charts initialized successfully');
+                } catch (chartError) {
+                    console.error('❌ Error in initializeQuantumCharts:', chartError);
+                    console.warn('Charts failed but continuing...');
+                }
+                
                 showQuantumNotification('Quantum investment analysis completed successfully! 🚀');
                 
                 // Scroll to results
