@@ -2255,13 +2255,15 @@
                     </div>
 
                     <div class="form-group-quantum">
-                        <label for="expectedROIQuantum" class="form-label-quantum">Target ROI (%)</label>
-                        <input type="number" id="expectedROIQuantum" class="form-input-quantum" min="1" max="1000" step="1" placeholder="25" required>
+                        <label for="expectedROIQuantum" class="form-label-quantum">Target ROI (%) <span class="optional-badge">Optional</span></label>
+                        <input type="number" id="expectedROIQuantum" class="form-input-quantum" min="0" max="1000" step="1" placeholder="Leave empty for market average">
+                        <div class="field-hint">💡 Leave empty to use industry-standard ROI expectations</div>
                     </div>
 
                     <div class="form-group-quantum">
-                        <label for="timelineMonthsQuantum" class="form-label-quantum">Investment Horizon (Months)</label>
-                        <input type="number" id="timelineMonthsQuantum" class="form-input-quantum" min="1" max="120" step="1" placeholder="12" required>
+                        <label for="timelineMonthsQuantum" class="form-label-quantum">Investment Horizon (Months) <span class="optional-badge">Optional</span></label>
+                        <input type="number" id="timelineMonthsQuantum" class="form-input-quantum" min="0" max="120" step="1" placeholder="Leave empty for project default">
+                        <div class="field-hint">💡 Leave empty to use project-specific timeline recommendations</div>
                     </div>
                 </div>
             </div>
@@ -2888,9 +2890,9 @@
             const names = {
                 'companySizeQuantum': 'Company scale',
                 'targetIndustryQuantum': 'Target market sector',
-                'investmentAmountQuantum': 'Investment capital',
-                'expectedROIQuantum': 'Target ROI',
-                'timelineMonthsQuantum': 'Investment horizon'
+                'investmentAmountQuantum': 'Investment capital (optional)',
+                'expectedROIQuantum': 'Target ROI (optional)',
+                'timelineMonthsQuantum': 'Investment horizon (optional)'
             };
             return names[fieldId] || fieldId;
         }
@@ -3010,8 +3012,27 @@
                     console.log('💡 No investment provided - will use estimated project cost');
                 }
                 
-                // Add timeline
-                requestData.custom_timeline = parseInt(document.getElementById('timelineMonthsQuantum').value);
+                // Handle optional timeline
+                const timelineValue = document.getElementById('timelineMonthsQuantum').value.trim();
+                const hasCustomTimeline = timelineValue && !isNaN(parseInt(timelineValue)) && parseInt(timelineValue) > 0;
+                
+                if (hasCustomTimeline) {
+                    requestData.custom_timeline = parseInt(timelineValue);
+                    console.log('⏰ Using custom timeline:', requestData.custom_timeline, 'months');
+                } else {
+                    console.log('💡 No timeline provided - will use project default timeline');
+                }
+                
+                // Handle optional ROI target (for future use in recommendations)
+                const roiValue = document.getElementById('expectedROIQuantum').value.trim();
+                const hasCustomROI = roiValue && !isNaN(parseFloat(roiValue)) && parseFloat(roiValue) > 0;
+                
+                if (hasCustomROI) {
+                    requestData.target_roi = parseFloat(roiValue);
+                    console.log('🎯 Using custom ROI target:', requestData.target_roi + '%');
+                } else {
+                    console.log('💡 No ROI target provided - will use industry standards');
+                }
                 
                 console.log('📤 Sending quantum calculation request:', requestData);
                 
@@ -3133,9 +3154,9 @@
                 isValid = false;
             }
             
-            // Validate form fields (investment is now optional)
-            const requiredFields = ['companySizeQuantum', 'targetIndustryQuantum', 'expectedROIQuantum', 'timelineMonthsQuantum'];
-            const optionalFields = ['investmentAmountQuantum'];
+            // Validate form fields (investment, ROI target, and timeline are now optional)
+            const requiredFields = ['companySizeQuantum', 'targetIndustryQuantum'];
+            const optionalFields = ['investmentAmountQuantum', 'expectedROIQuantum', 'timelineMonthsQuantum'];
             
             requiredFields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
