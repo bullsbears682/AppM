@@ -2649,6 +2649,8 @@
                             <!-- Projects will be loaded here -->
                         </div>
                         <button onclick="loadProjectTypesQuantum()" style="margin: 10px; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px;">🔄 Force Load Projects</button>
+                        <button onclick="createManualProjects()" style="margin: 10px; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px;">⚡ Manual Projects</button>
+                        <button onclick="testContainer()" style="margin: 10px; padding: 10px; background: #ffc107; color: black; border: none; border-radius: 5px;">🔍 Test Container</button>
                     </div>
                 </div>
             </div>
@@ -3914,6 +3916,109 @@
                     addAIInsight('⚠️ Using offline project types - limited selection available');
                 }
             }
+        }
+
+        // === MANUAL PROJECT CREATION ===
+        function createManualProjects() {
+            console.log('🔧 Creating manual projects...');
+            const container = document.getElementById('projectTypesPhantom');
+            
+            if (!container) {
+                alert('❌ Container not found!');
+                return;
+            }
+            
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:#64ffda;">🔧 Creating manual projects...</div>';
+            
+            const manualProjects = [
+                {
+                    id: 'web_app',
+                    name: 'Web Application',
+                    description: 'Modern web application development',
+                    complexity: 'High',
+                    base_cost: '$75,000'
+                },
+                {
+                    id: 'mobile_app',
+                    name: 'Mobile App',
+                    description: 'iOS and Android mobile application',
+                    complexity: 'High',
+                    base_cost: '$50,000'
+                },
+                {
+                    id: 'ai_integration',
+                    name: 'AI Integration',
+                    description: 'Artificial intelligence integration project',
+                    complexity: 'Very High',
+                    base_cost: '$100,000'
+                },
+                {
+                    id: 'ecommerce',
+                    name: 'E-commerce Platform',
+                    description: 'Online shopping platform development',
+                    complexity: 'High',
+                    base_cost: '$85,000'
+                }
+            ];
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+                
+                manualProjects.forEach((project, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'project-card-phantom';
+                    card.style.marginBottom = '15px';
+                    card.style.padding = '20px';
+                    card.style.background = 'rgba(100, 255, 218, 0.1)';
+                    card.style.border = '1px solid rgba(100, 255, 218, 0.3)';
+                    card.style.borderRadius = '10px';
+                    card.style.cursor = 'pointer';
+                    card.setAttribute('data-project-id', project.id);
+                    
+                    card.innerHTML = `
+                        <div style="font-size: 18px; font-weight: bold; color: #64ffda; margin-bottom: 10px;">${project.name}</div>
+                        <div style="color: #a0a0a0; margin-bottom: 15px;">${project.description}</div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #ff6b6b;">${project.complexity}</span>
+                            <span style="color: #4ecdc4;">${project.base_cost}</span>
+                        </div>
+                    `;
+                    
+                    const selectHandler = () => selectProjectTypeQuantum(project.id, card, project.name);
+                    card.addEventListener('click', selectHandler);
+                    card.addEventListener('mouseover', () => {
+                        card.style.background = 'rgba(100, 255, 218, 0.2)';
+                        card.style.transform = 'translateY(-2px)';
+                    });
+                    card.addEventListener('mouseout', () => {
+                        card.style.background = 'rgba(100, 255, 218, 0.1)';
+                        card.style.transform = 'translateY(0)';
+                    });
+                    
+                    container.appendChild(card);
+                    console.log(`✅ Manual project added: ${project.name}`);
+                });
+                
+                alert(`✅ ${manualProjects.length} manual projects created! Click any project to select it.`);
+            }, 500);
+        }
+        
+        // === TEST CONTAINER ===
+        function testContainer() {
+            const container = document.getElementById('projectTypesPhantom');
+            
+            if (!container) {
+                alert('❌ Container not found with ID: projectTypesPhantom');
+                return;
+            }
+            
+            alert(`✅ Container found! Current content: "${container.innerHTML.substring(0, 100)}..."`);
+            console.log('📋 Container details:', {
+                id: container.id,
+                className: container.className,
+                innerHTML: container.innerHTML,
+                childNodes: container.childNodes.length
+            });
         }
 
         // === SELECT PROJECT TYPE QUANTUM ===
