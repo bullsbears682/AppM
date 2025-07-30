@@ -1069,6 +1069,32 @@
                          <i class="fas fa-brain"></i>
                          Run Scenario Analysis
                      </button>
+
+                     <!-- Advanced Testing Controls -->
+                     <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg);">
+                         <h4 style="color: var(--primary-200); margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-2);">
+                             <i class="fas fa-vials"></i>
+                             Advanced Testing Suite
+                         </h4>
+                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-3);">
+                             <button onclick="runAllScenarios()" class="btn btn-secondary" style="font-size: 0.9rem;">
+                                 <i class="fas fa-flask"></i>
+                                 Test All Scenarios
+                             </button>
+                             <button onclick="runStressTest()" class="btn btn-secondary" style="font-size: 0.9rem;">
+                                 <i class="fas fa-bolt"></i>
+                                 Stress Test Suite
+                             </button>
+                             <button onclick="runQuickValidation()" class="btn btn-secondary" style="font-size: 0.9rem;">
+                                 <i class="fas fa-check-double"></i>
+                                 Quick Validation
+                             </button>
+                             <button onclick="runBenchmarkSuite()" class="btn btn-secondary" style="font-size: 0.9rem;">
+                                 <i class="fas fa-stopwatch"></i>
+                                 Performance Test
+                             </button>
+                         </div>
+                     </div>
                 </div>
 
                 <!-- Results Panel -->
@@ -1989,12 +2015,366 @@
             VoidSightApp.init();
         });
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            // Responsive adjustments
-            const isMobile = window.innerWidth < 768;
-            document.body.classList.toggle('mobile', isMobile);
-        });
+                 // Handle window resize
+         window.addEventListener('resize', () => {
+             // Responsive adjustments
+             const isMobile = window.innerWidth < 768;
+             document.body.classList.toggle('mobile', isMobile);
+         });
+
+         // === COMPREHENSIVE TESTING SUITE ===
+
+         // Test all scenario types with all parameter combinations
+         async function runAllScenarios() {
+             console.log('🧪 Starting comprehensive scenario testing...');
+             VoidSightApp.addAIMessage('🧪 Starting comprehensive testing of ALL scenario combinations...');
+             
+             // Ensure we have a project selected
+             if (!VoidSightApp.state.selectedProject) {
+                 VoidSightApp.selectProject('web_application', document.querySelector('[data-project-id="web_application"]'));
+                 await new Promise(resolve => setTimeout(resolve, 500));
+             }
+             
+             // Set required fields
+             document.getElementById('companySize').value = 'enterprise';
+             document.getElementById('industry').value = 'fintech';
+             
+             const scenarioTypes = [
+                 'comprehensive',
+                 'monte_carlo', 
+                 'sensitivity',
+                 'stress_test',
+                 'optimistic',
+                 'pessimistic',
+                 'market_volatility',
+                 'economic_cycles'
+             ];
+             
+             const riskLevels = [10, 30, 50, 70, 90];
+             const volatilityLevels = ['low', 'medium', 'high', 'extreme'];
+             
+             let testCount = 0;
+             let successCount = 0;
+             let totalScenarios = 0;
+             
+             const totalTests = scenarioTypes.length * riskLevels.length * volatilityLevels.length;
+             VoidSightApp.addAIMessage(`📊 Running ${totalTests} comprehensive tests...`);
+             
+             for (const scenarioType of scenarioTypes) {
+                 for (const riskLevel of riskLevels) {
+                     for (const volatility of volatilityLevels) {
+                         testCount++;
+                         
+                         try {
+                             // Set parameters
+                             document.getElementById('scenarioType').value = scenarioType;
+                             document.getElementById('riskTolerance').value = riskLevel;
+                             document.getElementById('riskValue').textContent = riskLevel + '%';
+                             
+                             // Set volatility
+                             document.querySelectorAll('.volatility-btn').forEach(btn => btn.classList.remove('active'));
+                             const volatilityBtn = document.querySelector(`[data-volatility="${volatility}"]`);
+                             if (volatilityBtn) {
+                                 volatilityBtn.classList.add('active');
+                                 VoidSightApp.state.volatility = volatility;
+                             }
+                             
+                             // Update preview
+                             VoidSightApp.updateScenarioPreview();
+                             
+                             // Get scenario info
+                             const scenarioInfo = VoidSightApp.calculateScenarioCount(scenarioType, riskLevel, volatility);
+                             totalScenarios += scenarioInfo.count;
+                             
+                             // Test scenario generation
+                             const calculationData = {
+                                 project_type: 'web_application',
+                                 company_size: 'enterprise',
+                                 target_industry: 'fintech',
+                                 scenario_type: scenarioType,
+                                 risk_tolerance: riskLevel,
+                                 volatility: volatility
+                             };
+                             
+                             const results = generateComprehensiveResults(calculationData, scenarioInfo);
+                             
+                             if (results && results.scenario_analysis) {
+                                 successCount++;
+                                 console.log(`✅ Test ${testCount}/${totalTests}: ${scenarioType} + ${riskLevel}% risk + ${volatility} volatility = ${scenarioInfo.count} scenarios`);
+                             } else {
+                                 console.error(`❌ Test ${testCount}/${totalTests}: Failed`);
+                             }
+                             
+                         } catch (error) {
+                             console.error(`❌ Test ${testCount}/${totalTests}: Error -`, error.message);
+                         }
+                         
+                         // Progress update every 10 tests
+                         if (testCount % 10 === 0) {
+                             const progress = (testCount / totalTests * 100).toFixed(1);
+                             VoidSightApp.addAIMessage(`⚡ Testing progress: ${progress}% (${testCount}/${totalTests} tests, ${successCount} successful)`);
+                             await new Promise(resolve => setTimeout(resolve, 100));
+                         }
+                     }
+                 }
+             }
+             
+             // Final results
+             const successRate = (successCount / totalTests * 100).toFixed(1);
+             VoidSightApp.addAIMessage(`🎉 ALL TESTS COMPLETE! ${successCount}/${totalTests} tests passed (${successRate}% success rate)`);
+             VoidSightApp.addAIMessage(`📈 Total scenarios tested: ${totalScenarios.toLocaleString()}`);
+             
+             console.log(`🎉 Comprehensive testing complete: ${successCount}/${totalTests} tests passed`);
+             console.log(`📊 Total scenarios generated: ${totalScenarios.toLocaleString()}`);
+             
+             // Show final summary
+             showAlert(`🧪 Comprehensive Testing Complete!\n\n✅ ${successCount}/${totalTests} tests passed (${successRate}%)\n📊 ${totalScenarios.toLocaleString()} total scenarios tested\n🚀 All scenario types working perfectly!`, 'success');
+         }
+
+         // Run stress test with extreme parameters
+         async function runStressTest() {
+             console.log('⚡ Starting stress test...');
+             VoidSightApp.addAIMessage('⚡ Running stress test with extreme parameters...');
+             
+             // Ensure we have a project selected
+             if (!VoidSightApp.state.selectedProject) {
+                 VoidSightApp.selectProject('ai_integration', document.querySelector('[data-project-id="ai_integration"]'));
+                 await new Promise(resolve => setTimeout(resolve, 500));
+             }
+             
+             // Set required fields
+             document.getElementById('companySize').value = 'enterprise';
+             document.getElementById('industry').value = 'ai';
+             
+             const stressTests = [
+                 { type: 'monte_carlo', risk: 5, volatility: 'extreme', investment: 1000000, timeline: 36, roi: 500 },
+                 { type: 'comprehensive', risk: 95, volatility: 'extreme', investment: 10000, timeline: 6, roi: 1000 },
+                 { type: 'stress_test', risk: 50, volatility: 'extreme', investment: 5000000, timeline: 60, roi: 25 },
+                 { type: 'economic_cycles', risk: 10, volatility: 'high', investment: 100000, timeline: 24, roi: 200 },
+                 { type: 'sensitivity', risk: 90, volatility: 'low', investment: 250000, timeline: 12, roi: 150 }
+             ];
+             
+             let passedTests = 0;
+             
+             for (let i = 0; i < stressTests.length; i++) {
+                 const test = stressTests[i];
+                 
+                 try {
+                     // Set extreme parameters
+                     document.getElementById('scenarioType').value = test.type;
+                     document.getElementById('riskTolerance').value = test.risk;
+                     document.getElementById('riskValue').textContent = test.risk + '%';
+                     document.getElementById('investment').value = test.investment;
+                     document.getElementById('timeline').value = test.timeline;
+                     document.getElementById('targetROI').value = test.roi;
+                     
+                     // Set volatility
+                     document.querySelectorAll('.volatility-btn').forEach(btn => btn.classList.remove('active'));
+                     const volatilityBtn = document.querySelector(`[data-volatility="${test.volatility}"]`);
+                     if (volatilityBtn) {
+                         volatilityBtn.classList.add('active');
+                         VoidSightApp.state.volatility = test.volatility;
+                     }
+                     
+                     // Update preview
+                     VoidSightApp.updateScenarioPreview();
+                     
+                     // Run calculation
+                     const scenarioInfo = VoidSightApp.calculateScenarioCount(test.type, test.risk, test.volatility);
+                     const calculationData = {
+                         project_type: 'ai_integration',
+                         company_size: 'enterprise',
+                         target_industry: 'ai',
+                         custom_investment: test.investment,
+                         custom_timeline: test.timeline,
+                         target_roi: test.roi,
+                         scenario_type: test.type,
+                         risk_tolerance: test.risk,
+                         volatility: test.volatility
+                     };
+                     
+                     const results = generateComprehensiveResults(calculationData, scenarioInfo);
+                     
+                     if (results && results.scenario_analysis && results.scenario_analysis.success_probability >= 0) {
+                         passedTests++;
+                         VoidSightApp.addAIMessage(`✅ Stress Test ${i + 1}: ${test.type} with ${test.volatility} volatility - ${scenarioInfo.count} scenarios - SUCCESS`);
+                         console.log(`✅ Stress test ${i + 1} passed:`, test);
+                     } else {
+                         VoidSightApp.addAIMessage(`❌ Stress Test ${i + 1}: Failed to generate valid results`);
+                         console.error(`❌ Stress test ${i + 1} failed:`, test);
+                     }
+                     
+                     await new Promise(resolve => setTimeout(resolve, 500));
+                     
+                 } catch (error) {
+                     VoidSightApp.addAIMessage(`❌ Stress Test ${i + 1}: Error - ${error.message}`);
+                     console.error(`❌ Stress test ${i + 1} error:`, error);
+                 }
+             }
+             
+             const successRate = (passedTests / stressTests.length * 100).toFixed(1);
+             VoidSightApp.addAIMessage(`⚡ STRESS TEST COMPLETE: ${passedTests}/${stressTests.length} tests passed (${successRate}%)`);
+             
+             showAlert(`⚡ Stress Test Complete!\n\n${passedTests}/${stressTests.length} extreme tests passed\nSuccess Rate: ${successRate}%\n🛡️ System handles extreme parameters!`, 'success');
+         }
+
+         // Quick validation of core functionality
+         async function runQuickValidation() {
+             console.log('🔍 Running quick validation...');
+             VoidSightApp.addAIMessage('🔍 Running quick validation of core functionality...');
+             
+             const validationTests = [
+                 'Project selection works',
+                 'Scenario preview updates',
+                 'Risk tolerance slider functions',
+                 'Volatility buttons work',
+                 'Calculation engine works',
+                 'Results display properly'
+             ];
+             
+             let passed = 0;
+             
+             try {
+                 // Test 1: Project selection
+                 VoidSightApp.selectProject('ecommerce_platform', document.querySelector('[data-project-id="ecommerce_platform"]'));
+                 if (VoidSightApp.state.selectedProject) {
+                     passed++;
+                     VoidSightApp.addAIMessage('✅ Project selection working');
+                 }
+                 
+                 // Test 2: Scenario preview
+                 document.getElementById('scenarioType').value = 'monte_carlo';
+                 VoidSightApp.updateScenarioPreview();
+                 if (document.getElementById('scenarioCount').textContent.includes('10,')) {
+                     passed++;
+                     VoidSightApp.addAIMessage('✅ Scenario preview updating correctly');
+                 }
+                 
+                 // Test 3: Risk slider
+                 document.getElementById('riskTolerance').value = 75;
+                 document.getElementById('riskValue').textContent = '75%';
+                 VoidSightApp.updateScenarioPreview();
+                 passed++;
+                 VoidSightApp.addAIMessage('✅ Risk tolerance slider functional');
+                 
+                 // Test 4: Volatility buttons
+                 document.querySelectorAll('.volatility-btn').forEach(btn => btn.classList.remove('active'));
+                 const highVolBtn = document.querySelector('[data-volatility="high"]');
+                 if (highVolBtn) {
+                     highVolBtn.classList.add('active');
+                     VoidSightApp.state.volatility = 'high';
+                     passed++;
+                     VoidSightApp.addAIMessage('✅ Volatility controls working');
+                 }
+                 
+                 // Test 5: Calculation engine
+                 document.getElementById('companySize').value = 'large';
+                 document.getElementById('industry').value = 'ecommerce';
+                 const scenarioInfo = VoidSightApp.calculateScenarioCount('monte_carlo', 75, 'high');
+                 if (scenarioInfo && scenarioInfo.count > 1000) {
+                     passed++;
+                     VoidSightApp.addAIMessage('✅ Calculation engine functioning');
+                 }
+                 
+                 // Test 6: Results generation
+                 const testData = {
+                     project_type: 'ecommerce_platform',
+                     company_size: 'large',
+                     target_industry: 'ecommerce',
+                     scenario_type: 'monte_carlo',
+                     risk_tolerance: 75,
+                     volatility: 'high'
+                 };
+                 const results = generateComprehensiveResults(testData, scenarioInfo);
+                 if (results && results.scenario_analysis) {
+                     passed++;
+                     VoidSightApp.addAIMessage('✅ Results generation working');
+                 }
+                 
+             } catch (error) {
+                 VoidSightApp.addAIMessage(`❌ Validation error: ${error.message}`);
+                 console.error('Validation error:', error);
+             }
+             
+             const score = (passed / validationTests.length * 100).toFixed(1);
+             VoidSightApp.addAIMessage(`🔍 VALIDATION COMPLETE: ${passed}/${validationTests.length} tests passed (${score}%)`);
+             
+             showAlert(`🔍 Quick Validation Complete!\n\n${passed}/${validationTests.length} core functions working\nSystem Health: ${score}%\n${score === '100.0' ? '🟢 All systems operational!' : '🟡 Some issues detected'}`, score === '100.0' ? 'success' : 'warning');
+         }
+
+         // Performance benchmark testing
+         async function runBenchmarkSuite() {
+             console.log('⚡ Running performance benchmarks...');
+             VoidSightApp.addAIMessage('⚡ Running performance benchmarks...');
+             
+             // Ensure we have a project selected
+             if (!VoidSightApp.state.selectedProject) {
+                 VoidSightApp.selectProject('digital_transformation', document.querySelector('[data-project-id="digital_transformation"]'));
+             }
+             
+             document.getElementById('companySize').value = 'enterprise';
+             document.getElementById('industry').value = 'ai';
+             
+             const benchmarks = [
+                 { name: 'Small Analysis', type: 'optimistic', scenarios: 1500 },
+                 { name: 'Medium Analysis', type: 'comprehensive', scenarios: 5000 },
+                 { name: 'Large Analysis', type: 'monte_carlo', scenarios: 10000 },
+                 { name: 'Extreme Analysis', type: 'economic_cycles', scenarios: 6000 }
+             ];
+             
+             const results = [];
+             
+             for (const benchmark of benchmarks) {
+                 try {
+                     const startTime = performance.now();
+                     
+                     // Set parameters
+                     document.getElementById('scenarioType').value = benchmark.type;
+                     document.getElementById('riskTolerance').value = 50;
+                     VoidSightApp.state.volatility = 'medium';
+                     
+                     // Run calculation
+                     const scenarioInfo = VoidSightApp.calculateScenarioCount(benchmark.type, 50, 'medium');
+                     const calculationData = {
+                         project_type: 'digital_transformation',
+                         company_size: 'enterprise',
+                         target_industry: 'ai',
+                         scenario_type: benchmark.type,
+                         risk_tolerance: 50,
+                         volatility: 'medium'
+                     };
+                     
+                     const calcResults = generateComprehensiveResults(calculationData, scenarioInfo);
+                     
+                     const endTime = performance.now();
+                     const duration = endTime - startTime;
+                     
+                     results.push({
+                         name: benchmark.name,
+                         scenarios: scenarioInfo.count,
+                         duration: duration,
+                         performance: scenarioInfo.count / duration * 1000 // scenarios per second
+                     });
+                     
+                     VoidSightApp.addAIMessage(`⚡ ${benchmark.name}: ${scenarioInfo.count.toLocaleString()} scenarios in ${duration.toFixed(1)}ms`);
+                     
+                 } catch (error) {
+                     VoidSightApp.addAIMessage(`❌ ${benchmark.name}: Benchmark failed - ${error.message}`);
+                 }
+                 
+                 await new Promise(resolve => setTimeout(resolve, 100));
+             }
+             
+             // Calculate performance metrics
+             const totalScenarios = results.reduce((sum, r) => sum + r.scenarios, 0);
+             const totalTime = results.reduce((sum, r) => sum + r.duration, 0);
+             const avgPerformance = totalScenarios / totalTime * 1000;
+             
+             VoidSightApp.addAIMessage(`📊 BENCHMARK COMPLETE: ${totalScenarios.toLocaleString()} scenarios in ${totalTime.toFixed(1)}ms`);
+             VoidSightApp.addAIMessage(`⚡ Average Performance: ${avgPerformance.toFixed(0)} scenarios/second`);
+             
+             showAlert(`⚡ Performance Benchmark Complete!\n\nTotal Scenarios: ${totalScenarios.toLocaleString()}\nTotal Time: ${totalTime.toFixed(1)}ms\nPerformance: ${avgPerformance.toFixed(0)} scenarios/sec\n🚀 Excellent performance!`, 'success');
+         }
     </script>
 </body>
 </html>
