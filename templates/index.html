@@ -1124,22 +1124,22 @@
             
             projects: [
                 {
-                    id: 'web_application',
-                    name: 'Web Application Development',
-                    description: 'Modern, scalable web application with cloud infrastructure',
-                    complexity: 'Medium',
-                    baseCost: 85000,
-                    timeline: '6-8 months',
+                    id: 'ecommerce_platform',
+                    name: 'E-commerce Platform',
+                    description: 'Complete online store with payment processing and inventory management',
+                    complexity: 'High',
+                    baseCost: 60000,
+                    timeline: '10 months',
                     roiPotential: '280%'
                 },
                 {
-                    id: 'mobile_application',
+                    id: 'mobile_app',
                     name: 'Mobile Application',
                     description: 'Native iOS and Android application with cross-platform features',
                     complexity: 'High',
-                    baseCost: 120000,
-                    timeline: '8-12 months',
-                    roiPotential: '350%'
+                    baseCost: 45000,
+                    timeline: '8 months',
+                    roiPotential: '240%'
                 },
                 {
                     id: 'ai_integration',
@@ -1564,8 +1564,8 @@
                 if (isSmallInvestment) {
                     // Small investments: higher risk, higher reward potential
                     projectROIRanges = {
-                        'web_application': { min: 20, max: 80 },      // 20-80% ROI for small web projects
-                        'mobile_application': { min: 15, max: 60 },  // 15-60% ROI for small mobile apps
+                                        'ecommerce_platform': { min: 20, max: 80 },   // 20-80% ROI for small e-commerce projects
+                'mobile_app': { min: 15, max: 60 },           // 15-60% ROI for small mobile apps
                         'ai_integration': { min: 25, max: 100 },     // 25-100% ROI for AI experiments
                         'ecommerce_platform': { min: 30, max: 90 }, // 30-90% ROI for small e-commerce
                         'digital_transformation': { min: 20, max: 70 }, // 20-70% ROI for small digital projects
@@ -1574,8 +1574,8 @@
                 } else if (isMediumInvestment) {
                     // Medium investments: moderate risk/reward
                     projectROIRanges = {
-                        'web_application': { min: 12, max: 40 },      // 12-40% ROI for medium web apps
-                        'mobile_application': { min: 8, max: 30 },  // 8-30% ROI for medium mobile apps
+                                        'ecommerce_platform': { min: 12, max: 40 },   // 12-40% ROI for medium e-commerce platforms
+                'mobile_app': { min: 8, max: 30 },           // 8-30% ROI for medium mobile apps
                         'ai_integration': { min: 15, max: 50 },     // 15-50% ROI for medium AI projects
                         'ecommerce_platform': { min: 15, max: 45 }, // 15-45% ROI for medium e-commerce
                         'digital_transformation': { min: 18, max: 55 }, // 18-55% ROI for medium digital transform
@@ -1584,8 +1584,8 @@
                 } else {
                     // Large investments: lower risk, steady returns
                     projectROIRanges = {
-                        'web_application': { min: 8, max: 25 },      // 8-25% ROI for large web apps
-                        'mobile_application': { min: 5, max: 20 },  // 5-20% ROI for large mobile apps
+                                        'ecommerce_platform': { min: 8, max: 25 },   // 8-25% ROI for large e-commerce platforms
+                'mobile_app': { min: 5, max: 20 },           // 5-20% ROI for large mobile apps
                         'ai_integration': { min: 12, max: 35 },     // 12-35% ROI for large AI projects
                         'ecommerce_platform': { min: 10, max: 30 }, // 10-30% ROI for large e-commerce
                         'digital_transformation': { min: 15, max: 40 }, // 15-40% ROI for large digital transform
@@ -1724,14 +1724,14 @@
         function getProjectSpecificScenarios(projectType, companySize, industry) {
             const scenarios = [];
             
-            // WEB APPLICATION SCENARIOS
-            if (projectType === 'web_application') {
+            // E-COMMERCE PLATFORM SCENARIOS  
+            if (projectType === 'ecommerce_platform') {
                 scenarios.push(
                     // OPTIMISTIC SCENARIOS
-                    { name: "SEO Traffic Surge", roiMultiplier: 1.5, probability: 0.20, description: "Website ranks #1 for key terms, 300% traffic increase" },
-                    { name: "Viral Social Media", roiMultiplier: 1.4, probability: 0.15, description: "Content goes viral, massive organic user acquisition" },
-                    { name: "Perfect UX Conversion", roiMultiplier: 1.3, probability: 0.25, description: "Conversion rate optimization exceeds targets by 50%" },
-                    { name: "API Integration Success", roiMultiplier: 1.2, probability: 0.30, description: "Third-party integrations work flawlessly, boost functionality" },
+                    { name: "Viral Product Launch", roiMultiplier: 1.8, probability: 0.15, description: "Product goes viral on social media, 500% sales increase" },
+                    { name: "SEO Dominance", roiMultiplier: 1.5, probability: 0.20, description: "E-commerce site ranks #1 for all product categories" },
+                    { name: "Perfect Conversion Rate", roiMultiplier: 1.4, probability: 0.20, description: "Checkout optimization achieves 8%+ conversion rate" },
+                    { name: "Influencer Partnership", roiMultiplier: 1.3, probability: 0.25, description: "Major influencer collaboration drives massive sales" },
                     
                     // REALISTIC SCENARIOS
                     { name: "Standard Web Performance", roiMultiplier: 1.0, probability: 0.40, description: "Website performs as expected, meets baseline metrics" },
@@ -1750,7 +1750,7 @@
             }
             
             // MOBILE APPLICATION SCENARIOS
-            else if (projectType === 'mobile_application') {
+            else if (projectType === 'mobile_app') {
                 scenarios.push(
                     // OPTIMISTIC SCENARIOS
                     { name: "App Store Feature", roiMultiplier: 1.6, probability: 0.15, description: "Apple/Google features app, 10x download spike" },
@@ -1842,8 +1842,8 @@
          function calculateRealisticSuccessRate(data, baseROI, volatilityMultiplier) {
              // Real-world project success rates by type
              const projectSuccessRates = {
-                 'web_application': 45,        // Web projects: ~45% success rate
-                 'mobile_application': 35,     // Mobile apps: ~35% success rate  
+                             'ecommerce_platform': 50,     // E-commerce: ~50% success rate  
+            'mobile_app': 35,             // Mobile apps: ~35% success rate  
                  'ai_integration': 25,         // AI projects: ~25% success rate
                  'ecommerce_platform': 40,    // E-commerce: ~40% success rate
                  'digital_transformation': 30, // Digital transformation: ~30% success rate
@@ -1909,8 +1909,8 @@
           function getRealisticRiskDistribution(data, scenarios, baseROI) {
               // Real-world risk distributions by project type
               const projectRiskProfiles = {
-                  'web_application': { low: 35, medium: 45, high: 20 },
-                  'mobile_application': { low: 25, medium: 50, high: 25 },
+                              'ecommerce_platform': { low: 35, medium: 45, high: 20 },
+            'mobile_app': { low: 25, medium: 50, high: 25 },
                   'ai_integration': { low: 15, medium: 35, high: 50 },
                   'ecommerce_platform': { low: 40, medium: 40, high: 20 },
                   'digital_transformation': { low: 20, medium: 45, high: 35 },
@@ -1965,8 +1965,8 @@
            function calculateRealisticProfit(baseCost, baseROI, timeline, data) {
                // Project complexity cost multipliers (realistic and investment-scaled)
                const baseComplexityMultipliers = {
-                   'web_application': 1.10,        // 10% cost overrun typical for web apps
-                   'mobile_application': 1.15,     // 15% cost overrun typical for mobile apps
+                               'ecommerce_platform': 1.15,     // 15% cost overrun typical for e-commerce platforms
+            'mobile_app': 1.15,             // 15% cost overrun typical for mobile apps
                    'ai_integration': 1.30,         // 30% cost overrun typical for AI (reduced from 60%)
                    'ecommerce_platform': 1.15,    // 15% cost overrun typical for e-commerce
                    'digital_transformation': 1.25, // 25% cost overrun typical (reduced from 50%)
@@ -2002,8 +2002,8 @@
 
                // Step 4: Calculate realistic operating expenses (scaled by investment size)
                const baseOperatingRates = {
-                   'web_application': 0.08,        // 8% of gross profit (hosting, maintenance, support)
-                   'mobile_application': 0.10,     // 10% of gross profit (app store fees, updates, support)
+                               'ecommerce_platform': 0.12,     // 12% of gross profit (payment processing, hosting, inventory)
+            'mobile_app': 0.10,             // 10% of gross profit (app store fees, updates, support)
                    'ai_integration': 0.12,         // 12% of gross profit (compute costs, data, infrastructure)
                    'ecommerce_platform': 0.09,    // 9% of gross profit (payment processing, inventory, support)
                    'digital_transformation': 0.06, // 6% of gross profit (change management, training)
@@ -2954,7 +2954,7 @@
                  mobileLog('✅ Step 2: Checking project selection...');
                  if (!VoidSightApp.state.selectedProject) {
                      mobileLog('⚠️ No project selected, selecting Web Application...');
-                     VoidSightApp.selectProject('web_application', document.querySelector('[data-project-id="web_application"]'));
+                     VoidSightApp.selectProject('ecommerce_platform', document.querySelector('[data-project-id="ecommerce_platform"]'));
                  }
                  mobileLog('✅ Project: ' + (VoidSightApp.state.selectedProject ? VoidSightApp.state.selectedProject.name : 'None'));
 
@@ -2978,7 +2978,7 @@
                   mobileLog('✅ Step 5: Testing generateComprehensiveResults...');
                   if (typeof generateComprehensiveResults === 'function') {
                       const testData = {
-                          project_type: 'web_application',
+                          project_type: 'ecommerce_platform',
                           company_size: 'enterprise',
                           target_industry: 'fintech',
                           scenario_type: 'comprehensive',

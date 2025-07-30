@@ -1,5 +1,5 @@
 """
-Enterprise Configuration Management for Infinex ROI Calculator
+Enterprise Configuration Management for VoidSight Analytics
 Production-ready configuration with security, scaling, and commercial features
 """
 
@@ -30,10 +30,10 @@ class BaseConfig:
     """Enhanced base configuration for enterprise deployment"""
     
     # Application Metadata
-    APP_NAME = "Infinex ROI Calculator"
-    APP_VERSION = "3.0 Enterprise"
-    APP_DESCRIPTION = "Professional Investment Analysis Platform"
-    COMPANY_NAME = "Infinex Analytics"
+    APP_NAME = "VoidSight Analytics"
+    APP_VERSION = "2.0 Enterprise"
+    APP_DESCRIPTION = "Professional ROI Intelligence Platform"
+    COMPANY_NAME = "VoidSight Analytics"
     
     # Security Configuration
     SECRET_KEY = os.environ.get('SECRET_KEY') or secrets.token_urlsafe(32)
@@ -42,7 +42,7 @@ class BaseConfig:
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     
     # Database Configuration
-    DATABASE_URL = os.environ.get('DATABASE_URL') or 'sqlite:///infinex_roi.db'
+    DATABASE_URL = os.environ.get('DATABASE_URL') or 'sqlite:///voidsight_analytics.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_pre_ping': True,

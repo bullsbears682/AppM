@@ -49,8 +49,11 @@ cd voidsight-analytics
 python3 -m venv venv
 source venv/bin/activate
 
-# 3. Install dependencies
-pip install -r requirements.txt
+# 3. Install dependencies (choose your deployment type)
+# For basic deployment (14 dependencies):
+pip install -r requirements-core.txt
+# OR for full enterprise features (34 dependencies):
+pip install -r requirements-enterprise.txt
 
 # 4. Configure environment
 cp .env.production .env
