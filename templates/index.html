@@ -6,17 +6,64 @@
     <title>VoidSight Analytics - Enterprise ROI Intelligence Platform</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chart.js with Multiple CDN Fallbacks -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js" 
-            onerror="loadChartJsFallback()"></script>
-    
-    <!-- Chart.js Loading Status -->
+    <!-- Chart.js with Aggressive Multi-CDN Loading -->
     <script>
+        // Immediate Chart.js loading with multiple strategies
         window.chartJsLoadStatus = 'loading';
-        if (typeof Chart !== 'undefined') {
+        window.chartJsAttempts = 0;
+        
+        // Strategy 1: Load from primary CDN
+        const script1 = document.createElement('script');
+        script1.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js';
+        script1.onload = () => {
             window.chartJsLoadStatus = 'loaded';
-            console.log('Chart.js pre-loaded successfully');
-        }
+            console.log('✅ Chart.js loaded from jsdelivr CDN');
+        };
+        script1.onerror = () => {
+            console.warn('❌ Primary Chart.js CDN failed, trying fallback...');
+            loadChartJsFallback();
+        };
+        document.head.appendChild(script1);
+        
+        // Strategy 2: Parallel loading from alternative CDN (after 1 second)
+        setTimeout(() => {
+            if (typeof Chart === 'undefined' && window.chartJsAttempts < 1) {
+                console.log('🔄 Loading Chart.js from parallel CDN...');
+                const script2 = document.createElement('script');
+                script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js';
+                script2.onload = () => {
+                    window.chartJsLoadStatus = 'loaded';
+                    console.log('✅ Chart.js loaded from cloudflare CDN');
+                };
+                document.head.appendChild(script2);
+            }
+        }, 1000);
+        
+        // Fallback loading function
+        window.loadChartJsFallback = function() {
+            if (window.chartJsAttempts >= 3) return;
+            window.chartJsAttempts++;
+            
+            const fallbackUrls = [
+                'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js',
+                'https://unpkg.com/chart.js@4.4.0/dist/chart.min.js',
+                'https://cdn.skypack.dev/chart.js@4.4.0'
+            ];
+            
+            const script = document.createElement('script');
+            script.src = fallbackUrls[window.chartJsAttempts - 1];
+            script.onload = () => {
+                window.chartJsLoadStatus = 'loaded';
+                console.log(`✅ Chart.js loaded from fallback CDN ${window.chartJsAttempts}`);
+            };
+            script.onerror = () => {
+                console.warn(`❌ Chart.js fallback ${window.chartJsAttempts} failed`);
+                if (window.chartJsAttempts < 3) {
+                    setTimeout(loadChartJsFallback, 500);
+                }
+            };
+            document.head.appendChild(script);
+        };
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -1213,11 +1260,26 @@
                     card.classList.remove('selected');
                 });
 
-                // Add selection to current card
-                cardElement.classList.add('selected');
+                // Add selection to current card (with null check)
+                if (cardElement && cardElement.classList) {
+                    cardElement.classList.add('selected');
+                } else {
+                    // Fallback: find the card element by project ID
+                    const fallbackCard = document.querySelector(`[data-project-id="${projectId}"]`);
+                    if (fallbackCard && fallbackCard.classList) {
+                        fallbackCard.classList.add('selected');
+                    } else {
+                        console.warn(`Project card element not found for ${projectId}`);
+                    }
+                }
+                
                 this.state.selectedProject = this.projects.find(p => p.id === projectId);
                 
-                console.log('🎯 Project selected:', this.state.selectedProject.name);
+                if (this.state.selectedProject) {
+                    console.log('🎯 Project selected:', this.state.selectedProject.name);
+                } else {
+                    console.warn(`Project data not found for ID: ${projectId}`);
+                }
 
             },
 
@@ -2937,49 +2999,53 @@
 
         // Enhanced Chart.js Detection and App Initialization
         function initializeApp() {
-            // Check if Chart.js is loaded
+            // Immediate check if Chart.js is already loaded
             if (typeof Chart !== 'undefined') {
-                mobileLog('✅ Chart.js loaded successfully');
+                mobileLog('✅ Chart.js already loaded');
                 console.log('Chart.js version:', Chart.version || 'Unknown');
                 VoidSightApp.init();
                 return;
             }
             
-            // Wait for Chart.js with enhanced detection
-            mobileLog('⏳ Loading Chart.js library...');
+            // Start app initialization with Chart.js loading status
+            mobileLog('⏳ Initializing VoidSight Analytics...');
             let attempts = 0;
-            const maxAttempts = 100; // 10 seconds
+            const maxAttempts = 150; // 15 seconds (more time for slow connections)
             
             const checkChart = setInterval(() => {
                 attempts++;
                 
-                // Check multiple Chart.js detection methods
+                // Multiple Chart.js detection methods
                 const chartLoaded = (
                     typeof Chart !== 'undefined' || 
+                    (window.Chart && typeof window.Chart === 'function') ||
                     (window.Chart && typeof window.Chart === 'object') ||
-                    document.querySelector('script[src*="chart"]')?.readyState === 'complete'
+                    window.chartJsLoadStatus === 'loaded'
                 );
                 
                 if (chartLoaded) {
                     clearInterval(checkChart);
                     mobileLog('✅ Chart.js loaded successfully (attempt ' + attempts + ')');
-                    console.log('Chart.js detection successful');
+                    console.log('Chart.js detection successful, version:', (typeof Chart !== 'undefined' ? Chart.version : 'Unknown'));
                     VoidSightApp.init();
                 } else if (attempts >= maxAttempts) {
                     clearInterval(checkChart);
-                    console.warn('Chart.js loading timeout after 10 seconds');
+                    console.warn('Chart.js loading timeout after 15 seconds');
                     mobileLog('⚠️ Chart.js failed to load - app will work without charts');
-                    // Try one more fallback before giving up
-                    if (chartJsLoadAttempts === 0) {
+                    
+                    // Final fallback attempt
+                    if (window.chartJsAttempts < 2) {
+                        console.log('🔄 Final Chart.js loading attempt...');
                         loadChartJsFallback();
                         setTimeout(() => {
-                            if (typeof Chart === 'undefined') {
-                                VoidSightApp.init();
-                            }
-                        }, 2000);
+                            VoidSightApp.init();
+                        }, 3000);
                     } else {
                         VoidSightApp.init();
                     }
+                } else if (attempts % 30 === 0) {
+                    // Progress update every 3 seconds
+                    mobileLog(`⏳ Loading Chart.js... (${Math.floor(attempts/10)}s)`);
                 }
             }, 100);
         }
@@ -3027,13 +3093,21 @@
                  }
                  mobileLog('✅ VoidSightApp exists');
 
-                 // Test 2: Check project selection
-                 mobileLog('✅ Step 2: Checking project selection...');
-                 if (!VoidSightApp.state.selectedProject) {
-                     mobileLog('⚠️ No project selected, selecting Web Application...');
-                     VoidSightApp.selectProject('ecommerce_platform', document.querySelector('[data-project-id="ecommerce_platform"]'));
-                 }
-                 mobileLog('✅ Project: ' + (VoidSightApp.state.selectedProject ? VoidSightApp.state.selectedProject.name : 'None'));
+                                 // Test 2: Check project selection
+                mobileLog('✅ Step 2: Checking project selection...');
+                if (!VoidSightApp.state.selectedProject) {
+                    mobileLog('⚠️ No project selected, selecting E-commerce Platform...');
+                    // Safely call selectProject with null handling
+                    const projectElement = document.querySelector('[data-project-id="ecommerce_platform"]');
+                    if (projectElement) {
+                        VoidSightApp.selectProject('ecommerce_platform', projectElement);
+                        mobileLog('✅ Project selected with element');
+                    } else {
+                        mobileLog('⚠️ Project element not found, selecting without element');
+                        VoidSightApp.selectProject('ecommerce_platform', null);
+                    }
+                }
+                mobileLog('✅ Project: ' + (VoidSightApp.state.selectedProject ? VoidSightApp.state.selectedProject.name : 'None'));
 
                  // Test 3: Check form fields
                  mobileLog('✅ Step 3: Setting form fields...');
