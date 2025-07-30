@@ -983,16 +983,9 @@
                                          <!-- Scenario Analysis Configuration -->
                      <div class="form-group">
                          <label class="form-label">Scenario Analysis Type</label>
-                         <select id="scenarioType" class="form-select">
-                                                         <option value="comprehensive">Project-Specific Scenarios (12 real cases)</option>
-                            <option value="monte_carlo">Business Risk Analysis (12 real cases)</option>
-                            <option value="sensitivity">Market Condition Analysis (12 real cases)</option>
-                            <option value="stress_test">Economic Impact Analysis (12 real cases)</option>
-                            <option value="optimistic">Best Case Planning (12 real cases)</option>
-                            <option value="pessimistic">Worst Case Planning (12 real cases)</option>
-                            <option value="market_volatility">Competition Analysis (12 real cases)</option>
-                            <option value="economic_cycles">Technology Risk Planning (12 real cases)</option>
-                         </select>
+                                                 <select id="scenarioType" class="form-select">
+                            <option value="project_specific">Project-Specific Real Scenarios</option>
+                        </select>
                      </div>
 
                      <!-- Risk Parameters -->
@@ -1609,8 +1602,8 @@
                  const riskFactor = (data.risk_tolerance || 50) / 100;
                  const volatilityImpact = getVolatilityImpact(data.volatility || 'medium');
                  
-                 // Generate scenario variations
-                 const scenarios = generateScenarioVariations(data, scenarioInfo, baseCost, timeline, baseROI);
+                                 // Generate scenario variations
+                const scenarioResults = generateScenarioVariations(data, scenarioInfo, baseCost, timeline, baseROI);
                  
                  // Calculate realistic profit with business expenses
                  const profitBreakdown = calculateRealisticProfit(baseCost, baseROI, timeline, data);
@@ -1633,16 +1626,17 @@
                      
                      // Scenario analysis
                      scenario_analysis: {
-                         total_scenarios: scenarios.length,  // Actual count of project-specific scenarios
-                         analysis_type: data.scenario_type || 'comprehensive',
-                         best_case: scenarios.bestCase,
-                         worst_case: scenarios.worstCase,
-                         most_likely: scenarios.mostLikely,
-                         average_roi: scenarios.averageROI,
-                         median_roi: scenarios.medianROI,
-                         success_probability: scenarios.successProbability,
-                         risk_distribution: scenarios.riskDistribution,
-                         volatility_impact: volatilityImpact
+                         total_scenarios: scenarioResults.scenarios?.length || 12,  // Actual count of project-specific scenarios
+                         analysis_type: data.scenario_type || 'project_specific',
+                         best_case: scenarioResults.bestCase,
+                         worst_case: scenarioResults.worstCase,
+                         most_likely: scenarioResults.mostLikely,
+                         average_roi: scenarioResults.averageROI,
+                         median_roi: scenarioResults.medianROI,
+                         success_probability: scenarioResults.successProbability,
+                         risk_distribution: scenarioResults.riskDistribution,
+                         volatility_impact: volatilityImpact,
+                         scenarios: scenarioResults.scenarios  // Include detailed scenarios
                      }
                  };
              } catch (error) {
@@ -1675,39 +1669,42 @@
                     });
                 }
                  
-                                 // Ensure we have scenarios
+                                                 // Ensure we have scenarios
                 if (scenarios.length === 0) {
                     const fallbackProfitBreakdown = calculateRealisticProfit(baseCost, baseROI, timeline, data);
                     scenarios.push({
                         roi: baseROI,
                         profit: fallbackProfitBreakdown.netProfit,
-                        success: fallbackProfitBreakdown.netProfit > 0
+                        success: fallbackProfitBreakdown.netProfit > 0,
+                        scenario: "Baseline Scenario",
+                        description: "Standard project execution"
                     });
                 }
-                 
-                 // Calculate statistics
-                 scenarios.sort((a, b) => b.roi - a.roi);
-                 const successfulScenarios = scenarios.filter(s => s.success);
-                 const totalROIs = scenarios.map(s => s.roi);
-                 
-                                 return {
+                
+                // Calculate statistics from the scenarios
+                scenarios.sort((a, b) => b.roi - a.roi);
+                const successfulScenarios = scenarios.filter(s => s.success);
+                const totalROIs = scenarios.map(s => s.roi);
+                
+                return {
                     bestCase: {
                         roi_percentage: scenarios[0]?.roi || baseROI,
-                        profit: scenarios[0]?.profit || calculateRealisticProfit(baseCost, baseROI, timeline, data).netProfit
+                        profit: scenarios[0]?.profit || 0
                     },
                     worstCase: {
                         roi_percentage: scenarios[scenarios.length - 1]?.roi || baseROI * 0.5,
-                        profit: scenarios[scenarios.length - 1]?.profit || calculateRealisticProfit(baseCost, baseROI * 0.5, timeline, data).netProfit
+                        profit: scenarios[scenarios.length - 1]?.profit || 0
                     },
                     mostLikely: {
                         roi_percentage: totalROIs[Math.floor(totalROIs.length * 0.5)] || baseROI,
-                        profit: scenarios[Math.floor(scenarios.length * 0.5)]?.profit || calculateRealisticProfit(baseCost, baseROI, timeline, data).netProfit
+                        profit: scenarios[Math.floor(scenarios.length * 0.5)]?.profit || 0
                     },
-                     averageROI: totalROIs.length > 0 ? totalROIs.reduce((a, b) => a + b, 0) / totalROIs.length : baseROI,
-                     medianROI: totalROIs[Math.floor(totalROIs.length / 2)] || baseROI,
-                     successProbability: calculateRealisticSuccessRate(data, baseROI, volatilityMultiplier),
-                     riskDistribution: getRealisticRiskDistribution(data, scenarios, baseROI)
-                 };
+                    averageROI: totalROIs.length > 0 ? totalROIs.reduce((a, b) => a + b, 0) / totalROIs.length : baseROI,
+                    medianROI: totalROIs[Math.floor(totalROIs.length / 2)] || baseROI,
+                    successProbability: calculateRealisticSuccessRate(data, baseROI, 1.0),
+                    riskDistribution: getRealisticRiskDistribution(data, scenarios, baseROI),
+                    scenarios: scenarios  // Include the full scenarios array
+                };
              } catch (error) {
                  console.error('Error generating scenario variations:', error);
                                  // Return fallback scenario data using realistic profit calculations
@@ -2087,7 +2084,7 @@
              resultsContent.innerHTML = `
                  <div class="alert alert-success">
                      <i class="fas fa-check-circle"></i>
-                     Scenario analysis completed: ${scenarioAnalysis.total_scenarios.toLocaleString()}+ scenarios analyzed for ${results.project_name}
+                     Scenario analysis completed: ${scenarioAnalysis?.total_scenarios || 12} project-specific scenarios analyzed for ${results.project_name}
                  </div>
 
                  <div class="metrics-grid">
