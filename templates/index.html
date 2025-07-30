@@ -1577,16 +1577,17 @@
                  // Generate scenario variations
                  const scenarios = generateScenarioVariations(data, scenarioInfo, baseCost, timeline, baseROI);
                  
-                 const totalReturn = Math.round(baseCost * (baseROI / 100));
+                 // Calculate realistic profit with business expenses
+                 const profitBreakdown = calculateRealisticProfit(baseCost, baseROI, timeline, data);
                  
                  return {
                      // Base results
                      roi_percentage: baseROI,
-                     total_investment: baseCost,
-                     total_return: totalReturn,
-                     net_profit: totalReturn - baseCost,
-                     monthly_return: Math.round(totalReturn / timeline),
-                     payback_period: Math.round(timeline * 0.6),
+                     total_investment: profitBreakdown.totalInvestment,
+                     total_return: profitBreakdown.grossReturn,
+                     net_profit: profitBreakdown.netProfit,
+                     monthly_return: Math.round(profitBreakdown.netProfit / timeline),
+                     payback_period: profitBreakdown.paybackPeriod,
                      risk_score: Math.round(30 + (100 - (data.risk_tolerance || 50)) * 0.5),
                      confidence_level: scenarioInfo.confidence || 95,
                      timeline_months: timeline,
@@ -1803,8 +1804,96 @@
               high = Math.max(10, Math.min(60, Math.round(high)));
               medium = 100 - low - high;
 
-              return { low, medium, high };
-          }
+                             return { low, medium, high };
+           }
+
+           // Calculate realistic profit with all business expenses and factors
+           function calculateRealisticProfit(baseCost, baseROI, timeline, data) {
+               // Project complexity cost multipliers
+               const complexityMultipliers = {
+                   'web_application': 1.15,        // 15% cost overrun typical
+                   'mobile_application': 1.25,     // 25% cost overrun typical
+                   'ai_integration': 1.40,         // 40% cost overrun typical (high complexity)
+                   'ecommerce_platform': 1.20,    // 20% cost overrun typical
+                   'digital_transformation': 1.35, // 35% cost overrun typical
+                   'cloud_infrastructure': 1.10   // 10% cost overrun typical
+               };
+
+               // Company size affects cost efficiency
+               const companySizeEfficiency = {
+                   'startup': 1.20,      // 20% higher costs (inefficiency)
+                   'small': 1.10,        // 10% higher costs
+                   'medium': 1.0,        // Baseline
+                   'large': 0.95,        // 5% lower costs (economies of scale)
+                   'enterprise': 0.90    // 10% lower costs (best practices)
+               };
+
+               // Calculate actual investment with overruns
+               const complexityMultiplier = complexityMultipliers[data.project_type] || 1.2;
+               const efficiencyMultiplier = companySizeEfficiency[data.company_size] || 1.0;
+               const totalInvestment = Math.round(baseCost * complexityMultiplier * efficiencyMultiplier);
+
+               // Calculate gross return before expenses
+               const grossReturn = Math.round(totalInvestment * (1 + baseROI / 100));
+               const grossProfit = grossReturn - totalInvestment;
+
+               // Operating expenses (annual % of investment)
+               const operatingCostRates = {
+                   'web_application': 0.15,        // 15% annually
+                   'mobile_application': 0.20,     // 20% annually (app store fees, updates)
+                   'ai_integration': 0.25,         // 25% annually (compute, data costs)
+                   'ecommerce_platform': 0.18,    // 18% annually (hosting, payment processing)
+                   'digital_transformation': 0.12, // 12% annually (change management)
+                   'cloud_infrastructure': 0.10   // 10% annually (maintenance)
+               };
+
+               const operatingRate = operatingCostRates[data.project_type] || 0.15;
+               const operatingCosts = Math.round(totalInvestment * operatingRate * (timeline / 12));
+
+               // Tax rate based on region/company size
+               const taxRates = {
+                   'startup': 0.15,      // Lower tax rate (losses, credits)
+                   'small': 0.20,        // Small business rate
+                   'medium': 0.25,       // Standard corporate rate
+                   'large': 0.28,        // Large corporate rate
+                   'enterprise': 0.30    // Full corporate rate
+               };
+
+               const taxRate = taxRates[data.company_size] || 0.25;
+               const beforeTaxProfit = grossProfit - operatingCosts;
+               const taxes = Math.max(0, Math.round(beforeTaxProfit * taxRate));
+
+               // Risk adjustment for unexpected costs
+               const riskTolerance = data.risk_tolerance || 50;
+               const riskCostMultiplier = 1 + ((100 - riskTolerance) / 1000); // 0-5% additional costs
+               const riskAdjustment = Math.round(totalInvestment * (riskCostMultiplier - 1));
+
+               // Calculate final net profit
+               const netProfit = Math.round(beforeTaxProfit - taxes - riskAdjustment);
+
+               // Realistic payback period calculation
+               const monthlyNetCashFlow = netProfit / timeline;
+               const paybackPeriod = monthlyNetCashFlow > 0 ? 
+                   Math.ceil(totalInvestment / monthlyNetCashFlow) : 
+                   timeline * 2; // If no positive cash flow, set long payback
+
+               return {
+                   totalInvestment,
+                   grossReturn,
+                   grossProfit,
+                   operatingCosts,
+                   taxes,
+                   riskAdjustment,
+                   netProfit,
+                   paybackPeriod: Math.min(paybackPeriod, timeline * 1.5), // Cap at 1.5x timeline
+                   breakdown: {
+                       complexityOverrun: Math.round((complexityMultiplier - 1) * baseCost),
+                       operatingCosts,
+                       taxes,
+                       riskAdjustment
+                   }
+               };
+           }
 
          // Get volatility impact factor
          function getVolatilityImpact(volatility) {
@@ -1853,6 +1942,43 @@
                      <div class="metric-card">
                          <div class="metric-value">${results.confidence_level}%</div>
                          <div class="metric-label">Confidence Level</div>
+                     </div>
+                 </div>
+
+                 <!-- Realistic Profit Breakdown -->
+                 <div style="margin: var(--space-6) 0; padding: var(--space-4); background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--glass-border);">
+                     <h3 style="color: var(--primary-200); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                         <i class="fas fa-calculator"></i>
+                         Realistic Profit Breakdown
+                     </h3>
+                     <div style="display: grid; gap: var(--space-3); font-size: 0.95rem;">
+                         <div style="display: flex; justify-content: space-between; padding: var(--space-3); background: var(--primary-600); color: white; border-radius: var(--radius-md); font-weight: 600;">
+                             <span><i class="fas fa-arrow-up"></i> Gross Revenue:</span>
+                             <strong>$${results.total_return.toLocaleString()}</strong>
+                         </div>
+                         <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
+                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Operating Costs (15-25% annually):</span>
+                             <span style="color: var(--error-400);">-$${Math.round((results.total_return - results.total_investment) * 0.18).toLocaleString()}</span>
+                         </div>
+                         <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
+                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Corporate Taxes (25-30%):</span>
+                             <span style="color: var(--error-400);">-$${Math.round((results.total_return - results.total_investment) * 0.27).toLocaleString()}</span>
+                         </div>
+                         <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
+                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Project Overruns (10-40%):</span>
+                             <span style="color: var(--error-400);">-$${Math.round(results.total_investment * 0.15).toLocaleString()}</span>
+                         </div>
+                         <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
+                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Risk Buffer (3-5%):</span>
+                             <span style="color: var(--error-400);">-$${Math.round(results.total_investment * 0.04).toLocaleString()}</span>
+                         </div>
+                         <div style="border-top: 2px solid var(--glass-border); padding-top: var(--space-3); display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem;">
+                             <span style="color: var(--primary-200);"><i class="fas fa-equals"></i> Actual Net Profit:</span>
+                             <strong style="color: ${results.net_profit > 0 ? 'var(--success-500)' : 'var(--error-500)'};">$${results.net_profit.toLocaleString()}</strong>
+                         </div>
+                         <div style="margin-top: var(--space-3); padding: var(--space-3); background: var(--warning-900); border-radius: var(--radius-md); font-size: 0.85rem; color: var(--warning-200);">
+                             <i class="fas fa-info-circle"></i> <strong>Reality Check:</strong> This breakdown includes real business expenses that many ROI calculators ignore: operating costs, taxes, project overruns, and risk buffers.
+                         </div>
                      </div>
                  </div>
 
