@@ -2562,25 +2562,60 @@
                      return;
                  }
 
-                 // Test 5: Test generateComprehensiveResults
-                 mobileLog('✅ Step 5: Testing generateComprehensiveResults...');
-                 if (typeof generateComprehensiveResults === 'function') {
-                     const testData = {
-                         project_type: 'web_application',
-                         company_size: 'enterprise',
-                         target_industry: 'fintech',
-                         scenario_type: 'comprehensive',
-                         risk_tolerance: 50,
-                         volatility: 'medium'
-                     };
-                     const scenarioInfo = { count: 5000, time: 45, confidence: 95 };
-                     
-                     const results = generateComprehensiveResults(testData, scenarioInfo);
-                     mobileLog('✅ Results generated: ROI = ' + results.roi_percentage + '%');
-                     mobileLog('✅ All functions working! Try the main calculation now.');
-                 } else {
-                     mobileLog('❌ ERROR: generateComprehensiveResults is not a function!');
-                 }
+                                   // Test 5: Test generateComprehensiveResults
+                  mobileLog('✅ Step 5: Testing generateComprehensiveResults...');
+                  if (typeof generateComprehensiveResults === 'function') {
+                      const testData = {
+                          project_type: 'web_application',
+                          company_size: 'enterprise',
+                          target_industry: 'fintech',
+                          scenario_type: 'comprehensive',
+                          risk_tolerance: 50,
+                          volatility: 'medium'
+                      };
+                      const scenarioInfo = { count: 5000, time: 45, confidence: 95 };
+                      
+                      const results = generateComprehensiveResults(testData, scenarioInfo);
+                      mobileLog('✅ Results generated: ROI = ' + results.roi_percentage + '%');
+                      
+                      // Store test results for PDF testing
+                      VoidSightApp.state.results = results;
+                      
+                      mobileLog('✅ All functions working! Try the main calculation now.');
+                  } else {
+                      mobileLog('❌ ERROR: generateComprehensiveResults is not a function!');
+                  }
+
+                  // Test 6: Test PDF Export Libraries
+                  mobileLog('✅ Step 6: Testing PDF export capabilities...');
+                  if (typeof window.jspdf !== 'undefined') {
+                      mobileLog('✅ jsPDF library loaded successfully');
+                      
+                      try {
+                          const { jsPDF } = window.jspdf;
+                          const testDoc = new jsPDF();
+                          testDoc.text('Test PDF', 20, 20);
+                          mobileLog('✅ PDF creation test successful');
+                      } catch (error) {
+                          mobileLog('❌ PDF creation test failed: ' + error.message);
+                      }
+                  } else {
+                      mobileLog('❌ ERROR: jsPDF library not loaded!');
+                  }
+
+                  if (typeof html2canvas !== 'undefined') {
+                      mobileLog('✅ html2canvas library loaded successfully');
+                  } else {
+                      mobileLog('⚠️ WARNING: html2canvas not loaded - charts won\'t be captured');
+                  }
+
+                  // Test 7: Test Actual PDF Export Function
+                  if (VoidSightApp.state.results && typeof exportToPDF === 'function') {
+                      mobileLog('✅ Step 7: PDF export function available');
+                      mobileLog('🔧 You can test PDF export with the buttons below');
+                  } else {
+                      mobileLog('❌ ERROR: PDF export function not available');
+                  }
 
              } catch (error) {
                  mobileLog('❌ ERROR in debug test:');
