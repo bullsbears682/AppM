@@ -2858,6 +2858,9 @@
         let selectedScenarioType = 'comprehensive';
         let selectedRiskTolerance = 50;
         let selectedVolatility = 'medium';
+        let aiInsightHistory = [];
+        let lastInsightTime = 0;
+        let aiInsightsPaused = false;
         
         // === DEBUG FUNCTIONS ===
         window.testCalculation = function() {
@@ -2889,8 +2892,14 @@
                 console.log('✅ Direct API test successful:', data);
                 alert('✅ Direct API test successful! Check console for details.');
                 
-                // Try to display results
-                displayQuantumResults(data);
+                // Try to display results (with error handling)
+                try {
+                    displayQuantumResults(data);
+                    console.log('✅ Results displayed successfully');
+                } catch (displayError) {
+                    console.warn('⚠️ Could not display results (likely due to AI popup not being ready):', displayError.message);
+                    // Just show basic success message without trying to display results
+                }
                 
             } catch (error) {
                 console.error('❌ Direct API test failed:', error);
@@ -3232,11 +3241,33 @@
         
         function addAIInsight(message, type = 'info') {
             const now = Date.now();
-            const container = document.getElementById('aiInsightsContainer');
+            let container = document.getElementById('aiInsightsContainer');
+            
+            // If container doesn't exist, try to find it or create a fallback
+            if (!container) {
+                console.warn('⚠️ aiInsightsContainer not found, checking for popup...');
+                
+                // Try to wait a bit and check again
+                setTimeout(() => {
+                    container = document.getElementById('aiInsightsContainer');
+                    if (container) {
+                        console.log('✅ Found aiInsightsContainer after delay');
+                        addAIInsight(message, type); // Retry
+                    } else {
+                        console.error('❌ aiInsightsContainer still not found - AI insights disabled');
+                    }
+                }, 100);
+                return;
+            }
             
             // Prevent spam - minimum 3 seconds between insights
-            if (now - lastInsightTime < 3000 || aiInsightsPaused || !container) {
+            if (now - lastInsightTime < 3000 || aiInsightsPaused) {
                 return;
+            }
+            
+            // Initialize AI insight history if not exists
+            if (typeof aiInsightHistory === 'undefined') {
+                window.aiInsightHistory = [];
             }
             
             // Don't repeat recent messages
@@ -3345,7 +3376,11 @@
             const messages = insights[action] || [];
             if (messages.length > 0) {
                 const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-                addAIInsight(randomMessage, action === 'error' ? 'warning' : 'info');
+                try {
+                    addAIInsight(randomMessage, action === 'error' ? 'warning' : 'info');
+                } catch (error) {
+                    console.warn('⚠️ Could not add AI insight:', error.message);
+                }
             }
         }
 
