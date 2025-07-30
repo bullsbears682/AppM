@@ -1807,10 +1807,21 @@
                      </div>
                  </div>
 
-                 <div class="chart-container">
-                     <h3 class="chart-title">ROI Projection Timeline</h3>
-                     <canvas id="roiChart"></canvas>
-                 </div>
+                                 <div class="chart-container">
+                    <h3 class="chart-title">ROI Projection Timeline</h3>
+                    <canvas id="roiChart"></canvas>
+                </div>
+
+                <!-- Interactive Timeline Visualization -->
+                <div id="timelineContainer" style="margin: var(--space-6) 0; padding: var(--space-5); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg);">
+                    <h3 style="color: var(--primary-200); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+                        <i class="fas fa-timeline"></i>
+                        Project Timeline & Milestones
+                    </h3>
+                    <div id="timelineContent">
+                        <!-- Timeline will be generated here -->
+                    </div>
+                </div>
 
                  <div style="background: var(--bg-secondary); padding: var(--space-6); border-radius: var(--radius-lg); margin-top: var(--space-6);">
                      <h3 style="color: var(--primary-200); margin-bottom: var(--space-4);">Analysis Summary</h3>
@@ -1846,6 +1857,9 @@
                  console.warn('Chart creation failed:', error);
                  mobileLog('⚠️ Chart creation skipped - results displayed without graph');
              }
+
+             // Create interactive timeline
+             createProjectTimeline(results);
          }
 
                  // Create enhanced ROI chart with scenario data
@@ -1993,6 +2007,183 @@
          // Legacy function for compatibility
          function createROIChart(results) {
              createEnhancedROIChart(results);
+         }
+
+         // Create interactive project timeline
+         function createProjectTimeline(results) {
+             const container = document.getElementById('timelineContent');
+             if (!container) return;
+
+             const timeline = results.timeline_months;
+             const paybackPeriod = results.payback_period;
+             const projectName = results.project_name;
+             const scenarioAnalysis = results.scenario_analysis;
+
+             // Calculate key milestones
+             const milestones = [
+                 {
+                     month: 0,
+                     title: 'Project Launch',
+                     description: `${projectName} begins`,
+                     type: 'start',
+                     icon: 'fas fa-rocket',
+                     color: '#10b981'
+                 },
+                 {
+                     month: Math.ceil(timeline * 0.25),
+                     title: 'First Quarter',
+                     description: 'Initial development phase complete',
+                     type: 'milestone',
+                     icon: 'fas fa-flag',
+                     color: '#0ea5e9'
+                 },
+                 {
+                     month: Math.ceil(timeline * 0.5),
+                     title: 'Midpoint Review',
+                     description: 'Project 50% complete',
+                     type: 'milestone',
+                     icon: 'fas fa-chart-line',
+                     color: '#8b5cf6'
+                 },
+                 {
+                     month: paybackPeriod,
+                     title: 'Break-Even Point',
+                     description: `Investment recovered in ${paybackPeriod} months`,
+                     type: 'financial',
+                     icon: 'fas fa-balance-scale',
+                     color: '#f59e0b'
+                 },
+                 {
+                     month: Math.ceil(timeline * 0.75),
+                     title: 'Final Phase',
+                     description: 'Implementation nearing completion',
+                     type: 'milestone',
+                     icon: 'fas fa-tasks',
+                     color: '#0ea5e9'
+                 },
+                 {
+                     month: timeline,
+                     title: 'Project Complete',
+                     description: `Expected ROI: ${scenarioAnalysis.most_likely.roi_percentage.toFixed(1)}%`,
+                     type: 'end',
+                     icon: 'fas fa-trophy',
+                     color: '#10b981'
+                 }
+             ];
+
+             // Generate timeline HTML
+             container.innerHTML = `
+                 <!-- Timeline Progress Bar -->
+                 <div style="position: relative; margin-bottom: var(--space-6);">
+                     <div style="height: 4px; background: var(--secondary-600); border-radius: 2px; position: relative;">
+                         <div style="height: 100%; background: linear-gradient(90deg, #10b981, #0ea5e9, #8b5cf6, #f59e0b); border-radius: 2px; width: 100%;"></div>
+                     </div>
+                     
+                     <!-- Timeline Labels -->
+                     <div style="display: flex; justify-content: space-between; margin-top: var(--space-2); font-size: 0.875rem; color: var(--secondary-400);">
+                         <span>Month 0</span>
+                         <span>Month ${Math.ceil(timeline/2)}</span>
+                         <span>Month ${timeline}</span>
+                     </div>
+                 </div>
+
+                 <!-- Milestones Grid -->
+                 <div style="display: grid; gap: var(--space-4);">
+                     ${milestones.map((milestone, index) => `
+                         <div style="display: flex; align-items: center; gap: var(--space-4); padding: var(--space-4); background: var(--bg-secondary); border-radius: var(--radius-md); border-left: 4px solid ${milestone.color}; transition: all 0.3s ease;" 
+                              onmouseover="this.style.transform='translateX(8px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" 
+                              onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='none'">
+                             
+                             <!-- Icon Circle -->
+                             <div style="width: 48px; height: 48px; border-radius: 50%; background: ${milestone.color}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                 <i class="${milestone.icon}" style="color: white; font-size: 1.25rem;"></i>
+                             </div>
+                             
+                             <!-- Content -->
+                             <div style="flex: 1;">
+                                 <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1);">
+                                     <h4 style="color: var(--primary-200); margin: 0; font-size: 1.1rem; font-weight: 600;">${milestone.title}</h4>
+                                     <span style="background: ${milestone.color}20; color: ${milestone.color}; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
+                                         Month ${milestone.month}
+                                     </span>
+                                 </div>
+                                 <p style="color: var(--secondary-300); margin: 0; font-size: 0.9rem;">${milestone.description}</p>
+                             </div>
+                             
+                             <!-- Progress Indicator -->
+                             <div style="text-align: right; color: var(--secondary-400); font-size: 0.8rem;">
+                                 ${Math.round((milestone.month / timeline) * 100)}%
+                             </div>
+                         </div>
+                     `).join('')}
+                 </div>
+
+                 <!-- Timeline Summary -->
+                 <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--bg-primary); border: 1px solid var(--glass-border); border-radius: var(--radius-md);">
+                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4);">
+                         <div style="text-align: center;">
+                             <div style="color: var(--primary-200); font-size: 1.5rem; font-weight: 700; margin-bottom: var(--space-1);">${timeline}</div>
+                             <div style="color: var(--secondary-400); font-size: 0.9rem;">Total Months</div>
+                         </div>
+                         <div style="text-align: center;">
+                             <div style="color: var(--primary-200); font-size: 1.5rem; font-weight: 700; margin-bottom: var(--space-1);">${paybackPeriod}</div>
+                             <div style="color: var(--secondary-400); font-size: 0.9rem;">Payback Period</div>
+                         </div>
+                         <div style="text-align: center;">
+                             <div style="color: var(--primary-200); font-size: 1.5rem; font-weight: 700; margin-bottom: var(--space-1);">${scenarioAnalysis.most_likely.roi_percentage.toFixed(1)}%</div>
+                             <div style="color: var(--secondary-400); font-size: 0.9rem;">Expected ROI</div>
+                         </div>
+                         <div style="text-align: center;">
+                             <div style="color: var(--primary-200); font-size: 1.5rem; font-weight: 700; margin-bottom: var(--space-1);">${scenarioAnalysis.success_probability}%</div>
+                             <div style="color: var(--secondary-400); font-size: 0.9rem;">Success Rate</div>
+                         </div>
+                     </div>
+                 </div>
+
+                 <!-- Interactive Timeline Controls -->
+                 <div style="margin-top: var(--space-6); display: flex; gap: var(--space-3); flex-wrap: wrap;">
+                     <button onclick="highlightPhase('development')" style="padding: var(--space-2) var(--space-4); background: var(--primary-600); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease;" 
+                             onmouseover="this.style.background='var(--primary-500)'" onmouseout="this.style.background='var(--primary-600)'">
+                         📅 Development Phase
+                     </button>
+                     <button onclick="highlightPhase('financial')" style="padding: var(--space-2) var(--space-4); background: var(--accent-600); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease;"
+                             onmouseover="this.style.background='var(--accent-500)'" onmouseout="this.style.background='var(--accent-600)'">
+                         💰 Financial Milestones
+                     </button>
+                     <button onclick="highlightPhase('all')" style="padding: var(--space-2) var(--space-4); background: var(--secondary-600); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease;"
+                             onmouseover="this.style.background='var(--secondary-500)'" onmouseout="this.style.background='var(--secondary-600)'">
+                         🔍 Show All
+                     </button>
+                 </div>
+             `;
+
+             mobileLog('📅 Interactive timeline created with ' + milestones.length + ' milestones');
+         }
+
+         // Timeline phase highlighting
+         function highlightPhase(phase) {
+             const milestones = document.querySelectorAll('#timelineContent [style*="border-left"]');
+             
+             milestones.forEach(milestone => {
+                 if (phase === 'all') {
+                     milestone.style.opacity = '1';
+                     milestone.style.transform = 'scale(1)';
+                 } else if (phase === 'development' && milestone.innerHTML.includes('Development')) {
+                     milestone.style.opacity = '1';
+                     milestone.style.transform = 'scale(1.02)';
+                     milestone.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.25)';
+                 } else if (phase === 'financial' && (milestone.innerHTML.includes('Break-Even') || milestone.innerHTML.includes('ROI'))) {
+                     milestone.style.opacity = '1';
+                     milestone.style.transform = 'scale(1.02)';
+                     milestone.style.boxShadow = '0 8px 25px rgba(245, 158, 11, 0.25)';
+                 } else if (phase !== 'all') {
+                     milestone.style.opacity = '0.4';
+                     milestone.style.transform = 'scale(0.98)';
+                     milestone.style.boxShadow = 'none';
+                 }
+             });
+
+             mobileLog('📅 Timeline filtered for: ' + phase);
          }
 
         // Show alert message
