@@ -1,6 +1,6 @@
-# 🚀 Infinex ROI Calculator - Next-Generation Analytics Platform
+# 🚀 VoidSight Analytics - Enterprise ROI Intelligence Platform
 
-> Advanced business ROI calculator with AI-powered insights, quantum-inspired UI, and real-time financial modeling
+> Professional ROI calculator with project-specific scenarios, realistic financial modeling, and enterprise-grade analytics
 
 ![Version](https://img.shields.io/badge/version-2.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8+-green.svg)

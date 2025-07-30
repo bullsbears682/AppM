@@ -566,7 +566,7 @@ class EnterpriseConfig(ProductionConfig):
 
 def get_config(config_name=None):
     """Get configuration based on environment"""
-    config_name = config_name or os.environ.get('FLASK_ENV', 'development')
+    config_name = config_name or os.environ.get('FLASK_ENV', 'production')
     
     configs = {
         'development': DevelopmentConfig,

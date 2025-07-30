@@ -21,7 +21,7 @@ except ImportError:
         SECRET_KEY = "termux-fallback-key"
         HOST = "0.0.0.0"
         PORT = 5000
-        DEBUG = True
+        DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
         LOG_LEVEL = "INFO"
         LOG_FORMAT = '%(asctime)s %(levelname)s: %(message)s'
         ENABLE_CORS = True

@@ -1,4 +1,4 @@
-# Enterprise Infinex ROI Calculator - Production Dockerfile
+# VoidSight Analytics - Production Dockerfile
 # Multi-stage build for optimized production deployment
 
 # Stage 1: Build Stage
