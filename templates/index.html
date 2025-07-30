@@ -1069,6 +1069,17 @@
                          <i class="fas fa-brain"></i>
                          Run Scenario Analysis
                      </button>
+
+                     <!-- Mobile Debug Button -->
+                     <button onclick="mobileDebugTest()" style="margin-top: 10px; width: 100%; padding: 12px; background: #ff6b35; color: white; border: none; border-radius: 8px; font-size: 14px;">
+                         🔍 Mobile Debug Test
+                     </button>
+
+                     <!-- Debug Output -->
+                     <div id="debugOutput" style="margin-top: 15px; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #00ff00; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto; display: none;">
+                         <div style="color: #ffff00; margin-bottom: 10px;">📱 Mobile Debug Console:</div>
+                         <div id="debugContent"></div>
+                     </div>
                 </div>
 
                 <!-- Results Panel -->
@@ -1494,7 +1505,13 @@
                     name: error.name,
                     stack: error.stack
                 });
-                showAlert('Calculation failed. Please try again.', 'error');
+                
+                // Mobile-friendly error display
+                mobileLog('❌ CALCULATION ERROR:');
+                mobileLog('❌ Message: ' + error.message);
+                mobileLog('❌ Function: ' + (error.stack ? error.stack.split('\n')[1] : 'Unknown'));
+                
+                showAlert('Calculation failed. Check the debug output below for details.', 'error');
                 resultsContent.innerHTML = `
                     <div class="alert alert-error">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -2007,6 +2024,90 @@
              const isMobile = window.innerWidth < 768;
              document.body.classList.toggle('mobile', isMobile);
          });
+
+         // Mobile Debug Functions
+         function mobileLog(message) {
+             const debugOutput = document.getElementById('debugOutput');
+             const debugContent = document.getElementById('debugContent');
+             
+             if (debugOutput && debugContent) {
+                 debugOutput.style.display = 'block';
+                 debugContent.innerHTML += '<div style="margin-bottom: 5px;">' + message + '</div>';
+                 debugOutput.scrollTop = debugOutput.scrollHeight;
+             }
+         }
+
+         function clearMobileLog() {
+             const debugContent = document.getElementById('debugContent');
+             if (debugContent) {
+                 debugContent.innerHTML = '';
+             }
+         }
+
+         // Mobile Debug Test Function
+         async function mobileDebugTest() {
+             clearMobileLog();
+             mobileLog('🔄 Starting mobile debug test...');
+             
+             try {
+                 // Test 1: Check if VoidSightApp exists
+                 mobileLog('✅ Step 1: Checking VoidSightApp...');
+                 if (typeof VoidSightApp === 'undefined') {
+                     mobileLog('❌ ERROR: VoidSightApp is undefined!');
+                     return;
+                 }
+                 mobileLog('✅ VoidSightApp exists');
+
+                 // Test 2: Check project selection
+                 mobileLog('✅ Step 2: Checking project selection...');
+                 if (!VoidSightApp.state.selectedProject) {
+                     mobileLog('⚠️ No project selected, selecting Web Application...');
+                     VoidSightApp.selectProject('web_application', document.querySelector('[data-project-id="web_application"]'));
+                 }
+                 mobileLog('✅ Project: ' + (VoidSightApp.state.selectedProject ? VoidSightApp.state.selectedProject.name : 'None'));
+
+                 // Test 3: Check form fields
+                 mobileLog('✅ Step 3: Setting form fields...');
+                 document.getElementById('companySize').value = 'enterprise';
+                 document.getElementById('industry').value = 'fintech';
+                 mobileLog('✅ Company Size: enterprise, Industry: fintech');
+
+                 // Test 4: Check scenario functions
+                 mobileLog('✅ Step 4: Testing calculateScenarioCount...');
+                 if (typeof VoidSightApp.calculateScenarioCount === 'function') {
+                     const scenarioInfo = VoidSightApp.calculateScenarioCount('comprehensive', 50, 'medium');
+                     mobileLog('✅ Scenario info: ' + JSON.stringify(scenarioInfo));
+                 } else {
+                     mobileLog('❌ ERROR: calculateScenarioCount is not a function!');
+                     return;
+                 }
+
+                 // Test 5: Test generateComprehensiveResults
+                 mobileLog('✅ Step 5: Testing generateComprehensiveResults...');
+                 if (typeof generateComprehensiveResults === 'function') {
+                     const testData = {
+                         project_type: 'web_application',
+                         company_size: 'enterprise',
+                         target_industry: 'fintech',
+                         scenario_type: 'comprehensive',
+                         risk_tolerance: 50,
+                         volatility: 'medium'
+                     };
+                     const scenarioInfo = { count: 5000, time: 45, confidence: 95 };
+                     
+                     const results = generateComprehensiveResults(testData, scenarioInfo);
+                     mobileLog('✅ Results generated: ROI = ' + results.roi_percentage + '%');
+                     mobileLog('✅ All functions working! Try the main calculation now.');
+                 } else {
+                     mobileLog('❌ ERROR: generateComprehensiveResults is not a function!');
+                 }
+
+             } catch (error) {
+                 mobileLog('❌ ERROR in debug test:');
+                 mobileLog('❌ Message: ' + error.message);
+                 mobileLog('❌ Stack: ' + error.stack);
+             }
+         }
 
 
     </script>
