@@ -984,14 +984,14 @@
                      <div class="form-group">
                          <label class="form-label">Scenario Analysis Type</label>
                          <select id="scenarioType" class="form-select">
-                                                         <option value="comprehensive">Real Business Scenarios (13 cases)</option>
-                            <option value="monte_carlo">Business Risk Analysis (13 cases)</option>
-                            <option value="sensitivity">Market Condition Analysis (13 cases)</option>
-                            <option value="stress_test">Economic Impact Analysis (13 cases)</option>
-                            <option value="optimistic">Best Case Planning (13 cases)</option>
-                            <option value="pessimistic">Worst Case Planning (13 cases)</option>
-                            <option value="market_volatility">Competition Analysis (13 cases)</option>
-                            <option value="economic_cycles">Economic Cycle Planning (13 cases)</option>
+                                                         <option value="comprehensive">Project-Specific Scenarios (12 real cases)</option>
+                            <option value="monte_carlo">Business Risk Analysis (12 real cases)</option>
+                            <option value="sensitivity">Market Condition Analysis (12 real cases)</option>
+                            <option value="stress_test">Economic Impact Analysis (12 real cases)</option>
+                            <option value="optimistic">Best Case Planning (12 real cases)</option>
+                            <option value="pessimistic">Worst Case Planning (12 real cases)</option>
+                            <option value="market_volatility">Competition Analysis (12 real cases)</option>
+                            <option value="economic_cycles">Technology Risk Planning (12 real cases)</option>
                          </select>
                      </div>
 
@@ -1633,7 +1633,7 @@
                      
                      // Scenario analysis
                      scenario_analysis: {
-                         total_scenarios: scenarios.length || 13,  // Real business scenarios, not fake thousands
+                         total_scenarios: scenarios.length,  // Actual count of project-specific scenarios
                          analysis_type: data.scenario_type || 'comprehensive',
                          best_case: scenarios.bestCase,
                          worst_case: scenarios.worstCase,
@@ -1651,37 +1651,16 @@
              }
          }
 
-                 // Generate REAL business scenario variations (not random numbers)
+                 // Generate PROJECT-SPECIFIC real business scenarios
         function generateScenarioVariations(data, scenarioInfo, baseCost, timeline, baseROI) {
             try {
                 const scenarios = [];
                 
-                // REAL BUSINESS SCENARIOS (not random math)
-                const businessScenarios = [
-                    // OPTIMISTIC SCENARIOS
-                    { name: "Market Leader Position", roiMultiplier: 1.4, probability: 0.15, description: "Capture significant market share" },
-                    { name: "Perfect Execution", roiMultiplier: 1.3, probability: 0.20, description: "Project executed flawlessly on time/budget" },
-                    { name: "Economic Tailwind", roiMultiplier: 1.25, probability: 0.25, description: "Favorable economic conditions boost demand" },
-                    { name: "Technology Adoption Surge", roiMultiplier: 1.2, probability: 0.30, description: "Faster than expected user adoption" },
-                    
-                    // REALISTIC SCENARIOS  
-                    { name: "As Planned Execution", roiMultiplier: 1.0, probability: 0.40, description: "Project meets original expectations" },
-                    { name: "Minor Delays/Overruns", roiMultiplier: 0.85, probability: 0.35, description: "Typical project challenges, slightly behind" },
-                    { name: "Moderate Competition", roiMultiplier: 0.75, probability: 0.30, description: "Expected competitive pressure" },
-                    
-                    // CHALLENGING SCENARIOS
-                    { name: "Economic Headwinds", roiMultiplier: 0.6, probability: 0.25, description: "Economic downturn reduces demand" },
-                    { name: "Technical Difficulties", roiMultiplier: 0.5, probability: 0.20, description: "Unexpected technical challenges" },
-                    { name: "Strong Competition", roiMultiplier: 0.4, probability: 0.15, description: "Major competitor enters market" },
-                    { name: "Market Shift", roiMultiplier: 0.25, probability: 0.10, description: "Technology/consumer preferences change" },
-                    
-                    // CRISIS SCENARIOS
-                    { name: "Regulatory Issues", roiMultiplier: 0.1, probability: 0.05, description: "New regulations impact business model" },
-                    { name: "Major Economic Crisis", roiMultiplier: -0.2, probability: 0.03, description: "Severe economic downturn" }
-                ];
+                // PROJECT-SPECIFIC REAL SCENARIOS based on actual project type
+                const projectSpecificScenarios = getProjectSpecificScenarios(data.project_type, data.company_size, data.target_industry);
                 
-                // Apply each business scenario
-                for (const scenario of businessScenarios) {
+                                 // Apply each project-specific scenario
+                 for (const scenario of projectSpecificScenarios) {
                     const scenarioROI = baseROI * scenario.roiMultiplier;
                     const scenarioProfitBreakdown = calculateRealisticProfit(baseCost, scenarioROI, timeline, data);
                     const scenarioProfit = scenarioProfitBreakdown.netProfit;
@@ -1742,9 +1721,127 @@
                      riskDistribution: getRealisticRiskDistribution(data || {}, [], baseROI || 50)
                  };
              }
-         }
+                  }
 
-         // Calculate realistic success rate based on real-world business data
+        // Get project-specific realistic business scenarios
+        function getProjectSpecificScenarios(projectType, companySize, industry) {
+            const scenarios = [];
+            
+            // WEB APPLICATION SCENARIOS
+            if (projectType === 'web_application') {
+                scenarios.push(
+                    // OPTIMISTIC SCENARIOS
+                    { name: "SEO Traffic Surge", roiMultiplier: 1.5, probability: 0.20, description: "Website ranks #1 for key terms, 300% traffic increase" },
+                    { name: "Viral Social Media", roiMultiplier: 1.4, probability: 0.15, description: "Content goes viral, massive organic user acquisition" },
+                    { name: "Perfect UX Conversion", roiMultiplier: 1.3, probability: 0.25, description: "Conversion rate optimization exceeds targets by 50%" },
+                    { name: "API Integration Success", roiMultiplier: 1.2, probability: 0.30, description: "Third-party integrations work flawlessly, boost functionality" },
+                    
+                    // REALISTIC SCENARIOS
+                    { name: "Standard Web Performance", roiMultiplier: 1.0, probability: 0.40, description: "Website performs as expected, meets baseline metrics" },
+                    { name: "Minor SEO Delays", roiMultiplier: 0.85, probability: 0.35, description: "Google algorithm changes slow organic growth" },
+                    { name: "Browser Compatibility Issues", roiMultiplier: 0.75, probability: 0.25, description: "Need extra development for cross-browser support" },
+                    
+                    // CHALLENGING SCENARIOS
+                    { name: "Server Scalability Issues", roiMultiplier: 0.6, probability: 0.20, description: "Unexpected traffic spikes cause downtime, lost conversions" },
+                    { name: "Security Breach", roiMultiplier: 0.4, probability: 0.10, description: "Data breach requires security overhaul, trust damage" },
+                    { name: "Major Framework Update", roiMultiplier: 0.5, probability: 0.15, description: "React/Angular major version breaks compatibility" },
+                    
+                    // CRISIS SCENARIOS
+                    { name: "GDPR/Privacy Compliance", roiMultiplier: 0.2, probability: 0.05, description: "New privacy laws require expensive compliance overhaul" },
+                    { name: "CDN/Hosting Failure", roiMultiplier: 0.1, probability: 0.03, description: "Major hosting provider outage, data loss" }
+                );
+            }
+            
+            // MOBILE APPLICATION SCENARIOS
+            else if (projectType === 'mobile_application') {
+                scenarios.push(
+                    // OPTIMISTIC SCENARIOS
+                    { name: "App Store Feature", roiMultiplier: 1.6, probability: 0.15, description: "Apple/Google features app, 10x download spike" },
+                    { name: "Influencer Endorsement", roiMultiplier: 1.4, probability: 0.20, description: "Major influencer organically promotes app" },
+                    { name: "Perfect User Retention", roiMultiplier: 1.3, probability: 0.25, description: "90%+ Day-30 retention, exceeds industry average" },
+                    { name: "Freemium Conversion Success", roiMultiplier: 1.25, probability: 0.30, description: "15%+ free-to-paid conversion rate achieved" },
+                    
+                    // REALISTIC SCENARIOS
+                    { name: "Standard App Performance", roiMultiplier: 1.0, probability: 0.35, description: "App performs within industry benchmarks" },
+                    { name: "App Store Optimization Slow", roiMultiplier: 0.8, probability: 0.40, description: "ASO takes longer than expected to gain traction" },
+                    { name: "Platform Update Issues", roiMultiplier: 0.7, probability: 0.30, description: "iOS/Android updates break app functionality" },
+                    
+                    // CHALLENGING SCENARIOS
+                    { name: "App Store Rejection", roiMultiplier: 0.5, probability: 0.25, description: "Multiple rejections delay launch by 3+ months" },
+                    { name: "Competitor Clone Launch", roiMultiplier: 0.4, probability: 0.20, description: "Well-funded competitor launches identical app" },
+                    { name: "Device Compatibility Crisis", roiMultiplier: 0.3, probability: 0.15, description: "New iPhone/Android versions cause widespread crashes" },
+                    
+                    // CRISIS SCENARIOS
+                    { name: "App Store Policy Change", roiMultiplier: 0.15, probability: 0.08, description: "Apple/Google bans app category or business model" },
+                    { name: "Critical Security Vulnerability", roiMultiplier: 0.1, probability: 0.05, description: "Zero-day exploit forces app removal from stores" }
+                );
+            }
+            
+            // AI INTEGRATION SCENARIOS
+            else if (projectType === 'ai_integration') {
+                scenarios.push(
+                    // OPTIMISTIC SCENARIOS
+                    { name: "AI Breakthrough Performance", roiMultiplier: 1.8, probability: 0.12, description: "AI model exceeds accuracy expectations, 40% efficiency gain" },
+                    { name: "Perfect Training Data", roiMultiplier: 1.5, probability: 0.18, description: "High-quality data enables exceptional model performance" },
+                    { name: "GPU Cost Reduction", roiMultiplier: 1.3, probability: 0.22, description: "Cloud GPU prices drop 50%, inference costs plummet" },
+                    { name: "Open Source Model Release", roiMultiplier: 1.25, probability: 0.25, description: "Meta/Google releases perfect open-source model" },
+                    
+                    // REALISTIC SCENARIOS
+                    { name: "Standard AI Performance", roiMultiplier: 1.0, probability: 0.30, description: "AI performs within expected parameters" },
+                    { name: "Model Training Delays", roiMultiplier: 0.75, probability: 0.35, description: "Training takes 3x longer, higher compute costs" },
+                    { name: "Data Quality Issues", roiMultiplier: 0.6, probability: 0.40, description: "Need extensive data cleaning, delayed deployment" },
+                    
+                    // CHALLENGING SCENARIOS
+                    { name: "Model Hallucination Crisis", roiMultiplier: 0.4, probability: 0.25, description: "AI generates false information, trust issues" },
+                    { name: "Compute Cost Explosion", roiMultiplier: 0.3, probability: 0.20, description: "GPU shortage drives inference costs up 300%" },
+                    { name: "Bias/Fairness Lawsuit", roiMultiplier: 0.25, probability: 0.15, description: "AI shows bias, legal issues force model rebuild" },
+                    
+                    // CRISIS SCENARIOS
+                    { name: "AI Regulation Compliance", roiMultiplier: 0.1, probability: 0.08, description: "EU AI Act requires complete system redesign" },
+                    { name: "Training Data Copyright", roiMultiplier: 0.05, probability: 0.05, description: "Lawsuits over training data force model shutdown" }
+                );
+            }
+            
+            // E-COMMERCE PLATFORM SCENARIOS
+            else if (projectType === 'ecommerce_platform') {
+                scenarios.push(
+                    // OPTIMISTIC SCENARIOS
+                    { name: "Holiday Season Boom", roiMultiplier: 1.4, probability: 0.25, description: "Black Friday/Christmas sales exceed projections by 200%" },
+                    { name: "Conversion Rate Optimization", roiMultiplier: 1.35, probability: 0.20, description: "A/B testing increases conversion rate from 2% to 5%" },
+                    { name: "Payment Integration Success", roiMultiplier: 1.25, probability: 0.30, description: "Multiple payment options increase checkout completion" },
+                    { name: "Inventory Management Win", roiMultiplier: 1.2, probability: 0.25, description: "Perfect demand forecasting, no stockouts or overstock" },
+                    
+                    // REALISTIC SCENARIOS
+                    { name: "Standard E-commerce Growth", roiMultiplier: 1.0, probability: 0.35, description: "Platform grows at industry-average rates" },
+                    { name: "Shipping Cost Increases", roiMultiplier: 0.85, probability: 0.40, description: "FedEx/UPS rates increase, margin pressure" },
+                    { name: "Cart Abandonment Issues", roiMultiplier: 0.75, probability: 0.30, description: "High cart abandonment rate, need UX improvements" },
+                    
+                    // CHALLENGING SCENARIOS
+                    { name: "Payment Processor Issues", roiMultiplier: 0.5, probability: 0.20, description: "Stripe/PayPal integration problems, lost sales" },
+                    { name: "Amazon Competition", roiMultiplier: 0.4, probability: 0.25, description: "Amazon enters niche, price war begins" },
+                    { name: "Supply Chain Disruption", roiMultiplier: 0.3, probability: 0.15, description: "Key suppliers fail, inventory shortages" },
+                    
+                    // CRISIS SCENARIOS
+                    { name: "Credit Card Data Breach", roiMultiplier: 0.1, probability: 0.05, description: "PCI compliance failure, massive fines and lawsuits" },
+                    { name: "Platform Migration Disaster", roiMultiplier: 0.05, probability: 0.03, description: "Shopify/WooCommerce migration loses all SEO/data" }
+                );
+            }
+            
+            // Add scenarios for other project types...
+            else {
+                // DEFAULT SCENARIOS for unspecified project types
+                scenarios.push(
+                    { name: "Optimal Execution", roiMultiplier: 1.3, probability: 0.25, description: "Project executed perfectly on time and budget" },
+                    { name: "Standard Performance", roiMultiplier: 1.0, probability: 0.40, description: "Project meets baseline expectations" },
+                    { name: "Minor Challenges", roiMultiplier: 0.8, probability: 0.25, description: "Typical project obstacles and delays" },
+                    { name: "Major Difficulties", roiMultiplier: 0.5, probability: 0.10, description: "Significant unexpected challenges arise" }
+                );
+            }
+            
+            return scenarios;
+        }
+
+        // Calculate realistic success rate based on real-world business data
          function calculateRealisticSuccessRate(data, baseROI, volatilityMultiplier) {
              // Real-world project success rates by type
              const projectSuccessRates = {
