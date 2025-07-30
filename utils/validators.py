@@ -226,6 +226,35 @@ class APIValidator:
             )
     
     @staticmethod
+    def validate_roi_percentage(roi: Union[str, int, float]) -> float:
+        """Validate ROI percentage target"""
+        if roi is None:
+            raise ValidationError("ROI percentage is required", "target_roi", roi, "REQUIRED")
+        
+        try:
+            roi_value = float(roi)
+            
+            if roi_value < 0:
+                raise ValidationError(
+                    "ROI percentage cannot be negative",
+                    "target_roi", roi, "NEGATIVE_VALUE"
+                )
+            
+            if roi_value > 1000:  # 1000% max
+                raise ValidationError(
+                    "ROI percentage cannot exceed 1000%",
+                    "target_roi", roi, "TOO_HIGH"
+                )
+            
+            return roi_value
+            
+        except (ValueError, TypeError):
+            raise ValidationError(
+                f"Invalid ROI percentage '{roi}'. Must be a valid number.",
+                "target_roi", roi, "INVALID_NUMBER"
+            )
+    
+    @staticmethod
     def validate_roi_calculation_request(data: Dict) -> Dict:
         """Validate a complete ROI calculation request"""
         validated_data = {}
@@ -269,6 +298,9 @@ class APIValidator:
             
             if 'custom_timeline' in data:
                 validated_data['custom_timeline'] = APIValidator.validate_timeline(data['custom_timeline'])
+            
+            if 'target_roi' in data:
+                validated_data['target_roi'] = APIValidator.validate_roi_percentage(data['target_roi'])
             
             return validated_data
             

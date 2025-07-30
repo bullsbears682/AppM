@@ -169,7 +169,7 @@ class EnhancedROICalculator:
     
     def calculate_enhanced_roi_projection(self, investment: Optional[Decimal], industry: str, 
                                         project_type: str, timeline_months: int,
-                                        currency: str, company_size: str) -> ROIResult:
+                                        currency: str, company_size: str, target_roi: float = None) -> ROIResult:
         """Calculate enhanced ROI with Monte Carlo simulation and advanced metrics"""
         
         try:
@@ -639,7 +639,7 @@ class EnhancedROICalculator:
             return 'Cautionary'
     
     def generate_recommendations(self, company_size: str, project_type: str, 
-                               industry: str, roi_result: ROIResult) -> List[str]:
+                               industry: str, roi_result: ROIResult, target_roi: float = None) -> List[str]:
         """Generate enhanced personalized recommendations"""
         recommendations = []
         
@@ -650,7 +650,21 @@ class EnhancedROICalculator:
         elif roi_result.risk_score > 50:
             recommendations.append("⚖️ Moderate risk: Develop contingency plans")
         
-        # ROI-based recommendations
+        # Target ROI comparison recommendations (if target provided)
+        if target_roi is not None:
+            actual_roi = float(roi_result.roi_percentage)
+            roi_difference = actual_roi - target_roi
+            
+            if roi_difference >= 20:
+                recommendations.append(f"🎯 Exceeds target by {roi_difference:.1f}%: Outstanding performance potential")
+            elif roi_difference >= 0:
+                recommendations.append(f"✅ Meets target ROI: {target_roi}% goal achieved")
+            elif roi_difference >= -10:
+                recommendations.append(f"📊 Close to target: {abs(roi_difference):.1f}% below {target_roi}% goal")
+            else:
+                recommendations.append(f"🔄 Below target: Consider optimization to reach {target_roi}% goal")
+        
+        # General ROI-based recommendations
         if roi_result.roi_percentage > 200:
             recommendations.append("🚀 Exceptional ROI potential: Consider accelerating timeline")
         elif roi_result.roi_percentage > 100:

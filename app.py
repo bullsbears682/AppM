@@ -257,7 +257,8 @@ def calculate_roi():
                 project_type=validated_data['project_type'],
                 timeline_months=cost_analysis['timeline_months'],
                 currency=validated_data['currency'],
-                company_size=validated_data['company_size']
+                company_size=validated_data['company_size'],
+                target_roi=validated_data.get('target_roi')
             )
             
             return cost_analysis, roi_result
@@ -277,7 +278,8 @@ def calculate_roi():
             validated_data['company_size'],
             validated_data['project_type'],
             validated_data['target_industry'],
-            roi_result
+            roi_result,
+            validated_data.get('target_roi')
         )
         
         # Core v2.0 - focus on enhanced calculations and basic business intelligence
