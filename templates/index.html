@@ -6,7 +6,18 @@
     <title>VoidSight Analytics - Enterprise ROI Intelligence Platform</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js"></script>
+    <!-- Chart.js with Multiple CDN Fallbacks -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js" 
+            onerror="loadChartJsFallback()"></script>
+    
+    <!-- Chart.js Loading Status -->
+    <script>
+        window.chartJsLoadStatus = 'loading';
+        if (typeof Chart !== 'undefined') {
+            window.chartJsLoadStatus = 'loaded';
+            console.log('Chart.js pre-loaded successfully');
+        }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -824,8 +835,22 @@
              transition: width 1s ease-out;
          }
     </style>
-</head>
-<body>
+    </head>
+    <body>
+        <noscript>
+            <div style="background: #1a1a1a; color: #fff; padding: 20px; text-align: center; font-family: 'Inter', sans-serif;">
+                <h2 style="color: #f39c12; margin-bottom: 15px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    JavaScript Required
+                </h2>
+                <p style="margin-bottom: 15px; color: #bbb;">
+                    VoidSight Analytics requires JavaScript to function properly.
+                </p>
+                <p style="color: #888; font-size: 0.9rem;">
+                    Please enable JavaScript in your browser settings to access the ROI calculator.
+                </p>
+            </div>
+        </noscript>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
@@ -2235,17 +2260,35 @@
              createProjectTimeline(results);
          }
 
-                 // Create enhanced ROI chart with scenario data
-         function createEnhancedROIChart(results) {
-             const ctx = document.getElementById('roiChart');
-             if (!ctx) return;
+                         // Create enhanced ROI chart with scenario data
+        function createEnhancedROIChart(results) {
+            const ctx = document.getElementById('roiChart');
+            if (!ctx) {
+                console.warn('Chart canvas element not found');
+                return;
+            }
 
-             // Check if Chart.js is available
-             if (typeof Chart === 'undefined') {
-                 console.warn('Chart.js not loaded, skipping chart creation');
-                 mobileLog('⚠️ Chart.js not loaded - displaying results without chart');
-                 return;
-             }
+            // Enhanced Chart.js availability check
+            if (typeof Chart === 'undefined' || !window.Chart) {
+                console.warn('Chart.js not loaded, attempting to display results without chart');
+                mobileLog('⚠️ Chart.js not available - displaying data in table format');
+                
+                // Try to load Chart.js one more time if it failed initially
+                if (chartJsLoadAttempts === 0) {
+                    mobileLog('🔄 Attempting to reload Chart.js...');
+                    loadChartJsFallback();
+                    setTimeout(() => {
+                        if (typeof Chart !== 'undefined') {
+                            createEnhancedROIChart(results);
+                        } else {
+                            displayResultsWithoutChart(results);
+                        }
+                    }, 1000);
+                } else {
+                    displayResultsWithoutChart(results);
+                }
+                return;
+            }
 
              const scenarioAnalysis = results.scenario_analysis;
              
@@ -2828,32 +2871,121 @@
 
 
 
-        // Initialize application when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check if Chart.js is loaded, if not wait a bit
-            if (typeof Chart === 'undefined') {
-                console.log('Waiting for Chart.js to load...');
-                mobileLog('⏳ Loading Chart.js library...');
+        // Chart.js Fallback Loading Function
+        let chartJsLoadAttempts = 0;
+        window.loadChartJsFallback = function() {
+            if (chartJsLoadAttempts >= 2) return; // Max 2 fallback attempts
+            chartJsLoadAttempts++;
+            
+            const fallbackUrls = [
+                'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js',
+                'https://unpkg.com/chart.js@4.4.0/dist/chart.min.js'
+            ];
+            
+            const script = document.createElement('script');
+            script.src = fallbackUrls[chartJsLoadAttempts - 1];
+            script.onerror = () => {
+                console.warn(`Chart.js fallback ${chartJsLoadAttempts} failed`);
+                if (chartJsLoadAttempts < 2) {
+                    loadChartJsFallback();
+                }
+            };
+            document.head.appendChild(script);
+        };
+
+        // Fallback function to display results without charts
+        function displayResultsWithoutChart(results) {
+            const chartContainer = document.getElementById('roiChart')?.parentElement;
+            if (!chartContainer) return;
+            
+            // Create a simple data table instead of chart
+            const tableHTML = `
+                <div style="background: var(--glass-bg); border-radius: var(--radius-lg); padding: var(--space-4); border: 1px solid var(--glass-border);">
+                    <h4 style="color: var(--primary-200); margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-2);">
+                        <i class="fas fa-table"></i>
+                        ROI Analysis Results (Chart unavailable)
+                    </h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-3);">
+                        <div style="text-align: center; padding: var(--space-3); background: var(--glass-bg-dark); border-radius: var(--radius-md);">
+                            <div style="color: var(--success-400); font-size: 1.8rem; font-weight: 700;">${results.roi_percentage || 'N/A'}%</div>
+                            <div style="color: var(--secondary-300); font-size: 0.9rem;">ROI Percentage</div>
+                        </div>
+                        <div style="text-align: center; padding: var(--space-3); background: var(--glass-bg-dark); border-radius: var(--radius-md);">
+                            <div style="color: var(--primary-400); font-size: 1.8rem; font-weight: 700;">$${(results.net_profit || 0).toLocaleString()}</div>
+                            <div style="color: var(--secondary-300); font-size: 0.9rem;">Net Profit</div>
+                        </div>
+                        <div style="text-align: center; padding: var(--space-3); background: var(--glass-bg-dark); border-radius: var(--radius-md);">
+                            <div style="color: var(--warning-400); font-size: 1.8rem; font-weight: 700;">$${(results.projected_revenue || 0).toLocaleString()}</div>
+                            <div style="color: var(--secondary-300); font-size: 0.9rem;">Projected Revenue</div>
+                        </div>
+                        <div style="text-align: center; padding: var(--space-3); background: var(--glass-bg-dark); border-radius: var(--radius-md);">
+                            <div style="color: var(--info-400); font-size: 1.8rem; font-weight: 700;">${results.payback_period_months || 'N/A'} months</div>
+                            <div style="color: var(--secondary-300); font-size: 0.9rem;">Payback Period</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: var(--space-3); padding: var(--space-2); background: var(--warning-bg); border-radius: var(--radius-sm); border-left: 4px solid var(--warning-400);">
+                        <small style="color: var(--warning-300);">
+                            <i class="fas fa-info-circle"></i>
+                            Interactive charts are temporarily unavailable. All calculations are accurate and complete.
+                        </small>
+                    </div>
+                </div>
+            `;
+            
+            chartContainer.innerHTML = tableHTML;
+        }
+
+        // Enhanced Chart.js Detection and App Initialization
+        function initializeApp() {
+            // Check if Chart.js is loaded
+            if (typeof Chart !== 'undefined') {
+                mobileLog('✅ Chart.js loaded successfully');
+                console.log('Chart.js version:', Chart.version || 'Unknown');
+                VoidSightApp.init();
+                return;
+            }
+            
+            // Wait for Chart.js with enhanced detection
+            mobileLog('⏳ Loading Chart.js library...');
+            let attempts = 0;
+            const maxAttempts = 100; // 10 seconds
+            
+            const checkChart = setInterval(() => {
+                attempts++;
                 
-                // Wait up to 5 seconds for Chart.js to load
-                let attempts = 0;
-                const checkChart = setInterval(() => {
-                    attempts++;
-                    if (typeof Chart !== 'undefined') {
-                        clearInterval(checkChart);
-                        mobileLog('✅ Chart.js loaded successfully');
-                        VoidSightApp.init();
-                    } else if (attempts >= 50) { // 5 seconds
-                        clearInterval(checkChart);
-                        mobileLog('⚠️ Chart.js failed to load - app will work without charts');
+                // Check multiple Chart.js detection methods
+                const chartLoaded = (
+                    typeof Chart !== 'undefined' || 
+                    (window.Chart && typeof window.Chart === 'object') ||
+                    document.querySelector('script[src*="chart"]')?.readyState === 'complete'
+                );
+                
+                if (chartLoaded) {
+                    clearInterval(checkChart);
+                    mobileLog('✅ Chart.js loaded successfully (attempt ' + attempts + ')');
+                    console.log('Chart.js detection successful');
+                    VoidSightApp.init();
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(checkChart);
+                    console.warn('Chart.js loading timeout after 10 seconds');
+                    mobileLog('⚠️ Chart.js failed to load - app will work without charts');
+                    // Try one more fallback before giving up
+                    if (chartJsLoadAttempts === 0) {
+                        loadChartJsFallback();
+                        setTimeout(() => {
+                            if (typeof Chart === 'undefined') {
+                                VoidSightApp.init();
+                            }
+                        }, 2000);
+                    } else {
                         VoidSightApp.init();
                     }
-                }, 100);
-            } else {
-                mobileLog('✅ Chart.js already loaded');
-                VoidSightApp.init();
-            }
-        });
+                }
+            }, 100);
+        }
+
+        // Initialize application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
 
                  // Handle window resize
          window.addEventListener('resize', () => {
