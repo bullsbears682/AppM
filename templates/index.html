@@ -1738,14 +1738,14 @@
                  'cloud_infrastructure': 55   // Cloud infrastructure: ~55% success rate
              };
 
-             // Company size impact on success rate
-             const companySizeMultipliers = {
-                 'startup': 0.7,      // Startups have 30% lower success rate
-                 'small': 0.85,       // Small companies have 15% lower success rate
-                 'medium': 1.0,       // Medium companies baseline
-                 'large': 1.15,       // Large companies have 15% higher success rate
-                 'enterprise': 1.25   // Enterprise has 25% higher success rate
-             };
+                         // Company size impact on success rate (more realistic)
+            const companySizeMultipliers = {
+                'startup': 0.8,      // Startups have 20% lower success rate (was 30%)
+                'small': 0.9,        // Small companies have 10% lower success rate (was 15%)
+                'medium': 1.0,       // Medium companies baseline
+                'large': 1.15,       // Large companies have 15% higher success rate
+                'enterprise': 1.25   // Enterprise has 25% higher success rate
+            };
 
              // Industry risk factors
              const industryRiskFactors = {
@@ -1765,13 +1765,13 @@
              const riskTolerance = data.risk_tolerance || 50;
              const riskPenalty = (riskTolerance - 50) * 0.3; // Each 10 points of risk = 3% penalty
 
-             // Market volatility penalty
-             const volatilityPenalties = {
-                 'low': 5,      // Low volatility: -5%
-                 'medium': 10,  // Medium volatility: -10%
-                 'high': 20,    // High volatility: -20%
-                 'extreme': 35  // Extreme volatility: -35%
-             };
+                         // Market volatility penalty (reduced)
+            const volatilityPenalties = {
+                'low': 3,      // Low volatility: -3% (was -5%)
+                'medium': 7,   // Medium volatility: -7% (was -10%)
+                'high': 15,    // High volatility: -15% (was -20%)
+                'extreme': 25  // Extreme volatility: -25% (was -35%)
+            };
 
              // Calculate base success rate
              const baseRate = projectSuccessRates[data.project_type] || 40;
@@ -1789,8 +1789,8 @@
              else if (baseROI > 200) successRate -= 10; // High ROI expectations
              else if (baseROI > 150) successRate -= 5;  // Moderate ROI expectations
 
-                           // Cap between realistic bounds (5% minimum, 65% maximum)
-              return Math.max(5, Math.min(65, Math.round(successRate)));
+                                                    // Cap between realistic bounds (15% minimum, 75% maximum)
+             return Math.max(15, Math.min(75, Math.round(successRate)));
           }
 
           // Get realistic risk distribution based on project and market conditions
