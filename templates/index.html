@@ -1665,43 +1665,47 @@
                      const riskAdjustment = (Math.random() - 0.5) * 2 * (1 - riskFactor);
                      const timelineVariation = 0.8 + Math.random() * 0.4; // 80% to 120%
                      
-                     const scenarioROI = baseROI * (1 + marketFactor + riskAdjustment) * timelineVariation;
-                     const scenarioProfit = baseCost * (scenarioROI / 100) - baseCost;
+                                         const scenarioROI = baseROI * (1 + marketFactor + riskAdjustment) * timelineVariation;
+                    
+                    // Use the SAME realistic profit calculation as the main calculator
+                    const scenarioProfitBreakdown = calculateRealisticProfit(baseCost, scenarioROI, timeline, data);
+                    const scenarioProfit = scenarioProfitBreakdown.netProfit;
                      
-                     scenarios.push({
-                         roi: Math.max(scenarioROI, -50), // Cap losses at -50%
-                         profit: scenarioProfit,
-                         success: scenarioROI > 0
-                     });
+                                         scenarios.push({
+                        roi: Math.max(scenarioROI, -50), // Cap losses at -50%
+                        profit: scenarioProfit,
+                        success: scenarioProfit > 0  // Success = positive profit, not just positive ROI
+                    });
                  }
                  
-                 // Ensure we have scenarios
-                 if (scenarios.length === 0) {
-                     scenarios.push({
-                         roi: baseROI,
-                         profit: baseCost * (baseROI / 100) - baseCost,
-                         success: baseROI > 0
-                     });
-                 }
+                                 // Ensure we have scenarios
+                if (scenarios.length === 0) {
+                    const fallbackProfitBreakdown = calculateRealisticProfit(baseCost, baseROI, timeline, data);
+                    scenarios.push({
+                        roi: baseROI,
+                        profit: fallbackProfitBreakdown.netProfit,
+                        success: fallbackProfitBreakdown.netProfit > 0
+                    });
+                }
                  
                  // Calculate statistics
                  scenarios.sort((a, b) => b.roi - a.roi);
                  const successfulScenarios = scenarios.filter(s => s.success);
                  const totalROIs = scenarios.map(s => s.roi);
                  
-                 return {
-                     bestCase: {
-                         roi_percentage: scenarios[0]?.roi || baseROI,
-                         profit: scenarios[0]?.profit || (baseCost * (baseROI / 100) - baseCost)
-                     },
-                     worstCase: {
-                         roi_percentage: scenarios[scenarios.length - 1]?.roi || baseROI * 0.5,
-                         profit: scenarios[scenarios.length - 1]?.profit || (baseCost * (baseROI * 0.5 / 100) - baseCost)
-                     },
-                     mostLikely: {
-                         roi_percentage: totalROIs[Math.floor(totalROIs.length * 0.5)] || baseROI,
-                         profit: scenarios[Math.floor(scenarios.length * 0.5)]?.profit || (baseCost * (baseROI / 100) - baseCost)
-                     },
+                                 return {
+                    bestCase: {
+                        roi_percentage: scenarios[0]?.roi || baseROI,
+                        profit: scenarios[0]?.profit || calculateRealisticProfit(baseCost, baseROI, timeline, data).netProfit
+                    },
+                    worstCase: {
+                        roi_percentage: scenarios[scenarios.length - 1]?.roi || baseROI * 0.5,
+                        profit: scenarios[scenarios.length - 1]?.profit || calculateRealisticProfit(baseCost, baseROI * 0.5, timeline, data).netProfit
+                    },
+                    mostLikely: {
+                        roi_percentage: totalROIs[Math.floor(totalROIs.length * 0.5)] || baseROI,
+                        profit: scenarios[Math.floor(scenarios.length * 0.5)]?.profit || calculateRealisticProfit(baseCost, baseROI, timeline, data).netProfit
+                    },
                      averageROI: totalROIs.length > 0 ? totalROIs.reduce((a, b) => a + b, 0) / totalROIs.length : baseROI,
                      medianROI: totalROIs[Math.floor(totalROIs.length / 2)] || baseROI,
                      successProbability: calculateRealisticSuccessRate(data, baseROI, volatilityMultiplier),
@@ -1709,11 +1713,11 @@
                  };
              } catch (error) {
                  console.error('Error generating scenario variations:', error);
-                 // Return fallback scenario data
-                 return {
-                     bestCase: { roi_percentage: baseROI * 1.5, profit: baseCost * (baseROI * 1.5 / 100) - baseCost },
-                     worstCase: { roi_percentage: baseROI * 0.5, profit: baseCost * (baseROI * 0.5 / 100) - baseCost },
-                     mostLikely: { roi_percentage: baseROI, profit: baseCost * (baseROI / 100) - baseCost },
+                                 // Return fallback scenario data using realistic profit calculations
+                return {
+                    bestCase: { roi_percentage: baseROI * 1.5, profit: calculateRealisticProfit(baseCost, baseROI * 1.5, timeline, data || {}).netProfit },
+                    worstCase: { roi_percentage: baseROI * 0.5, profit: calculateRealisticProfit(baseCost, baseROI * 0.5, timeline, data || {}).netProfit },
+                    mostLikely: { roi_percentage: baseROI, profit: calculateRealisticProfit(baseCost, baseROI, timeline, data || {}).netProfit },
                      averageROI: baseROI,
                      medianROI: baseROI,
                      successProbability: calculateRealisticSuccessRate(data || {}, baseROI || 200, 1.0),
