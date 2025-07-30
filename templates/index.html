@@ -2275,6 +2275,11 @@
                 <i class="fas fa-brain"></i>
                 Initiate AI Analysis
             </button>
+            
+            <!-- Debug Test Button -->
+            <button type="button" style="margin-left: 1rem; padding: 0.75rem 1rem; background: #EF4444; color: white; border: none; border-radius: 8px; cursor: pointer;" onclick="testDirectCalculation()">
+                🔧 Test Direct API
+            </button>
         </div>
 
         <!-- Results Quantum Dashboard -->
@@ -2319,7 +2324,7 @@
         let roiChart = null;
         let riskChart = null;
         
-        // === DEBUG FUNCTION ===
+        // === DEBUG FUNCTIONS ===
         window.testCalculation = function() {
             console.log('🧪 Test function called!');
             console.log('🎯 Selected project:', selectedProjectTypeQuantum);
@@ -2329,6 +2334,33 @@
             console.log('  Investment:', document.getElementById('investmentAmountQuantum')?.value);
             console.log('  ROI:', document.getElementById('expectedROIQuantum')?.value);
             console.log('  Timeline:', document.getElementById('timelineMonthsQuantum')?.value);
+        };
+        
+        window.testDirectCalculation = async function() {
+            console.log('🔧 Direct API test starting...');
+            
+            try {
+                const response = await fetch('/api/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        company_size: 'startup',
+                        project_type: 'product_development',
+                        target_industry: 'fintech'
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('✅ Direct API test successful:', data);
+                alert('✅ Direct API test successful! Check console for details.');
+                
+                // Try to display results
+                displayQuantumResults(data);
+                
+            } catch (error) {
+                console.error('❌ Direct API test failed:', error);
+                alert('❌ Direct API test failed: ' + error.message);
+            }
         };
 
         // === QUANTUM INITIALIZATION ===
@@ -2659,17 +2691,39 @@
                 
             } catch (error) {
                 console.error('❌ Error loading quantum project types:', error);
+                console.log('🔄 Loading fallback projects...');
+                
+                // Fallback projects if API fails
+                const fallbackProjects = [
+                    { id: 'product_development', name: 'Product Development', description: 'New product development project', complexity: 'High', base_cost: '$75,000' },
+                    { id: 'mobile_app', name: 'Mobile Application', description: 'Mobile app development', complexity: 'High', base_cost: '$45,000' },
+                    { id: 'marketing_campaign', name: 'Marketing Campaign', description: 'Marketing and promotion campaign', complexity: 'Low', base_cost: '$25,000' }
+                ];
+                
                 const container = document.getElementById('projectTypesQuantum');
                 if (container) {
-                    container.innerHTML = `
-                        <div class="error-quantum">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Failed to load project types: ${error.message}
-                            <br><button onclick="loadProjectTypesQuantum()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--quantum-violet); color: white; border: none; border-radius: 8px; cursor: pointer;">Retry</button>
-                        </div>
-                    `;
+                    container.innerHTML = '';
+                    
+                    fallbackProjects.forEach((project, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'project-card-phantom';
+                        card.setAttribute('data-project-id', project.id);
+                        card.innerHTML = `
+                            <div class="project-title-phantom">${project.name}</div>
+                            <div class="project-description-phantom">${project.description}</div>
+                            <div class="project-meta-phantom">
+                                <span class="project-complexity-phantom">${project.complexity}</span>
+                                <span class="project-cost-phantom">${project.base_cost}</span>
+                            </div>
+                        `;
+                        
+                        const selectHandler = () => selectProjectTypeQuantum(project.id, card, project.name);
+                        card.addEventListener('click', selectHandler);
+                        container.appendChild(card);
+                    });
+                    
+                    addAIInsight('⚠️ Using offline project types - limited selection available');
                 }
-                showQuantumError('Failed to load project types. Please check your connection and try again.');
             }
         }
 
@@ -2952,8 +3006,14 @@
             console.log('🧮 Starting quantum ROI calculation...');
             console.log('🎯 Current selected project:', selectedProjectTypeQuantum);
             
-            const button = document.querySelector('.quantum-btn');
+            const button = document.querySelector('.quantum-btn') || document.getElementById('calculateBtnQuantum');
             console.log('🔘 Button found:', button);
+            
+            if (!button) {
+                console.error('❌ Calculate button not found!');
+                alert('Error: Calculate button not found. Please refresh the page.');
+                return;
+            }
             
             try {
                 // Clear previous errors and results
@@ -2968,13 +3028,33 @@
                 // Add contextual AI insight about calculation
                 getContextualAIInsight('calculating');
                 
-                // Validate inputs
-                console.log('🔍 About to validate inputs...');
-                if (!validateQuantumInputs()) {
-                    console.error('❌ Validation failed, stopping calculation');
+                // Simplified validation - only check essential fields
+                console.log('🔍 Checking essential fields...');
+                
+                // Check project selection
+                if (!selectedProjectTypeQuantum) {
+                    console.error('❌ No project selected');
+                    alert('Please select a project type first.');
                     return;
                 }
-                console.log('✅ Validation passed, continuing...');
+                
+                // Check company size
+                const companySize = document.getElementById('companySizeQuantum')?.value;
+                if (!companySize) {
+                    console.error('❌ No company size selected');
+                    alert('Please select a company size.');
+                    return;
+                }
+                
+                // Check industry
+                const industry = document.getElementById('targetIndustryQuantum')?.value;
+                if (!industry) {
+                    console.error('❌ No industry selected');
+                    alert('Please select an industry.');
+                    return;
+                }
+                
+                console.log('✅ Essential validation passed, continuing...');
                 
                 // Get form values
                 const rawTargetIndustry = document.getElementById('targetIndustryQuantum').value;
