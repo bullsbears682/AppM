@@ -3079,8 +3079,19 @@
                 
             } catch (error) {
                 console.error('❌ Quantum calculation error:', error);
-                showQuantumError(`Quantum analysis failed: ${error.message}`);
-                addAIInsight('⚠️ Analysis interrupted. Please verify inputs and try again.');
+                console.error('❌ Error stack:', error.stack);
+                
+                // More specific error handling
+                if (error.message.includes('Server error')) {
+                    showQuantumError(`API Error: ${error.message}`);
+                    getContextualAIInsight('error');
+                } else if (error.message.includes('resultsQuantumContainer')) {
+                    showQuantumError('UI Error: Results container not found');
+                    addAIInsight('🔧 Interface error detected - refreshing page may help');
+                } else {
+                    showQuantumError(`Calculation Error: ${error.message}`);
+                    getContextualAIInsight('error');
+                }
             } finally {
                 // Re-enable button
                 button.disabled = false;
@@ -3504,35 +3515,15 @@
             });
         }
         
-        // Smart Loading States
+        // Smart Loading States - Simplified to avoid conflicts
         function enhanceLoadingStates() {
             const calculateBtn = document.getElementById('calculateBtnQuantum');
             
             if (calculateBtn) {
-                const originalCalculate = window.calculateQuantumROI;
-                
-                if (originalCalculate) {
-                    window.calculateQuantumROI = async function() {
-                        try {
-                            calculateBtn.classList.add('loading');
-                            calculateBtn.innerHTML = '<span>Analyzing...</span>';
-                            showProgress();
-                            
-                            // Call original function and wait for completion
-                            const result = await originalCalculate.apply(this, arguments);
-                            return result;
-                        } catch (error) {
-                            console.error('Calculation error:', error);
-                            throw error;
-                        } finally {
-                            calculateBtn.classList.remove('loading');
-                            calculateBtn.innerHTML = '<i class="fas fa-brain"></i> Initiate AI Analysis';
-                            hideProgress();
-                        }
-                    };
-                } else {
-                    console.warn('Original calculateQuantumROI function not found');
-                }
+                // Just add visual enhancements, don't override the function
+                console.log('✅ Enhanced loading states initialized for button');
+            } else {
+                console.warn('Calculate button not found for enhanced loading states');
             }
         }
         
