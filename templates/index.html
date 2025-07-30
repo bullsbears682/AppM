@@ -1655,7 +1655,7 @@
                      },
                      averageROI: totalROIs.length > 0 ? totalROIs.reduce((a, b) => a + b, 0) / totalROIs.length : baseROI,
                      medianROI: totalROIs[Math.floor(totalROIs.length / 2)] || baseROI,
-                     successProbability: scenarios.length > 0 ? (successfulScenarios.length / scenarios.length) * 100 : 85,
+                     successProbability: calculateRealisticSuccessRate(data, baseROI, volatilityMultiplier),
                      riskDistribution: {
                          low: scenarios.length > 0 ? scenarios.filter(s => s.roi > baseROI * 0.8).length / scenarios.length * 100 : 70,
                          medium: scenarios.length > 0 ? scenarios.filter(s => s.roi > 0 && s.roi <= baseROI * 0.8).length / scenarios.length * 100 : 25,
@@ -1671,7 +1671,7 @@
                      mostLikely: { roi_percentage: baseROI, profit: baseCost * (baseROI / 100) - baseCost },
                      averageROI: baseROI,
                      medianROI: baseROI,
-                     successProbability: 85,
+                     successProbability: calculateRealisticSuccessRate(data || {}, baseROI || 200, 1.0),
                      riskDistribution: { low: 70, medium: 25, high: 5 }
                  };
              }
