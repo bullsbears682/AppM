@@ -330,7 +330,7 @@
             z-index: 1000;
             background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(40px);
-            border-bottom: 1px solid var(--border-neural);
+            border-bottom: 1px solid var(--border-phantom);
             transition: var(--transition-quantum);
         }
 
@@ -567,7 +567,7 @@
         .stat-quantum {
             background: var(--bg-glass-ultra);
             backdrop-filter: blur(20px);
-            border: 1px solid var(--border-neural);
+            border: 1px solid var(--border-phantom);
             border-radius: 24px;
             padding: 2rem;
             text-align: center;
@@ -621,13 +621,13 @@
 
         /* === QUANTUM GLASS CARDS === */
         .quantum-card {
-            background: var(--bg-glass-neural);
+            background: var(--bg-glass-phantom);
             backdrop-filter: blur(40px);
-            border: 1px solid var(--border-neural);
+            border: 1px solid var(--border-phantom);
             border-radius: 32px;
             padding: 3rem;
             margin-bottom: 3rem;
-            box-shadow: var(--shadow-neural);
+            box-shadow: var(--shadow-phantom);
             transition: var(--transition-neural);
             position: relative;
             overflow: hidden;
@@ -1147,7 +1147,7 @@
             width: 100%;
             padding: 1.25rem 1.5rem;
             background: rgba(26, 26, 35, 0.8);
-            border: 2px solid var(--border-neural);
+            border: 2px solid var(--border-phantom);
             border-radius: 16px;
             color: var(--text-quantum);
             font-family: var(--font-mono);
@@ -1175,9 +1175,9 @@
             top: 50%;
             transform: translateY(-50%);
             width: 350px;
-            background: var(--bg-glass-neural);
+            background: var(--bg-glass-phantom);
             backdrop-filter: blur(40px);
-            border: 1px solid var(--border-quantum);
+            border: 1px solid var(--border-phantom);
             border-radius: 24px;
             padding: 2rem;
             z-index: 900;
@@ -1250,7 +1250,7 @@
 
         .project-card-quantum {
             background: rgba(26, 26, 35, 0.6);
-            border: 2px solid var(--border-neural);
+            border: 2px solid var(--border-phantom);
             border-radius: 20px;
             padding: 2rem;
             cursor: pointer;
@@ -1549,13 +1549,13 @@
         }
 
         .metric-card-quantum {
-            background: var(--bg-glass-neural);
+            background: var(--bg-glass-phantom);
             backdrop-filter: blur(40px);
-            border: 1px solid var(--border-neural);
+            border: 1px solid var(--border-phantom);
             border-radius: 24px;
             padding: 2.5rem;
             text-align: center;
-            transition: var(--transition-neural);
+            transition: var(--transition-phantom);
             position: relative;
             overflow: hidden;
             transform-style: preserve-3d;
@@ -1619,13 +1619,19 @@
         }
 
         .chart-container-quantum {
-            background: var(--bg-glass-neural);
+            background: var(--bg-glass-phantom);
             backdrop-filter: blur(40px);
-            border: 1px solid var(--border-neural);
+            border: 1px solid var(--border-phantom);
             border-radius: 24px;
             padding: 2rem;
             position: relative;
             height: 400px;
+            min-height: 400px;
+        }
+        
+        .chart-container-quantum canvas {
+            max-height: 350px !important;
+            width: 100% !important;
         }
 
         .chart-title {
@@ -3405,19 +3411,35 @@
 
         // === INITIALIZE QUANTUM CHARTS ===
         function initializeQuantumCharts(data) {
+            console.log('📊 Initializing charts with data:', data);
+            
             // ROI Timeline Chart
             const roiCtx = document.getElementById('roiChart');
             const roiProjection = data.roi_projection || {};
             
+            console.log('📈 ROI Chart Context:', roiCtx);
+            console.log('📊 ROI Projection data:', roiProjection);
+            console.log('⏱️ Payback period:', roiProjection.payback_period_months);
+            
             if (roiCtx && roiProjection.payback_period_months) {
+                // Destroy existing chart if it exists
+                if (roiChart) {
+                    roiChart.destroy();
+                }
+                
                 const timelinePeriod = Math.max(roiProjection.payback_period_months || 12, 6);
                 const timeline = Array.from({length: timelinePeriod + 6}, (_, i) => i + 1);
                 const roiPercentage = roiProjection.roi_percentage || 25;
+                
+                console.log('📅 Timeline period:', timelinePeriod);
+                console.log('📈 ROI percentage:', roiPercentage);
                 
                 const roiData = timeline.map(month => {
                     const progress = month / timelinePeriod;
                     return Math.min(progress * roiPercentage, roiPercentage);
                 });
+                
+                console.log('📊 Chart data:', roiData);
 
                 roiChart = new Chart(roiCtx, {
                     type: 'line',
@@ -3463,17 +3485,38 @@
                         }
                     }
                 });
+                
+                console.log('✅ ROI Chart created successfully:', roiChart);
+            } else {
+                console.warn('⚠️ ROI Chart not created - missing context or payback period');
+                console.log('Context exists:', !!roiCtx);
+                console.log('Payback period exists:', !!roiProjection.payback_period_months);
             }
 
             // Risk Assessment Chart
             const riskCtx = document.getElementById('riskChart');
+            console.log('🎯 Risk Chart Context:', riskCtx);
+            
             if (riskCtx) {
+                // Destroy existing chart if it exists
+                if (riskChart) {
+                    riskChart.destroy();
+                }
+                
+                // Use actual risk data from API response
+                const riskScore = roiProjection.risk_score || 50;
+                const lowRisk = Math.max(0, 100 - riskScore);
+                const highRisk = Math.min(riskScore, 100);
+                const mediumRisk = Math.max(0, 100 - lowRisk - highRisk);
+                
+                console.log('🎯 Risk breakdown:', { lowRisk, mediumRisk, highRisk, riskScore });
+                
                 riskChart = new Chart(riskCtx, {
                     type: 'doughnut',
                     data: {
                         labels: ['Low Risk', 'Medium Risk', 'High Risk'],
                         datasets: [{
-                            data: [60, 30, 10],
+                            data: [lowRisk, mediumRisk, highRisk],
                             backgroundColor: [
                                 'rgb(16, 185, 129)',
                                 'rgb(245, 158, 11)',
@@ -3496,6 +3539,10 @@
                         }
                     }
                 });
+                
+                console.log('✅ Risk Chart created successfully:', riskChart);
+            } else {
+                console.warn('⚠️ Risk Chart not created - missing context');
             }
         }
 
