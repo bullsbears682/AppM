@@ -2773,11 +2773,11 @@
                     
                     <div class="parameter-group">
                         <label class="phantom-label">Market Volatility Factor</label>
-                        <div class="volatility-buttons">
-                            <button type="button" class="volatility-btn" data-volatility="low" onclick="selectVolatility('low', this)">Low</button>
-                            <button type="button" class="volatility-btn active" data-volatility="medium" onclick="selectVolatility('medium', this)">Medium</button>
-                            <button type="button" class="volatility-btn" data-volatility="high" onclick="selectVolatility('high', this)">High</button>
-                            <button type="button" class="volatility-btn" data-volatility="extreme" onclick="selectVolatility('extreme', this)">Extreme</button>
+                        <div class="volatility-buttons" id="volatilityButtonsContainer">
+                            <button type="button" class="volatility-btn" data-volatility="low" id="vol-low">Low</button>
+                            <button type="button" class="volatility-btn active" data-volatility="medium" id="vol-medium">Medium</button>
+                            <button type="button" class="volatility-btn" data-volatility="high" id="vol-high">High</button>
+                            <button type="button" class="volatility-btn" data-volatility="extreme" id="vol-extreme">Extreme</button>
                         </div>
                     </div>
                 </div>
@@ -2822,6 +2822,9 @@
             </button>
             <button type="button" style="margin-left: 0.5rem; padding: 0.75rem 1rem; background: #9333EA; color: white; border: none; border-radius: 8px; cursor: pointer;" onclick="openAIPopup()">
                 🤖 Test AI Popup
+            </button>
+            <button type="button" style="margin-left: 0.5rem; padding: 0.75rem 1rem; background: #14B8A6; color: white; border: none; border-radius: 8px; cursor: pointer;" onclick="testVolatilitySystem()">
+                🎯 Test Volatility
             </button>
         </div>
 
@@ -3202,6 +3205,188 @@
             updateScenarioPreview();
         }
 
+        // === BULLETPROOF VOLATILITY SYSTEM ===
+        function initializeBulletproofControls() {
+            console.log('🔫 Initializing bulletproof volatility controls...');
+            
+            // Volatility buttons - multiple binding approaches
+            const volatilityButtons = ['vol-low', 'vol-medium', 'vol-high', 'vol-extreme'];
+            const volatilityValues = ['low', 'medium', 'high', 'extreme'];
+            
+            volatilityButtons.forEach((buttonId, index) => {
+                const button = document.getElementById(buttonId);
+                const volatility = volatilityValues[index];
+                
+                if (button) {
+                    console.log(`🎯 Setting up button: ${buttonId} for ${volatility}`);
+                    
+                    // Remove any existing listeners
+                    button.replaceWith(button.cloneNode(true));
+                    const newButton = document.getElementById(buttonId);
+                    
+                    // Add multiple event types for maximum compatibility
+                    ['click', 'touchend', 'mouseup'].forEach(eventType => {
+                        newButton.addEventListener(eventType, function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log(`🔥 ${eventType} on ${volatility} button!`);
+                            handleVolatilityChange(volatility, newButton);
+                        }, true);
+                    });
+                    
+                    // Also add direct onclick as fallback
+                    newButton.onclick = function(e) {
+                        e.preventDefault();
+                        console.log(`🔥 onclick fallback for ${volatility}!`);
+                        handleVolatilityChange(volatility, newButton);
+                        return false;
+                    };
+                } else {
+                    console.error(`❌ Button ${buttonId} not found!`);
+                }
+            });
+            
+            // Risk slider
+            const riskSlider = document.getElementById('riskToleranceQuantum');
+            if (riskSlider) {
+                console.log('🎯 Setting up risk slider...');
+                ['input', 'change', 'mousemove'].forEach(eventType => {
+                    riskSlider.addEventListener(eventType, function() {
+                        console.log(`⚖️ Risk slider ${eventType}:`, this.value);
+                        selectedRiskTolerance = parseInt(this.value);
+                        updateScenarioPreviewBulletproof();
+                    });
+                });
+            }
+            
+            // Scenario type selector
+            const scenarioSelect = document.getElementById('scenarioTypeQuantum');
+            if (scenarioSelect) {
+                console.log('🎯 Setting up scenario selector...');
+                scenarioSelect.addEventListener('change', function() {
+                    console.log('📊 Scenario type changed:', this.value);
+                    selectedScenarioType = this.value;
+                    updateScenarioPreviewBulletproof();
+                });
+            }
+            
+            // Initialize preview
+            setTimeout(() => {
+                updateScenarioPreviewBulletproof();
+            }, 100);
+        }
+        
+        function handleVolatilityChange(volatility, clickedButton) {
+            console.log(`🎯 Handling volatility change to: ${volatility}`);
+            
+            // Update global variable
+            selectedVolatility = volatility;
+            window.selectedVolatility = volatility; // Also set on window
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.volatility-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.background = '';
+                btn.style.color = '';
+            });
+            
+            // Add active class to clicked button
+            clickedButton.classList.add('active');
+            clickedButton.style.background = '#9333EA';
+            clickedButton.style.color = 'white';
+            clickedButton.style.borderColor = '#7C3AED';
+            
+            // Visual feedback
+            clickedButton.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                clickedButton.style.transform = 'scale(1)';
+            }, 150);
+            
+            // Update preview
+            updateScenarioPreviewBulletproof();
+            
+            console.log(`✅ Volatility successfully changed to: ${selectedVolatility}`);
+        }
+        
+        function updateScenarioPreviewBulletproof() {
+            console.log('🔄 BULLETPROOF: Updating scenario preview...');
+            
+            try {
+                const config = getScenarioConfig();
+                console.log('📊 Config generated:', config);
+                
+                // Update with fallbacks
+                const scenarioCount = document.getElementById('scenarioCount');
+                const analysisTime = document.getElementById('analysisTime');
+                const confidenceLevel = document.getElementById('confidenceLevel');
+                
+                if (scenarioCount) {
+                    const countText = `${config.count.toLocaleString()}+`;
+                    scenarioCount.textContent = countText;
+                    scenarioCount.innerHTML = countText;
+                    console.log('✅ Updated scenario count:', countText);
+                }
+                
+                if (analysisTime) {
+                    const timeText = `~${config.time}s`;
+                    analysisTime.textContent = timeText;
+                    analysisTime.innerHTML = timeText;
+                    console.log('✅ Updated analysis time:', timeText);
+                }
+                
+                if (confidenceLevel) {
+                    const confidenceText = `${config.confidence}%`;
+                    confidenceLevel.textContent = confidenceText;
+                    confidenceLevel.innerHTML = confidenceText;
+                    console.log('✅ Updated confidence level:', confidenceText);
+                }
+                
+                console.log('✅ BULLETPROOF: Preview updated successfully');
+            } catch (error) {
+                console.error('❌ BULLETPROOF: Error updating preview:', error);
+            }
+        }
+
+        // === TEST FUNCTIONS ===
+        function testVolatilitySystem() {
+            console.log('🧪 Testing volatility system...');
+            
+            // Test each button
+            const buttons = ['vol-low', 'vol-medium', 'vol-high', 'vol-extreme'];
+            const values = ['low', 'medium', 'high', 'extreme'];
+            
+            buttons.forEach((buttonId, index) => {
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    console.log(`✅ Button ${buttonId} found`);
+                    // Simulate click
+                    setTimeout(() => {
+                        console.log(`🔥 Testing ${values[index]} button...`);
+                        handleVolatilityChange(values[index], button);
+                    }, index * 500);
+                } else {
+                    console.error(`❌ Button ${buttonId} not found!`);
+                }
+            });
+            
+            // Test preview elements
+            setTimeout(() => {
+                const scenarioCount = document.getElementById('scenarioCount');
+                const analysisTime = document.getElementById('analysisTime');
+                const confidenceLevel = document.getElementById('confidenceLevel');
+                
+                console.log('🎯 Preview elements:', {
+                    scenarioCount: !!scenarioCount,
+                    analysisTime: !!analysisTime,
+                    confidenceLevel: !!confidenceLevel
+                });
+                
+                if (scenarioCount) console.log('📊 Current scenario count:', scenarioCount.textContent);
+                if (analysisTime) console.log('⏱️ Current analysis time:', analysisTime.textContent);
+                if (confidenceLevel) console.log('🎯 Current confidence:', confidenceLevel.textContent);
+            }, 2500);
+        }
+
         // === QUANTUM INITIALIZATION ===
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 VoidSight Analytics - Initializing...');
@@ -3212,11 +3397,10 @@
             activateAIInsights();
             initializeScenarioControls();
             
-            // Initialize scenario preview
-            setTimeout(() => {
-                console.log('🎲 Initializing scenario preview...');
-                updateScenarioPreview();
-            }, 500);
+            // Initialize bulletproof controls with multiple delays
+            setTimeout(initializeBulletproofControls, 100);
+            setTimeout(initializeBulletproofControls, 500);
+            setTimeout(initializeBulletproofControls, 1000);
             
             // Backup timer to ensure content is visible
             setTimeout(() => {
