@@ -2271,7 +2271,7 @@
 
         <!-- Quantum Calculate Button -->
         <div class="calculate-section">
-            <button type="button" id="calculateBtnQuantum" class="quantum-btn" onclick="calculateQuantumROI()">
+            <button type="button" id="calculateBtnQuantum" class="quantum-btn" onclick="console.log('🔥 Button clicked!'); calculateQuantumROI()">
                 <i class="fas fa-brain"></i>
                 Initiate AI Analysis
             </button>
@@ -2318,6 +2318,18 @@
         let aiInsightsTimer = null;
         let roiChart = null;
         let riskChart = null;
+        
+        // === DEBUG FUNCTION ===
+        window.testCalculation = function() {
+            console.log('🧪 Test function called!');
+            console.log('🎯 Selected project:', selectedProjectTypeQuantum);
+            console.log('📊 Form values:');
+            console.log('  Company:', document.getElementById('companySizeQuantum')?.value);
+            console.log('  Industry:', document.getElementById('targetIndustryQuantum')?.value);
+            console.log('  Investment:', document.getElementById('investmentAmountQuantum')?.value);
+            console.log('  ROI:', document.getElementById('expectedROIQuantum')?.value);
+            console.log('  Timeline:', document.getElementById('timelineMonthsQuantum')?.value);
+        };
 
         // === QUANTUM INITIALIZATION ===
         document.addEventListener('DOMContentLoaded', function() {
@@ -2941,6 +2953,7 @@
             console.log('🎯 Current selected project:', selectedProjectTypeQuantum);
             
             const button = document.querySelector('.quantum-btn');
+            console.log('🔘 Button found:', button);
             
             try {
                 // Clear previous errors and results
@@ -2950,14 +2963,18 @@
                 button.disabled = true;
                 button.innerHTML = '<i class="fas fa-brain fa-spin"></i> Quantum Analysis in Progress...';
                 isCalculatingQuantum = true;
+                console.log('🔄 Button disabled, starting calculation...');
                 
                 // Add contextual AI insight about calculation
                 getContextualAIInsight('calculating');
                 
                 // Validate inputs
+                console.log('🔍 About to validate inputs...');
                 if (!validateQuantumInputs()) {
+                    console.error('❌ Validation failed, stopping calculation');
                     return;
                 }
+                console.log('✅ Validation passed, continuing...');
                 
                 // Get form values
                 const rawTargetIndustry = document.getElementById('targetIndustryQuantum').value;
