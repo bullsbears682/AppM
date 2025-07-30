@@ -1593,6 +1593,9 @@
                      timeline_months: timeline,
                      project_name: project.name || 'Selected Project',
                      
+                     // Financial breakdown
+                     breakdown: profitBreakdown.breakdown,
+                     
                      // Scenario analysis
                      scenario_analysis: {
                          total_scenarios: scenarioInfo.count || 5000,
@@ -1839,19 +1842,19 @@
                // Step 3: Calculate gross profit (revenue minus actual costs)
                const grossProfit = expectedRevenue - actualProjectCost;
 
-               // Step 4: Calculate realistic operating expenses (industry averages)
+               // Step 4: Calculate realistic operating expenses (as % of PROFIT, not revenue)
                const operatingCostRates = {
-                   'web_application': 0.35,        // 35% of revenue (hosting, maintenance, support)
-                   'mobile_application': 0.40,     // 40% of revenue (app store fees, updates, support)
-                   'ai_integration': 0.45,         // 45% of revenue (compute costs, data, infrastructure)
-                   'ecommerce_platform': 0.38,    // 38% of revenue (payment processing, inventory, support)
-                   'digital_transformation': 0.30, // 30% of revenue (change management, training)
-                   'cloud_infrastructure': 0.25   // 25% of revenue (maintenance, monitoring)
+                   'web_application': 0.15,        // 15% of gross profit (hosting, maintenance, support)
+                   'mobile_application': 0.18,     // 18% of gross profit (app store fees, updates, support)
+                   'ai_integration': 0.22,         // 22% of gross profit (compute costs, data, infrastructure)
+                   'ecommerce_platform': 0.16,    // 16% of gross profit (payment processing, inventory, support)
+                   'digital_transformation': 0.12, // 12% of gross profit (change management, training)
+                   'cloud_infrastructure': 0.10   // 10% of gross profit (maintenance, monitoring)
                };
 
-               const operatingRate = operatingCostRates[data.project_type] || 0.35;
-               const annualOperatingCosts = expectedRevenue * operatingRate;
-               const totalOperatingCosts = Math.round(annualOperatingCosts * (timeline / 12));
+               const operatingRate = operatingCostRates[data.project_type] || 0.15;
+               // Apply operating costs as percentage of gross profit for the project duration
+               const totalOperatingCosts = Math.round(Math.max(0, grossProfit) * operatingRate * (timeline / 12));
 
                // Step 5: Calculate taxes on profit (not revenue)
                const taxRates = {
@@ -1954,12 +1957,12 @@
                              <strong>$${results.total_return.toLocaleString()}</strong>
                          </div>
                          <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
-                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Operating Costs (25-45% of revenue):</span>
-                             <span style="color: var(--error-400);">-$${Math.round(results.total_return * 0.35).toLocaleString()}</span>
+                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Operating Costs (10-22% of profit):</span>
+                             <span style="color: var(--error-400);">-$${(results.breakdown?.operatingCosts || Math.round((results.total_return - results.total_investment) * 0.15)).toLocaleString()}</span>
                          </div>
                          <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
-                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Corporate Taxes (25-30% of profit):</span>
-                             <span style="color: var(--error-400);">-$${Math.round(Math.max(0, (results.total_return - results.total_investment - results.total_return * 0.35)) * 0.27).toLocaleString()}</span>
+                             <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Corporate Taxes (15-30% of profit):</span>
+                             <span style="color: var(--error-400);">-$${(results.breakdown?.taxes || Math.round(Math.max(0, (results.total_return - results.total_investment)) * 0.25)).toLocaleString()}</span>
                          </div>
                          <div style="display: flex; justify-content: space-between; padding: var(--space-2); color: var(--secondary-300);">
                              <span><i class="fas fa-minus-circle" style="color: var(--error-400);"></i> Project Overruns (20-60% typical):</span>
