@@ -1049,29 +1049,17 @@
         </div>
     </main>
 
-    <!-- AI Assistant -->
-    <div class="ai-assistant">
-        <button class="ai-trigger" onclick="toggleAI()">
-            <i class="fas fa-robot"></i>
-        </button>
-        <div id="aiPanel" class="ai-panel">
-            <h3 style="color: var(--primary-100); margin-bottom: var(--space-4);">AI Assistant</h3>
-            <div id="aiContent" style="max-height: 300px; overflow-y: auto;">
-                <p style="color: var(--secondary-300);">Hello! I'm your AI assistant. I can help you with ROI calculations and provide insights about your project analysis.</p>
-            </div>
-        </div>
-    </div>
+
 
     <script>
         // === ENTERPRISE APPLICATION STATE ===
         const VoidSightApp = {
-                         state: {
-                 selectedProject: null,
-                 isCalculating: false,
-                 results: null,
-                 aiActive: false,
-                 volatility: 'medium'
-             },
+                                                 state: {
+                selectedProject: null,
+                isCalculating: false,
+                results: null,
+                volatility: 'medium'
+            },
             
             projects: [
                 {
@@ -1205,7 +1193,7 @@
                 this.state.selectedProject = this.projects.find(p => p.id === projectId);
                 
                 console.log('🎯 Project selected:', this.state.selectedProject.name);
-                this.addAIMessage(`Great choice! ${this.state.selectedProject.name} is selected. This project typically delivers ${this.state.selectedProject.roiPotential} ROI.`);
+
             },
 
                          // Setup event listeners
@@ -1339,26 +1327,7 @@
                 });
             },
 
-            // Add AI message
-            addAIMessage(message) {
-                const aiContent = document.getElementById('aiContent');
-                if (!aiContent) return;
 
-                const messageDiv = document.createElement('div');
-                messageDiv.style.cssText = `
-                    margin-bottom: var(--space-3);
-                    padding: var(--space-3);
-                    background: var(--bg-secondary);
-                    border-radius: var(--radius-md);
-                    color: var(--primary-200);
-                    font-size: 0.9rem;
-                    line-height: 1.5;
-                `;
-                messageDiv.textContent = message;
-                
-                aiContent.appendChild(messageDiv);
-                aiContent.scrollTop = aiContent.scrollHeight;
-            }
         };
 
         // === CALCULATION ENGINE ===
@@ -1429,7 +1398,7 @@
                      scenarioInfo = { count: 5000, time: 45, confidence: 95 };
                  }
                  
-                 VoidSightApp.addAIMessage(`Starting ${calculationData.scenario_type.replace('_', ' ')} analysis with ${scenarioInfo.count.toLocaleString()}+ scenarios for ${VoidSightApp.state.selectedProject.name} in ${industry} industry...`);
+                 console.log(`🧮 Starting ${calculationData.scenario_type.replace('_', ' ')} analysis for ${VoidSightApp.state.selectedProject.name}`);
 
                  // Simulate progressive scenario analysis
                  await simulateScenarioAnalysis(scenarioInfo);
@@ -1441,7 +1410,7 @@
                 
                 // Display results
                 displayResults(results);
-                VoidSightApp.addAIMessage(`Analysis complete! Your projected ROI is ${results.roi_percentage}% with a payback period of ${results.payback_period} months.`);
+                console.log(`✅ Analysis complete! ROI: ${results.roi_percentage}%, Payback: ${results.payback_period} months`);
 
             } catch (error) {
                 console.error('❌ Calculation error:', error);
@@ -1483,12 +1452,12 @@
                      const progress = ((i + 1) / steps) * 100;
                      const scenariosProcessed = Math.round((count / steps) * (i + 1));
                      
-                     VoidSightApp.addAIMessage(`Processing ${scenariosProcessed.toLocaleString()} scenarios... ${progress.toFixed(0)}% complete`);
+                     console.log(`Processing scenarios: ${progress.toFixed(0)}% complete`);
                      await new Promise(resolve => setTimeout(resolve, stepTime));
                  }
              } catch (error) {
                  console.error('Error in scenario simulation:', error);
-                 VoidSightApp.addAIMessage('Scenario analysis simulation completed');
+                 console.log('✅ Scenario analysis simulation completed');
              }
          }
 
@@ -1565,9 +1534,9 @@
                  // Calculate realistic profit with business expenses
                  const profitBreakdown = calculateRealisticProfit(baseCost, baseROI, timeline, data);
                  
-                 return {
-                     // Base results
-                     roi_percentage: baseROI,
+                                 return {
+                    // Base results - calculate ACTUAL ROI based on net profit vs investment
+                    roi_percentage: Math.round((profitBreakdown.netProfit / profitBreakdown.totalInvestment) * 100),
                      total_investment: profitBreakdown.totalInvestment,
                      total_return: profitBreakdown.grossReturn,
                      net_profit: profitBreakdown.netProfit,
@@ -1962,8 +1931,23 @@
                const efficiencyMultiplier = companySizeEfficiency[data.company_size] || 1.0;
                const actualProjectCost = Math.round(baseCost * complexityMultiplier * efficiencyMultiplier);
 
-               // Step 2: Calculate expected revenue based on original ROI promise
-               const expectedRevenue = Math.round(baseCost * (1 + baseROI / 100));
+               // Step 2: Calculate realistic revenue needed to deliver target ROI after all expenses
+               // For business projects, revenue should be 3-10x the investment to deliver meaningful ROI
+               const revenueMultipliers = {
+                   'ecommerce_platform': 4.5,      // E-commerce typically 4-5x revenue multiplier
+                   'mobile_app': 3.8,              // Apps typically 3-4x revenue multiplier  
+                   'ai_integration': 6.2,          // AI projects 5-7x revenue multiplier
+                   'marketing_campaign': 8.5,      // Marketing 8-12x revenue multiplier (high leverage)
+                   'product_development': 5.2,     // Products 4-6x revenue multiplier
+                   'tech_upgrade': 3.2,            // Tech upgrades 3-4x revenue multiplier
+                   'automation_system': 7.8,       // Automation 6-10x revenue multiplier
+                   'cybersecurity_upgrade': 2.8,   // Security 2-3x revenue multiplier
+                   'digital_transformation': 4.8,  // Digital transformation 4-5x revenue multiplier
+                   'cloud_migration': 3.5         // Cloud migration 3-4x revenue multiplier
+               };
+               
+               const revenueMultiplier = revenueMultipliers[data.project_type] || 4.0;
+               const expectedRevenue = Math.round(baseCost * revenueMultiplier);
                
                // Step 3: Calculate gross profit (revenue minus actual costs)
                const grossProfit = expectedRevenue - actualProjectCost;
@@ -2842,18 +2826,7 @@
             }, 5000);
         }
 
-        // Toggle AI assistant
-        function toggleAI() {
-            const panel = document.getElementById('aiPanel');
-            VoidSightApp.state.aiActive = !VoidSightApp.state.aiActive;
-            
-            if (VoidSightApp.state.aiActive) {
-                panel.classList.add('active');
-                VoidSightApp.addAIMessage('How can I help you with your ROI analysis today?');
-            } else {
-                panel.classList.remove('active');
-            }
-        }
+
 
         // Initialize application when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
