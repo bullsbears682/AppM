@@ -1828,69 +1828,66 @@
                    'enterprise': 0.90    // 10% lower costs (best practices)
                };
 
-               // Calculate actual investment with overruns
+               // Step 1: Calculate project cost overruns
                const complexityMultiplier = complexityMultipliers[data.project_type] || 1.2;
                const efficiencyMultiplier = companySizeEfficiency[data.company_size] || 1.0;
-               const totalInvestment = Math.round(baseCost * complexityMultiplier * efficiencyMultiplier);
+               const actualProjectCost = Math.round(baseCost * complexityMultiplier * efficiencyMultiplier);
 
-               // Calculate gross return before expenses
-               const grossReturn = Math.round(totalInvestment * (1 + baseROI / 100));
-               const grossProfit = grossReturn - totalInvestment;
+               // Step 2: Calculate expected revenue based on original ROI promise
+               const expectedRevenue = Math.round(baseCost * (1 + baseROI / 100));
+               
+               // Step 3: Calculate gross profit (revenue minus actual costs)
+               const grossProfit = expectedRevenue - actualProjectCost;
 
-               // Operating expenses (annual % of investment)
+               // Step 4: Calculate operating expenses as percentage of revenue (not investment)
                const operatingCostRates = {
-                   'web_application': 0.15,        // 15% annually
-                   'mobile_application': 0.20,     // 20% annually (app store fees, updates)
-                   'ai_integration': 0.25,         // 25% annually (compute, data costs)
-                   'ecommerce_platform': 0.18,    // 18% annually (hosting, payment processing)
-                   'digital_transformation': 0.12, // 12% annually (change management)
-                   'cloud_infrastructure': 0.10   // 10% annually (maintenance)
+                   'web_application': 0.12,        // 12% of revenue annually
+                   'mobile_application': 0.15,     // 15% of revenue annually
+                   'ai_integration': 0.18,         // 18% of revenue annually
+                   'ecommerce_platform': 0.14,    // 14% of revenue annually
+                   'digital_transformation': 0.10, // 10% of revenue annually
+                   'cloud_infrastructure': 0.08   // 8% of revenue annually
                };
 
-               const operatingRate = operatingCostRates[data.project_type] || 0.15;
-               const operatingCosts = Math.round(totalInvestment * operatingRate * (timeline / 12));
+               const operatingRate = operatingCostRates[data.project_type] || 0.12;
+               const annualOperatingCosts = expectedRevenue * operatingRate;
+               const totalOperatingCosts = Math.round(annualOperatingCosts * (timeline / 12));
 
-               // Tax rate based on region/company size
+               // Step 5: Calculate taxes on profit (not revenue)
                const taxRates = {
-                   'startup': 0.15,      // Lower tax rate (losses, credits)
+                   'startup': 0.15,      // Lower tax rate
                    'small': 0.20,        // Small business rate
-                   'medium': 0.25,       // Standard corporate rate
+                   'medium': 0.25,       // Standard rate
                    'large': 0.28,        // Large corporate rate
                    'enterprise': 0.30    // Full corporate rate
                };
 
+               const taxableProfit = Math.max(0, grossProfit - totalOperatingCosts);
                const taxRate = taxRates[data.company_size] || 0.25;
-               const beforeTaxProfit = grossProfit - operatingCosts;
-               const taxes = Math.max(0, Math.round(beforeTaxProfit * taxRate));
+               const taxes = Math.round(taxableProfit * taxRate);
 
-               // Risk adjustment for unexpected costs
-               const riskTolerance = data.risk_tolerance || 50;
-               const riskCostMultiplier = 1 + ((100 - riskTolerance) / 1000); // 0-5% additional costs
-               const riskAdjustment = Math.round(totalInvestment * (riskCostMultiplier - 1));
-
-               // Calculate final net profit
-               const netProfit = Math.round(beforeTaxProfit - taxes - riskAdjustment);
+               // Step 6: Calculate final net profit
+               const netProfit = Math.max(-actualProjectCost, grossProfit - totalOperatingCosts - taxes);
 
                // Realistic payback period calculation
                const monthlyNetCashFlow = netProfit / timeline;
                const paybackPeriod = monthlyNetCashFlow > 0 ? 
-                   Math.ceil(totalInvestment / monthlyNetCashFlow) : 
+                   Math.ceil(actualProjectCost / monthlyNetCashFlow) : 
                    timeline * 2; // If no positive cash flow, set long payback
 
                return {
-                   totalInvestment,
-                   grossReturn,
+                   totalInvestment: actualProjectCost,
+                   grossReturn: expectedRevenue,
                    grossProfit,
-                   operatingCosts,
+                   operatingCosts: totalOperatingCosts,
                    taxes,
-                   riskAdjustment,
                    netProfit,
                    paybackPeriod: Math.min(paybackPeriod, timeline * 1.5), // Cap at 1.5x timeline
                    breakdown: {
                        complexityOverrun: Math.round((complexityMultiplier - 1) * baseCost),
-                       operatingCosts,
+                       operatingCosts: totalOperatingCosts,
                        taxes,
-                       riskAdjustment
+                       projectOverrun: actualProjectCost - baseCost
                    }
                };
            }
