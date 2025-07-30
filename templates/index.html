@@ -984,7 +984,11 @@
                      <div class="form-group">
                          <label class="form-label">Scenario Analysis Type</label>
                                                  <select id="scenarioType" class="form-select">
-                            <option value="project_specific">Project-Specific Real Scenarios</option>
+                            <option value="optimistic">Optimistic Market Conditions (Best Case)</option>
+                            <option value="realistic" selected>Realistic Business Scenarios (Most Likely)</option>
+                            <option value="conservative">Conservative Projections (Safe Estimates)</option>
+                            <option value="crisis">Crisis & Challenge Scenarios (Stress Test)</option>
+                            <option value="mixed">Mixed Reality (All Scenario Types)</option>
                         </select>
                      </div>
 
@@ -1031,33 +1035,34 @@
                          </div>
                      </div>
 
-                     <!-- Scenario Preview -->
-                     <div style="
-                         background: var(--glass-bg);
-                         border: 1px solid var(--glass-border);
-                         border-radius: var(--radius-lg);
-                         padding: var(--space-4);
-                         margin-bottom: var(--space-6);
-                     ">
-                         <h4 style="color: var(--primary-200); margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-2);">
-                             <i class="fas fa-chart-area"></i>
-                             Scenario Preview
-                         </h4>
-                         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); text-align: center;">
-                             <div>
-                                 <div style="color: var(--secondary-400); font-size: 0.8rem; margin-bottom: var(--space-1);">Scenarios</div>
-                                 <div id="scenarioCount" style="color: var(--accent-400); font-weight: 700; font-size: 1.1rem;">5,000+</div>
-                             </div>
-                             <div>
-                                 <div style="color: var(--secondary-400); font-size: 0.8rem; margin-bottom: var(--space-1);">Analysis Time</div>
-                                 <div id="analysisTime" style="color: var(--primary-300); font-weight: 700; font-size: 1.1rem;">~45s</div>
-                             </div>
-                             <div>
-                                 <div style="color: var(--secondary-400); font-size: 0.8rem; margin-bottom: var(--space-1);">Confidence</div>
-                                 <div id="confidenceLevel" style="color: var(--success-500); font-weight: 700; font-size: 1.1rem;">95%</div>
-                             </div>
-                         </div>
-                     </div>
+                                         <!-- Real Scenario Information -->
+                    <div style="
+                        background: var(--glass-bg);
+                        border: 1px solid var(--glass-border);
+                        border-radius: var(--radius-lg);
+                        padding: var(--space-4);
+                        margin-bottom: var(--space-6);
+                    ">
+                        <h4 style="color: var(--primary-200); margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-2);">
+                            <i class="fas fa-chart-line"></i>
+                            Scenario Analysis Overview
+                        </h4>
+                        <div style="color: var(--secondary-300); line-height: 1.6;">
+                            <p style="margin-bottom: var(--space-2);">
+                                <strong>Realistic Business Scenarios:</strong> Each project type includes 12 specific scenarios based on real market conditions, industry trends, and business challenges.
+                            </p>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); margin-top: var(--space-3);">
+                                <div>
+                                    <div style="color: var(--success-400); font-weight: 600;">✓ Market Opportunities</div>
+                                    <div style="color: var(--warning-400); font-weight: 600;">⚠ Realistic Challenges</div>
+                                </div>
+                                <div>
+                                    <div style="color: var(--error-400); font-weight: 600;">⚡ Crisis Scenarios</div>
+                                    <div style="color: var(--primary-400); font-weight: 600;">📊 Performance Metrics</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                      <!-- Calculate Button -->
                      <button id="calculateBtn" class="btn btn-primary btn-full" onclick="calculateROI()">
@@ -1721,12 +1726,13 @@
                   }
 
         // Get project-specific realistic business scenarios
-        function getProjectSpecificScenarios(projectType, companySize, industry) {
-            const scenarios = [];
+        function getProjectSpecificScenarios(projectType, companySize, industry, scenarioType = 'realistic') {
+            const allScenarios = [];
+            let scenarios = [];
             
             // E-COMMERCE PLATFORM SCENARIOS  
             if (projectType === 'ecommerce_platform') {
-                scenarios.push(
+                allScenarios.push(
                     // OPTIMISTIC SCENARIOS
                     { name: "Viral Product Launch", roiMultiplier: 1.8, probability: 0.15, description: "Product goes viral on social media, 500% sales increase" },
                     { name: "SEO Dominance", roiMultiplier: 1.5, probability: 0.20, description: "E-commerce site ranks #1 for all product categories" },
