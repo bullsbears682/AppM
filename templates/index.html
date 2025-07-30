@@ -1552,19 +1552,28 @@
             color: var(--text-spirit);
             font-size: 0.9rem;
             cursor: pointer;
-            transition: var(--transition-phantom);
+            transition: all 0.3s ease;
+            user-select: none;
+            font-family: var(--font-primary);
+            font-weight: 500;
         }
 
         .volatility-btn:hover {
             background: var(--bg-ethereal);
             border-color: var(--border-spirit);
+            transform: translateY(-1px);
         }
 
         .volatility-btn.active {
-            background: var(--ethereal-primary);
-            border-color: var(--phantom-purple);
-            color: white;
+            background: var(--ethereal-primary) !important;
+            border-color: var(--phantom-purple) !important;
+            color: white !important;
             box-shadow: var(--glow-spectral);
+            transform: translateY(-1px);
+        }
+
+        .volatility-btn:active {
+            transform: translateY(0);
         }
 
         .scenario-preview {
@@ -2738,7 +2747,7 @@
             <div class="scenario-controls">
                 <div class="scenario-type-selector">
                     <label class="phantom-label">Analysis Type</label>
-                    <select id="scenarioTypeQuantum" class="form-input-quantum">
+                    <select id="scenarioTypeQuantum" class="form-input-quantum" onchange="updateScenarioType(this.value)">
                         <option value="comprehensive">Comprehensive Analysis (1000+ scenarios)</option>
                         <option value="optimistic">Optimistic Scenarios (500+ scenarios)</option>
                         <option value="pessimistic">Pessimistic Scenarios (500+ scenarios)</option>
@@ -2753,7 +2762,7 @@
                     <div class="parameter-group">
                         <label class="phantom-label">Risk Tolerance</label>
                         <div class="risk-slider-container">
-                            <input type="range" id="riskToleranceQuantum" min="0" max="100" value="50" class="risk-slider">
+                            <input type="range" id="riskToleranceQuantum" min="0" max="100" value="50" class="risk-slider" oninput="updateRiskTolerance(this.value)">
                             <div class="risk-labels">
                                 <span>Conservative</span>
                                 <span>Balanced</span>
@@ -2765,10 +2774,10 @@
                     <div class="parameter-group">
                         <label class="phantom-label">Market Volatility Factor</label>
                         <div class="volatility-buttons">
-                            <button type="button" class="volatility-btn" data-volatility="low">Low</button>
-                            <button type="button" class="volatility-btn active" data-volatility="medium">Medium</button>
-                            <button type="button" class="volatility-btn" data-volatility="high">High</button>
-                            <button type="button" class="volatility-btn" data-volatility="extreme">Extreme</button>
+                            <button type="button" class="volatility-btn" data-volatility="low" onclick="selectVolatility('low', this)">Low</button>
+                            <button type="button" class="volatility-btn active" data-volatility="medium" onclick="selectVolatility('medium', this)">Medium</button>
+                            <button type="button" class="volatility-btn" data-volatility="high" onclick="selectVolatility('high', this)">High</button>
+                            <button type="button" class="volatility-btn" data-volatility="extreme" onclick="selectVolatility('extreme', this)">Extreme</button>
                         </div>
                     </div>
                 </div>
@@ -3039,15 +3048,38 @@
         }
 
         function updateScenarioPreview() {
+            console.log('🔄 Updating scenario preview...');
+            console.log('📊 Current settings:', {
+                type: selectedScenarioType,
+                risk: selectedRiskTolerance,
+                volatility: selectedVolatility
+            });
+            
             const scenarioCount = document.getElementById('scenarioCount');
             const analysisTime = document.getElementById('analysisTime');
             const confidenceLevel = document.getElementById('confidenceLevel');
             
-            const scenarios = getScenarioConfig();
+            console.log('🎯 Elements found:', {
+                scenarioCount: !!scenarioCount,
+                analysisTime: !!analysisTime,
+                confidenceLevel: !!confidenceLevel
+            });
             
-            if (scenarioCount) scenarioCount.textContent = `${scenarios.count.toLocaleString()}+`;
-            if (analysisTime) analysisTime.textContent = `~${scenarios.time}s`;
-            if (confidenceLevel) confidenceLevel.textContent = `${scenarios.confidence}%`;
+            const scenarios = getScenarioConfig();
+            console.log('📈 Scenario config:', scenarios);
+            
+            if (scenarioCount) {
+                scenarioCount.textContent = `${scenarios.count.toLocaleString()}+`;
+                console.log('✅ Updated scenario count to:', scenarioCount.textContent);
+            }
+            if (analysisTime) {
+                analysisTime.textContent = `~${scenarios.time}s`;
+                console.log('✅ Updated analysis time to:', analysisTime.textContent);
+            }
+            if (confidenceLevel) {
+                confidenceLevel.textContent = `${scenarios.confidence}%`;
+                console.log('✅ Updated confidence level to:', confidenceLevel.textContent);
+            }
         }
 
         function getScenarioConfig() {
@@ -3131,6 +3163,45 @@
             return 0.7 + Math.random() * 0.6; // 70% to 130% of projected revenue
         }
 
+        // === VOLATILITY BUTTON HANDLER ===
+        function selectVolatility(volatility, button) {
+            console.log('🎯 Volatility selected:', volatility);
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.volatility-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked button
+            button.classList.add('active');
+            
+            // Update global variable
+            selectedVolatility = volatility;
+            console.log('🎯 Updated selectedVolatility to:', selectedVolatility);
+            
+            // Update scenario preview
+            updateScenarioPreview();
+            
+            // Visual feedback
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = '';
+            }, 150);
+        }
+
+        // === SCENARIO CONTROL HANDLERS ===
+        function updateScenarioType(value) {
+            console.log('📊 Scenario type selected:', value);
+            selectedScenarioType = value;
+            updateScenarioPreview();
+        }
+
+        function updateRiskTolerance(value) {
+            console.log('⚖️ Risk tolerance updated:', value);
+            selectedRiskTolerance = parseInt(value);
+            updateScenarioPreview();
+        }
+
         // === QUANTUM INITIALIZATION ===
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 VoidSight Analytics - Initializing...');
@@ -3140,6 +3211,12 @@
             initializeScrollAnimations();
             activateAIInsights();
             initializeScenarioControls();
+            
+            // Initialize scenario preview
+            setTimeout(() => {
+                console.log('🎲 Initializing scenario preview...');
+                updateScenarioPreview();
+            }, 500);
             
             // Backup timer to ensure content is visible
             setTimeout(() => {
