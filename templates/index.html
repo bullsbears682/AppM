@@ -1556,20 +1556,55 @@
                      throw new Error('No project selected');
                  }
                  
-                 const baseCost = parseFloat(data.custom_investment) || project.baseCost || 100000;
+                 // Use user's investment input, or default to reasonable project estimate
+                const userInvestment = parseFloat(data.custom_investment);
+                const defaultCost = 10000; // Reasonable default for small projects
+                const baseCost = userInvestment && userInvestment > 0 ? userInvestment : defaultCost;
                  const timeline = parseInt(data.custom_timeline) || 12;
                  
-                 // Base scenario - realistic business ROI ranges
-                 const projectROIRanges = {
-                     'web_application': { min: 8, max: 25 },      // 8-25% ROI for web apps (realistic)
-                     'mobile_application': { min: 5, max: 20 },  // 5-20% ROI for mobile apps
-                     'ai_integration': { min: 12, max: 35 },     // 12-35% ROI for AI projects
-                     'ecommerce_platform': { min: 10, max: 30 }, // 10-30% ROI for e-commerce
-                     'digital_transformation': { min: 15, max: 40 }, // 15-40% ROI for digital transform
-                     'cloud_infrastructure': { min: 6, max: 18 } // 6-18% ROI for cloud infrastructure
-                 };
+                                 // Adjust ROI ranges based on investment size
+                const isSmallInvestment = baseCost < 5000;  // Under $5K = small experiment
+                const isMediumInvestment = baseCost < 50000; // Under $50K = medium project
+                
+                // Base ROI ranges - higher for smaller, riskier investments
+                let projectROIRanges;
+                if (isSmallInvestment) {
+                    // Small investments: higher risk, higher reward potential
+                    projectROIRanges = {
+                        'web_application': { min: 20, max: 80 },      // 20-80% ROI for small web projects
+                        'mobile_application': { min: 15, max: 60 },  // 15-60% ROI for small mobile apps
+                        'ai_integration': { min: 25, max: 100 },     // 25-100% ROI for AI experiments
+                        'ecommerce_platform': { min: 30, max: 90 }, // 30-90% ROI for small e-commerce
+                        'digital_transformation': { min: 20, max: 70 }, // 20-70% ROI for small digital projects
+                        'cloud_infrastructure': { min: 15, max: 50 } // 15-50% ROI for small cloud projects
+                    };
+                } else if (isMediumInvestment) {
+                    // Medium investments: moderate risk/reward
+                    projectROIRanges = {
+                        'web_application': { min: 12, max: 40 },      // 12-40% ROI for medium web apps
+                        'mobile_application': { min: 8, max: 30 },  // 8-30% ROI for medium mobile apps
+                        'ai_integration': { min: 15, max: 50 },     // 15-50% ROI for medium AI projects
+                        'ecommerce_platform': { min: 15, max: 45 }, // 15-45% ROI for medium e-commerce
+                        'digital_transformation': { min: 18, max: 55 }, // 18-55% ROI for medium digital transform
+                        'cloud_infrastructure': { min: 10, max: 30 } // 10-30% ROI for medium cloud infrastructure
+                    };
+                } else {
+                    // Large investments: lower risk, steady returns
+                    projectROIRanges = {
+                        'web_application': { min: 8, max: 25 },      // 8-25% ROI for large web apps
+                        'mobile_application': { min: 5, max: 20 },  // 5-20% ROI for large mobile apps
+                        'ai_integration': { min: 12, max: 35 },     // 12-35% ROI for large AI projects
+                        'ecommerce_platform': { min: 10, max: 30 }, // 10-30% ROI for large e-commerce
+                        'digital_transformation': { min: 15, max: 40 }, // 15-40% ROI for large digital transform
+                        'cloud_infrastructure': { min: 6, max: 18 } // 6-18% ROI for large cloud infrastructure
+                    };
+                }
                  
-                                    const roiRange = projectROIRanges[data.project_type] || { min: 8, max: 25 };
+                                    // Default ROI range based on investment size
+                const defaultROI = isSmallInvestment ? { min: 20, max: 80 } : 
+                                 isMediumInvestment ? { min: 12, max: 40 } : 
+                                 { min: 8, max: 25 };
+                const roiRange = projectROIRanges[data.project_type] || defaultROI;
                  const baseROI = Math.round(roiRange.min + Math.random() * (roiRange.max - roiRange.min));
                  const riskFactor = (data.risk_tolerance || 50) / 100;
                  const volatilityImpact = getVolatilityImpact(data.volatility || 'medium');
