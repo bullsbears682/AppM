@@ -46,6 +46,31 @@ class ROIResult:
     currency: str
     calculation_date: datetime
 
+@dataclass
+class ScenarioResult:
+    """Individual scenario calculation result"""
+    scenario_id: str
+    roi_percentage: Decimal
+    npv: Decimal
+    payback_months: int
+    risk_score: Decimal
+    market_condition: str
+    confidence: Decimal
+    parameters: Dict
+
+@dataclass
+class ScenarioAnalysis:
+    """Comprehensive scenario analysis result"""
+    total_scenarios: int
+    best_case: ScenarioResult
+    worst_case: ScenarioResult
+    most_likely: ScenarioResult
+    average_roi: Decimal
+    median_roi: Decimal
+    success_probability: Decimal  # % of scenarios with positive ROI
+    risk_distribution: Dict
+    scenario_breakdown: List[ScenarioResult]
+
 @dataclass 
 class CashFlowProjection:
     """Monthly cash flow projection"""
@@ -703,4 +728,145 @@ class EnhancedROICalculator:
             recommendations.append("🤖 Advanced technology: Ensure team has required expertise")
             recommendations.append("📚 Invest in training and knowledge transfer")
         
-        return recommendations[:8]  # Limit to 8 most relevant recommendations
+        return recommendations
+
+    def calculate_scenario_analysis(
+        self, 
+        project_type: str, 
+        company_size: str, 
+        industry: str,
+        scenario_type: str = 'comprehensive',
+        risk_tolerance: int = 50,
+        volatility: str = 'medium',
+        investment: Optional[Decimal] = None,
+        timeline: Optional[int] = None,
+        target_roi: Optional[float] = None
+    ) -> ScenarioAnalysis:
+        """
+        Generate thousands of scenario variations and analyze outcomes
+        """
+        scenario_configs = {
+            'comprehensive': {'count': 1000, 'variation_range': 0.3},
+            'optimistic': {'count': 500, 'variation_range': 0.2, 'bias': 0.1},
+            'pessimistic': {'count': 500, 'variation_range': 0.2, 'bias': -0.1},
+            'monte_carlo': {'count': 2000, 'variation_range': 0.4},
+            'sensitivity': {'count': 800, 'variation_range': 0.25},
+            'stress_test': {'count': 600, 'variation_range': 0.5, 'bias': -0.2},
+            'market_conditions': {'count': 1200, 'variation_range': 0.35}
+        }
+        
+        config = scenario_configs.get(scenario_type, scenario_configs['comprehensive'])
+        
+        # Adjust scenario count based on risk tolerance and volatility
+        risk_multiplier = 1 + (risk_tolerance - 50) / 100
+        volatility_multipliers = {'low': 0.7, 'medium': 1.0, 'high': 1.3, 'extreme': 1.6}
+        vol_multiplier = volatility_multipliers.get(volatility, 1.0)
+        
+        total_scenarios = int(config['count'] * risk_multiplier * vol_multiplier)
+        variation_range = config['variation_range']
+        bias = config.get('bias', 0)
+        
+        scenarios = []
+        base_roi = self.calculate_enhanced_roi_projection(
+            project_type, company_size, industry, investment, timeline, target_roi
+        )
+        
+        for i in range(total_scenarios):
+            # Generate random variations for each parameter
+            market_condition = self._get_random_market_condition()
+            risk_factor = self._generate_risk_factor(risk_tolerance)
+            
+            # Apply variations to key parameters
+            cost_variation = 1 + (random.random() - 0.5) * variation_range + bias
+            revenue_variation = 1 + (random.random() - 0.5) * variation_range - bias
+            timeline_variation = 1 + (random.random() - 0.5) * (variation_range * 0.5)
+            
+            # Calculate scenario-specific ROI
+            scenario_investment = base_roi.total_investment * Decimal(str(cost_variation))
+            scenario_revenue = base_roi.projected_revenue * Decimal(str(revenue_variation))
+            scenario_timeline = max(1, int(base_roi.payback_period_months * timeline_variation))
+            
+            scenario_roi = ((scenario_revenue - scenario_investment) / scenario_investment) * 100
+            scenario_npv = scenario_revenue - scenario_investment
+            scenario_risk = self._calculate_scenario_risk(market_condition, risk_factor, volatility)
+            
+            scenario = ScenarioResult(
+                scenario_id=f"scenario_{i+1}",
+                roi_percentage=scenario_roi,
+                npv=scenario_npv,
+                payback_months=scenario_timeline,
+                risk_score=scenario_risk,
+                market_condition=market_condition,
+                confidence=Decimal(str(0.7 + random.random() * 0.3)),  # 70-100% confidence
+                parameters={
+                    'cost_variation': cost_variation,
+                    'revenue_variation': revenue_variation,
+                    'timeline_variation': timeline_variation,
+                    'risk_factor': risk_factor
+                }
+            )
+            scenarios.append(scenario)
+        
+        # Analyze scenarios
+        roi_values = [s.roi_percentage for s in scenarios]
+        roi_values.sort()
+        
+        best_case = max(scenarios, key=lambda s: s.roi_percentage)
+        worst_case = min(scenarios, key=lambda s: s.roi_percentage)
+        
+        # Most likely scenario (median)
+        median_index = len(scenarios) // 2
+        most_likely = sorted(scenarios, key=lambda s: s.roi_percentage)[median_index]
+        
+        average_roi = sum(roi_values) / len(roi_values)
+        median_roi = roi_values[median_index]
+        success_probability = len([s for s in scenarios if s.roi_percentage > 0]) / len(scenarios) * 100
+        
+        # Risk distribution
+        risk_distribution = {
+            'low_risk': len([s for s in scenarios if s.risk_score < 30]) / len(scenarios) * 100,
+            'medium_risk': len([s for s in scenarios if 30 <= s.risk_score < 70]) / len(scenarios) * 100,
+            'high_risk': len([s for s in scenarios if s.risk_score >= 70]) / len(scenarios) * 100
+        }
+        
+        return ScenarioAnalysis(
+            total_scenarios=total_scenarios,
+            best_case=best_case,
+            worst_case=worst_case,
+            most_likely=most_likely,
+            average_roi=average_roi,
+            median_roi=median_roi,
+            success_probability=Decimal(str(success_probability)),
+            risk_distribution=risk_distribution,
+            scenario_breakdown=scenarios[:100]  # Return first 100 for detailed analysis
+        )
+    
+    def _get_random_market_condition(self) -> str:
+        """Generate random market condition"""
+        conditions = ['bull', 'bear', 'sideways', 'volatile', 'stable']
+        return random.choice(conditions)
+    
+    def _generate_risk_factor(self, risk_tolerance: int) -> float:
+        """Generate risk factor based on tolerance"""
+        base_risk = 0.5
+        tolerance_adjustment = (risk_tolerance - 50) / 100
+        return max(0.1, min(0.9, base_risk + (random.random() - 0.5) * tolerance_adjustment))
+    
+    def _calculate_scenario_risk(self, market_condition: str, risk_factor: float, volatility: str) -> Decimal:
+        """Calculate risk score for a scenario"""
+        base_risk = 50
+        
+        # Market condition impact
+        market_impact = {
+            'bull': -10, 'bear': 20, 'sideways': 0, 'volatile': 15, 'stable': -5
+        }
+        
+        # Volatility impact
+        volatility_impact = {
+            'low': -10, 'medium': 0, 'high': 15, 'extreme': 25
+        }
+        
+        risk_score = base_risk + market_impact.get(market_condition, 0) + volatility_impact.get(volatility, 0)
+        risk_score += (risk_factor - 0.5) * 20  # Risk factor adjustment
+        
+        return Decimal(str(max(0, min(100, risk_score))))

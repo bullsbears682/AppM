@@ -1168,76 +1168,480 @@
             border-color: var(--quantum-emerald);
         }
 
-        /* === AI INSIGHTS PANEL === */
-        .ai-insights-panel {
+        /* === AI POPUP SYSTEM === */
+        .ai-popup-trigger {
             position: fixed;
+            bottom: 2rem;
             right: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 350px;
+            background: var(--ethereal-primary);
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 1.5rem;
+            color: white;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: var(--shadow-phantom);
+            transition: var(--transition-phantom);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 140px;
+        }
+
+        .ai-popup-trigger:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow-spectral);
+        }
+
+        .ai-trigger-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+        }
+
+        .ai-pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: aiPulse 2s infinite;
+        }
+
+        @keyframes aiPulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .ai-notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--text-error);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .ai-popup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .ai-popup-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ai-popup-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .ai-popup-container {
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            background: var(--bg-phantom);
+            border: 1px solid var(--border-phantom);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-phantom);
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .ai-popup-header {
+            background: var(--bg-spirit);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-phantom);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ai-popup-title {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .ai-status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-phantom);
+        }
+
+        .ai-pulse-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--text-success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .ai-status-text {
+            font-size: 0.9rem;
+            color: var(--text-success);
+        }
+
+        .ai-popup-close {
+            background: none;
+            border: none;
+            color: var(--text-whisper);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition-phantom);
+        }
+
+        .ai-popup-close:hover {
+            background: var(--bg-shadow);
+            color: var(--text-phantom);
+        }
+
+        .ai-popup-content {
+            padding: 2rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .ai-insights-container {
+            margin-bottom: 2rem;
+        }
+
+        .ai-welcome-message {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-glass-phantom);
+            border-radius: 16px;
+            margin-bottom: 1rem;
+        }
+
+        .ai-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--ethereal-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .ai-message h4 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-phantom);
+            margin-bottom: 0.5rem;
+        }
+
+        .ai-message p {
+            color: var(--text-spirit);
+            line-height: 1.5;
+        }
+
+        .ai-insight {
+            background: rgba(147, 51, 234, 0.1);
+            border: 1px solid var(--border-phantom);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-spirit);
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .ai-insight:last-child {
+            margin-bottom: 0;
+        }
+
+        .ai-popup-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            border-top: 1px solid var(--border-phantom);
+            padding-top: 1.5rem;
+        }
+
+        .ai-control-button {
+            background: var(--bg-shadow);
+            border: 1px solid var(--border-phantom);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            color: var(--text-spirit);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition-phantom);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
+        }
+
+        .ai-control-button:hover {
+            background: var(--bg-ethereal);
+            border-color: var(--border-spirit);
+        }
+
+        .ai-control-button.primary {
+            background: var(--ethereal-primary);
+            border-color: var(--phantom-purple);
+            color: white;
+        }
+
+        .ai-control-button.primary:hover {
+            box-shadow: var(--glow-spectral);
+        }
+
+        /* === SCENARIO ANALYSIS SECTION === */
+        .scenario-section {
             background: var(--bg-glass-phantom);
             backdrop-filter: blur(40px);
             border: 1px solid var(--border-phantom);
             border-radius: 24px;
-            padding: 2rem;
-            z-index: 900;
-            box-shadow: var(--shadow-hologram);
-            transition: var(--transition-neural);
-            opacity: 0;
-            transform: translateY(-50%) translateX(400px);
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .ai-insights-panel.active {
-            opacity: 1;
-            transform: translateY(-50%) translateX(0);
+        .section-header-phantom {
+            text-align: center;
+            margin-bottom: 2.5rem;
         }
 
-        .ai-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .ai-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--holo-primary);
+        .section-title-phantom {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-phantom);
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            animation: ai-pulse 2s ease-in-out infinite;
+            gap: 1rem;
         }
 
-        @keyframes ai-pulse {
-            0%, 100% {
-                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
-            }
-            50% {
-                box-shadow: 0 0 0 15px rgba(139, 92, 246, 0);
-            }
+        .section-subtitle-phantom {
+            color: var(--text-spirit);
+            font-size: 1rem;
+            opacity: 0.9;
         }
 
-        .ai-name {
-            font-weight: 700;
-            color: var(--text-quantum);
+        .scenario-controls {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 2rem;
+            align-items: start;
         }
 
-        .ai-status {
+        .scenario-type-selector select {
+            width: 100%;
+        }
+
+        .scenario-parameters {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .parameter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .risk-slider-container {
+            position: relative;
+        }
+
+        .risk-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--bg-shadow);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .risk-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--ethereal-primary);
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+        }
+
+        .risk-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--ethereal-primary);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+        }
+
+        .risk-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
             font-size: 0.8rem;
-            color: var(--quantum-emerald);
+            color: var(--text-whisper);
         }
 
-        .ai-insight {
-            background: rgba(139, 92, 246, 0.1);
-            border-left: 3px solid var(--quantum-violet);
-            padding: 1rem;
+        .volatility-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .volatility-btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: var(--bg-shadow);
+            border: 1px solid var(--border-phantom);
             border-radius: 12px;
-            margin-bottom: 1rem;
+            color: var(--text-spirit);
             font-size: 0.9rem;
-            line-height: 1.5;
+            cursor: pointer;
+            transition: var(--transition-phantom);
+        }
+
+        .volatility-btn:hover {
+            background: var(--bg-ethereal);
+            border-color: var(--border-spirit);
+        }
+
+        .volatility-btn.active {
+            background: var(--ethereal-primary);
+            border-color: var(--phantom-purple);
+            color: white;
+            box-shadow: var(--glow-spectral);
+        }
+
+        .scenario-preview {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-card {
+            background: var(--bg-glass-phantom);
+            border: 1px solid var(--border-phantom);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        .preview-icon {
+            font-size: 2rem;
+            color: var(--phantom-purple);
+            margin-bottom: 1rem;
+        }
+
+        .preview-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-phantom);
+            margin-bottom: 1rem;
+        }
+
+        .preview-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-spirit);
+        }
+
+        .stat-item i {
+            color: var(--phantom-cyan);
+            width: 16px;
+        }
+
+        /* === RESPONSIVE SCENARIO SECTION === */
+        @media (max-width: 1024px) {
+            .scenario-controls {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .scenario-parameters {
+                order: 2;
+            }
+            
+            .scenario-preview {
+                order: 3;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .volatility-buttons {
+                flex-wrap: wrap;
+            }
+            
+            .volatility-btn {
+                min-width: calc(50% - 0.25rem);
+            }
+            
+            .risk-labels {
+                font-size: 0.7rem;
+            }
         }
 
         /* === PROJECT SELECTION QUANTUM === */
@@ -2121,20 +2525,62 @@
         </div>
     </nav>
 
-    <!-- AI Insights Panel -->
-    <div class="ai-insights-panel" id="aiInsightsPanel">
-        <div class="ai-header">
-            <div class="ai-avatar">
-                <i class="fas fa-brain"></i>
-            </div>
-            <div>
-                <div class="ai-name">ARIA AI</div>
-                <div class="ai-status">Online & Learning</div>
-            </div>
+    <!-- ARIA AI Assistant Popup Button -->
+    <button class="ai-popup-trigger" id="aiPopupTrigger" onclick="openAIPopup()">
+        <div class="ai-trigger-icon">
+            <i class="fas fa-brain"></i>
+            <div class="ai-pulse-ring"></div>
         </div>
-        <div id="aiInsights">
-            <div class="ai-insight">
-                💡 Welcome! I'm analyzing market trends to provide you with intelligent insights as you configure your ROI calculation.
+        <span>ARIA AI</span>
+        <div class="ai-notification-badge" id="aiNotificationBadge" style="display: none;">
+            <span id="aiNotificationCount">0</span>
+        </div>
+    </button>
+
+    <!-- ARIA AI Assistant Popup Modal -->
+    <div class="ai-popup-modal" id="aiPopupModal">
+        <div class="ai-popup-backdrop" onclick="closeAIPopup()"></div>
+        <div class="ai-popup-container">
+            <div class="ai-popup-header">
+                <div class="ai-popup-title">
+                    <div class="ai-status-indicator">
+                        <div class="ai-pulse-dot"></div>
+                        <span>ARIA AI Assistant</span>
+                    </div>
+                    <div class="ai-status-text" id="aiStatusText">Online & Learning</div>
+                </div>
+                <button class="ai-popup-close" onclick="closeAIPopup()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="ai-popup-content">
+                <div class="ai-insights-container" id="aiInsightsContainer">
+                    <div class="ai-welcome-message">
+                        <div class="ai-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="ai-message">
+                            <h4>Welcome to ARIA AI</h4>
+                            <p>I'm your intelligent ROI analysis assistant. I'll provide contextual insights, market analysis, and optimization recommendations as you work.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ai-popup-controls">
+                    <button class="ai-control-button" onclick="clearAIInsights()">
+                        <i class="fas fa-trash"></i>
+                        Clear History
+                    </button>
+                    <button class="ai-control-button" onclick="toggleAILearning()">
+                        <i class="fas fa-graduation-cap" id="aiLearningIcon"></i>
+                        <span id="aiLearningText">Learning Mode</span>
+                    </button>
+                    <button class="ai-control-button primary" onclick="requestAIAnalysis()">
+                        <i class="fas fa-chart-line"></i>
+                        Analyze Current Data
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -2275,6 +2721,83 @@
             </div>
         </div>
 
+        <!-- Scenario Analysis Section -->
+        <div class="scenario-section scroll-reveal">
+            <div class="section-header-phantom">
+                <h3 class="section-title-phantom">
+                    <i class="fas fa-dice-d20"></i>
+                    Scenario Analysis Engine
+                </h3>
+                <p class="section-subtitle-phantom">
+                    Generate thousands of scenario variations to explore all possible outcomes
+                </p>
+            </div>
+            
+            <div class="scenario-controls">
+                <div class="scenario-type-selector">
+                    <label class="phantom-label">Analysis Type</label>
+                    <select id="scenarioTypeQuantum" class="form-input-quantum">
+                        <option value="comprehensive">Comprehensive Analysis (1000+ scenarios)</option>
+                        <option value="optimistic">Optimistic Scenarios (500+ scenarios)</option>
+                        <option value="pessimistic">Pessimistic Scenarios (500+ scenarios)</option>
+                        <option value="monte_carlo">Monte Carlo Simulation (2000+ scenarios)</option>
+                        <option value="sensitivity">Sensitivity Analysis (800+ scenarios)</option>
+                        <option value="stress_test">Stress Testing (600+ scenarios)</option>
+                        <option value="market_conditions">Market Conditions (1200+ scenarios)</option>
+                    </select>
+                </div>
+                
+                <div class="scenario-parameters">
+                    <div class="parameter-group">
+                        <label class="phantom-label">Risk Tolerance</label>
+                        <div class="risk-slider-container">
+                            <input type="range" id="riskToleranceQuantum" min="0" max="100" value="50" class="risk-slider">
+                            <div class="risk-labels">
+                                <span>Conservative</span>
+                                <span>Balanced</span>
+                                <span>Aggressive</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="parameter-group">
+                        <label class="phantom-label">Market Volatility Factor</label>
+                        <div class="volatility-buttons">
+                            <button type="button" class="volatility-btn" data-volatility="low">Low</button>
+                            <button type="button" class="volatility-btn active" data-volatility="medium">Medium</button>
+                            <button type="button" class="volatility-btn" data-volatility="high">High</button>
+                            <button type="button" class="volatility-btn" data-volatility="extreme">Extreme</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="scenario-preview">
+                    <div class="preview-card">
+                        <div class="preview-icon">
+                            <i class="fas fa-chart-area"></i>
+                        </div>
+                        <div class="preview-content">
+                            <div class="preview-title">Scenario Preview</div>
+                            <div class="preview-stats" id="scenarioPreviewStats">
+                                <span class="stat-item">
+                                    <i class="fas fa-layer-group"></i>
+                                    <span id="scenarioCount">1,000+</span> scenarios
+                                </span>
+                                <span class="stat-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span id="analysisTime">~30s</span> analysis
+                                </span>
+                                <span class="stat-item">
+                                    <i class="fas fa-bullseye"></i>
+                                    <span id="confidenceLevel">95%</span> confidence
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Quantum Calculate Button -->
         <div class="calculate-section">
             <button type="button" id="calculateBtnQuantum" class="quantum-btn" onclick="console.log('🔥 Button clicked!'); calculateQuantumROI()">
@@ -2329,6 +2852,12 @@
         let aiInsightsTimer = null;
         let roiChart = null;
         let riskChart = null;
+        let aiPopupOpen = false;
+        let aiLearningMode = true;
+        let aiNotificationCount = 0;
+        let selectedScenarioType = 'comprehensive';
+        let selectedRiskTolerance = 50;
+        let selectedVolatility = 'medium';
         
         // === DEBUG FUNCTIONS ===
         window.testCalculation = function() {
@@ -2369,14 +2898,214 @@
             }
         };
 
+        // === AI POPUP SYSTEM ===
+        function openAIPopup() {
+            const modal = document.getElementById('aiPopupModal');
+            modal.classList.add('show');
+            aiPopupOpen = true;
+            
+            // Reset notification count
+            aiNotificationCount = 0;
+            updateAINotificationBadge();
+        }
+
+        function closeAIPopup() {
+            const modal = document.getElementById('aiPopupModal');
+            modal.classList.remove('show');
+            aiPopupOpen = false;
+        }
+
+        function clearAIInsights() {
+            const container = document.getElementById('aiInsightsContainer');
+            const insights = container.querySelectorAll('.ai-insight');
+            insights.forEach(insight => insight.remove());
+            
+            // Show welcome message again
+            const welcomeMessage = container.querySelector('.ai-welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.style.display = 'flex';
+            }
+            
+            // Reset AI insight history
+            if (typeof aiInsightHistory !== 'undefined') {
+                aiInsightHistory.clear();
+            }
+        }
+
+        function toggleAILearning() {
+            aiLearningMode = !aiLearningMode;
+            const icon = document.getElementById('aiLearningIcon');
+            const text = document.getElementById('aiLearningText');
+            
+            if (aiLearningMode) {
+                icon.className = 'fas fa-graduation-cap';
+                text.textContent = 'Learning Mode';
+            } else {
+                icon.className = 'fas fa-pause';
+                text.textContent = 'Paused';
+            }
+        }
+
+        function requestAIAnalysis() {
+            if (!selectedProjectTypeQuantum || !companySizeQuantum || !targetIndustryQuantum) {
+                addAIInsight('⚠️ Please complete the project configuration first to get personalized AI analysis.', 'warning');
+                return;
+            }
+            
+            addAIInsight('🧠 Initiating comprehensive AI analysis of your project configuration...', 'info');
+            
+            setTimeout(() => {
+                const scenarios = generateScenarioVariations();
+                addAIInsight(`📊 Analysis complete! Generated ${scenarios.length.toLocaleString()} scenarios. Based on ${selectedProjectTypeQuantum} in ${targetIndustryQuantum} sector, I recommend focusing on scalability and market timing.`, 'success');
+            }, 2000);
+        }
+
+        function updateAINotificationBadge() {
+            const badge = document.getElementById('aiNotificationBadge');
+            const count = document.getElementById('aiNotificationCount');
+            
+            if (aiNotificationCount > 0 && !aiPopupOpen) {
+                badge.style.display = 'flex';
+                count.textContent = aiNotificationCount;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // === SCENARIO MANAGEMENT SYSTEM ===
+        function initializeScenarioControls() {
+            // Scenario type selector
+            const scenarioSelect = document.getElementById('scenarioTypeQuantum');
+            if (scenarioSelect) {
+                scenarioSelect.addEventListener('change', function() {
+                    selectedScenarioType = this.value;
+                    updateScenarioPreview();
+                });
+            }
+            
+            // Risk tolerance slider
+            const riskSlider = document.getElementById('riskToleranceQuantum');
+            if (riskSlider) {
+                riskSlider.addEventListener('input', function() {
+                    selectedRiskTolerance = parseInt(this.value);
+                    updateScenarioPreview();
+                });
+            }
+            
+            // Volatility buttons
+            const volatilityButtons = document.querySelectorAll('.volatility-btn');
+            volatilityButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    volatilityButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedVolatility = this.dataset.volatility;
+                    updateScenarioPreview();
+                });
+            });
+        }
+
+        function updateScenarioPreview() {
+            const scenarioCount = document.getElementById('scenarioCount');
+            const analysisTime = document.getElementById('analysisTime');
+            const confidenceLevel = document.getElementById('confidenceLevel');
+            
+            const scenarios = getScenarioConfig();
+            
+            if (scenarioCount) scenarioCount.textContent = `${scenarios.count.toLocaleString()}+`;
+            if (analysisTime) analysisTime.textContent = `~${scenarios.time}s`;
+            if (confidenceLevel) confidenceLevel.textContent = `${scenarios.confidence}%`;
+        }
+
+        function getScenarioConfig() {
+            const baseConfigs = {
+                comprehensive: { count: 1000, time: 30, confidence: 95 },
+                optimistic: { count: 500, time: 15, confidence: 88 },
+                pessimistic: { count: 500, time: 15, confidence: 88 },
+                monte_carlo: { count: 2000, time: 45, confidence: 98 },
+                sensitivity: { count: 800, time: 25, confidence: 92 },
+                stress_test: { count: 600, time: 20, confidence: 85 },
+                market_conditions: { count: 1200, time: 35, confidence: 94 }
+            };
+            
+            let config = baseConfigs[selectedScenarioType] || baseConfigs.comprehensive;
+            
+            // Adjust based on risk tolerance
+            const riskMultiplier = 1 + (selectedRiskTolerance - 50) / 100;
+            config.count = Math.round(config.count * riskMultiplier);
+            
+            // Adjust based on volatility
+            const volatilityMultipliers = {
+                low: 0.7,
+                medium: 1.0,
+                high: 1.3,
+                extreme: 1.6
+            };
+            
+            const volMultiplier = volatilityMultipliers[selectedVolatility] || 1.0;
+            config.count = Math.round(config.count * volMultiplier);
+            config.time = Math.round(config.time * volMultiplier);
+            
+            return config;
+        }
+
+        function generateScenarioVariations() {
+            const config = getScenarioConfig();
+            const scenarios = [];
+            
+            // Generate base scenarios with different parameters
+            for (let i = 0; i < config.count; i++) {
+                const scenario = {
+                    id: `scenario_${i + 1}`,
+                    marketCondition: getRandomMarketCondition(),
+                    riskFactor: getRandomRiskFactor(),
+                    growthRate: getRandomGrowthRate(),
+                    timelineVariation: getRandomTimelineVariation(),
+                    costVariation: getRandomCostVariation(),
+                    revenueMultiplier: getRandomRevenueMultiplier(),
+                    confidence: Math.random() * 0.3 + 0.7 // 70-100% confidence
+                };
+                scenarios.push(scenario);
+            }
+            
+            return scenarios;
+        }
+
+        function getRandomMarketCondition() {
+            const conditions = ['bull', 'bear', 'sideways', 'volatile', 'stable'];
+            return conditions[Math.floor(Math.random() * conditions.length)];
+        }
+
+        function getRandomRiskFactor() {
+            return 0.5 + (Math.random() - 0.5) * (selectedRiskTolerance / 50);
+        }
+
+        function getRandomGrowthRate() {
+            const base = 0.15; // 15% base growth
+            const variation = (Math.random() - 0.5) * 0.3; // ±15% variation
+            return Math.max(0.01, base + variation);
+        }
+
+        function getRandomTimelineVariation() {
+            return 0.8 + Math.random() * 0.4; // 80% to 120% of original timeline
+        }
+
+        function getRandomCostVariation() {
+            return 0.9 + Math.random() * 0.2; // 90% to 110% of original cost
+        }
+
+        function getRandomRevenueMultiplier() {
+            return 0.7 + Math.random() * 0.6; // 70% to 130% of projected revenue
+        }
+
         // === QUANTUM INITIALIZATION ===
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Infinex Quantum ROI Calculator - Initializing...');
+            console.log('🚀 VoidSight Analytics - Initializing...');
             initializePhantomCanvas();
             loadProjectTypesQuantum();
             setupQuantumEventListeners();
             initializeScrollAnimations();
             activateAIInsights();
+            initializeScenarioControls();
             
             // Backup timer to ensure content is visible
             setTimeout(() => {
@@ -2503,11 +3232,10 @@
         
         function addAIInsight(message, type = 'info') {
             const now = Date.now();
-            const panel = document.getElementById('aiInsightsPanel');
-            const insights = document.getElementById('aiInsights');
+            const container = document.getElementById('aiInsightsContainer');
             
             // Prevent spam - minimum 3 seconds between insights
-            if (now - lastInsightTime < 3000 || aiInsightsPaused || !panel || !insights) {
+            if (now - lastInsightTime < 3000 || aiInsightsPaused || !container) {
                 return;
             }
             
@@ -2524,13 +3252,19 @@
             
             lastInsightTime = now;
             
+            // Hide welcome message if this is the first insight
+            const welcomeMessage = container.querySelector('.ai-welcome-message');
+            if (welcomeMessage && container.querySelectorAll('.ai-insight').length === 0) {
+                welcomeMessage.style.display = 'none';
+            }
+            
             const newInsight = document.createElement('div');
             newInsight.className = `ai-insight ${type}`;
             newInsight.textContent = message;
             newInsight.style.opacity = '0';
             newInsight.style.transform = 'translateY(20px)';
             
-            insights.appendChild(newInsight);
+            container.appendChild(newInsight);
             
             // Animate in
             setTimeout(() => {
@@ -2539,9 +3273,15 @@
                 newInsight.style.transform = 'translateY(0)';
             }, 100);
             
-            // Remove old insights (keep max 3)
-            const allInsights = insights.querySelectorAll('.ai-insight');
-            if (allInsights.length > 3) {
+            // Update notification count if popup is closed
+            if (!aiPopupOpen) {
+                aiNotificationCount++;
+                updateAINotificationBadge();
+            }
+            
+            // Remove old insights (keep max 8)
+            const allInsights = container.querySelectorAll('.ai-insight');
+            if (allInsights.length > 8) {
                 allInsights[0].style.opacity = '0';
                 allInsights[0].style.transform = 'translateY(-20px)';
                 setTimeout(() => {
@@ -2551,7 +3291,7 @@
                 }, 500);
             }
             
-            // Auto-hide after 15 seconds for non-important messages
+            // Auto-hide after 20 seconds for non-important messages
             if (type === 'info') {
                 setTimeout(() => {
                     if (newInsight.parentNode) {
@@ -3137,6 +3877,16 @@
                     console.log('💡 No ROI target provided - will use industry standards');
                 }
                 
+                // Add scenario analysis parameters
+                requestData.scenario_type = selectedScenarioType;
+                requestData.risk_tolerance = selectedRiskTolerance;
+                requestData.volatility = selectedVolatility;
+                console.log('🎲 Scenario parameters:', {
+                    type: selectedScenarioType,
+                    risk: selectedRiskTolerance,
+                    volatility: selectedVolatility
+                });
+                
                 console.log('📤 Sending quantum calculation request:', requestData);
                 
                 // Validate request data before sending
@@ -3188,6 +3938,41 @@
                 if (data.error) {
                     console.error('❌ API Error:', data);
                     throw new Error(data.validation_error?.message || data.error || 'Quantum calculation failed');
+                }
+                
+                // Perform scenario analysis in parallel
+                console.log('🎲 Starting scenario analysis...');
+                let scenarioData = null;
+                try {
+                    addAIInsight(`🔬 Generating ${getScenarioConfig().count.toLocaleString()}+ scenario variations for comprehensive analysis...`, 'info');
+                    
+                    const scenarioResponse = await fetch('/api/scenario-analysis', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+                    
+                    if (scenarioResponse.ok) {
+                        scenarioData = await scenarioResponse.json();
+                        console.log('📊 Scenario analysis completed:', scenarioData);
+                        
+                        // Add AI insight about scenario results
+                        const analysis = scenarioData.scenario_analysis;
+                        addAIInsight(`📈 Scenario analysis complete! Analyzed ${analysis.total_scenarios.toLocaleString()} scenarios. Best case: ${analysis.best_case.roi_percentage.toFixed(1)}% ROI, Worst case: ${analysis.worst_case.roi_percentage.toFixed(1)}% ROI. Success probability: ${analysis.success_probability.toFixed(1)}%`, 'success');
+                    } else {
+                        console.warn('⚠️ Scenario analysis failed, continuing with basic calculation');
+                        addAIInsight('⚠️ Advanced scenario analysis unavailable - showing basic calculation results', 'warning');
+                    }
+                } catch (scenarioError) {
+                    console.warn('⚠️ Scenario analysis error:', scenarioError);
+                    addAIInsight('⚠️ Scenario analysis encountered an issue - showing basic calculation results', 'warning');
+                }
+                
+                // Enhance main data with scenario results if available
+                if (scenarioData && scenarioData.scenario_analysis) {
+                    data.scenario_analysis = scenarioData.scenario_analysis;
                 }
                 
                 // Display enhanced results

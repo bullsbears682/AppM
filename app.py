@@ -941,6 +941,99 @@ def compare_scenarios():
         'comparison': comparison
     })
 
+@app.route('/api/scenario-analysis', methods=['POST'])
+@rate_limit(calculation_limiter, "Too many scenario analyses.")
+@handle_validation_errors
+def calculate_comprehensive_scenario_analysis():
+    """Calculate comprehensive scenario analysis with thousands of variations"""
+    
+    data = request.get_json()
+    if not data:
+        raise ValidationError("No data provided", code="NO_DATA")
+
+    # Validate required fields (reuse existing validation)
+    validated_data = APIValidator.validate_roi_calculation_request(data)
+    
+    # Extract scenario-specific parameters
+    scenario_type = data.get('scenario_type', 'comprehensive')
+    risk_tolerance = data.get('risk_tolerance', 50)
+    volatility = data.get('volatility', 'medium')
+    
+    # Validate scenario parameters
+    if scenario_type not in ['comprehensive', 'optimistic', 'pessimistic', 'monte_carlo', 'sensitivity', 'stress_test', 'market_conditions']:
+        raise ValidationError("Invalid scenario type", field="scenario_type")
+    
+    if not isinstance(risk_tolerance, (int, float)) or not (0 <= risk_tolerance <= 100):
+        raise ValidationError("Risk tolerance must be between 0 and 100", field="risk_tolerance")
+    
+    if volatility not in ['low', 'medium', 'high', 'extreme']:
+        raise ValidationError("Invalid volatility level", field="volatility")
+    
+    # Initialize calculator
+    calculator = ROICalculator()
+    
+    # Calculate scenario analysis
+    scenario_analysis = calculator.calculate_scenario_analysis(
+        project_type=validated_data['project_type'],
+        company_size=validated_data['company_size'],
+        industry=validated_data['target_industry'],
+        scenario_type=scenario_type,
+        risk_tolerance=int(risk_tolerance),
+        volatility=volatility,
+        investment=Decimal(str(validated_data['custom_investment'])) if validated_data.get('custom_investment') else None,
+        timeline=validated_data.get('custom_timeline'),
+        target_roi=validated_data.get('target_roi')
+    )
+    
+    # Convert to JSON-serializable format
+    def scenario_to_dict(scenario):
+        return {
+            'scenario_id': scenario.scenario_id,
+            'roi_percentage': float(scenario.roi_percentage),
+            'npv': float(scenario.npv),
+            'payback_months': scenario.payback_months,
+            'risk_score': float(scenario.risk_score),
+            'market_condition': scenario.market_condition,
+            'confidence': float(scenario.confidence),
+            'parameters': scenario.parameters
+        }
+    
+    analysis_dict = {
+        'total_scenarios': scenario_analysis.total_scenarios,
+        'best_case': scenario_to_dict(scenario_analysis.best_case),
+        'worst_case': scenario_to_dict(scenario_analysis.worst_case),
+        'most_likely': scenario_to_dict(scenario_analysis.most_likely),
+        'average_roi': float(scenario_analysis.average_roi),
+        'median_roi': float(scenario_analysis.median_roi),
+        'success_probability': float(scenario_analysis.success_probability),
+        'risk_distribution': scenario_analysis.risk_distribution,
+        'scenario_breakdown': [scenario_to_dict(s) for s in scenario_analysis.scenario_breakdown]
+    }
+    
+    calculation_id = f"scenario_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    
+    return jsonify({
+        'success': True,
+        'calculation_id': calculation_id,
+        'scenario_analysis': analysis_dict,
+        'calculation_metadata': {
+            'calculation_date': datetime.now().isoformat(),
+            'calculator_version': '2.0.0',
+            'methodology': f'Advanced Scenario Analysis - {scenario_type.title()}'
+        },
+        'input_parameters': {
+            'project_type': validated_data['project_type'],
+            'company_size': validated_data['company_size'],
+            'target_industry': validated_data['target_industry'],
+            'scenario_type': scenario_type,
+            'risk_tolerance': risk_tolerance,
+            'volatility': volatility,
+            'custom_investment': str(validated_data['custom_investment']) if validated_data.get('custom_investment') else None,
+            'custom_timeline': validated_data.get('custom_timeline'),
+            'target_roi': validated_data.get('target_roi')
+        }
+    })
+
 @app.route('/api/what-if/investment', methods=['POST'])
 @rate_limit(calculation_limiter, "Too many what-if analyses.")
 @handle_validation_errors
