@@ -2830,6 +2830,9 @@
             <button type="button" style="margin-left: 0.5rem; padding: 0.75rem 1rem; background: #14B8A6; color: white; border: none; border-radius: 8px; cursor: pointer;" onclick="testVolatilitySystem()">
                 🎯 Test Volatility
             </button>
+            <button type="button" style="margin-left: 0.5rem; padding: 0.75rem 1rem; background: #F59E0B; color: white; border: none; border-radius: 8px; cursor: pointer;" onclick="testAlert()">
+                ⚡ Simple Test
+            </button>
         </div>
 
         <!-- Results Quantum Dashboard -->
@@ -2866,6 +2869,10 @@
     </div>
 
     <script>
+        // === IMMEDIATE TEST ===
+        alert('🚀 JavaScript is loading!');
+        console.log('🚀 JavaScript is working!');
+        
         // === QUANTUM GLOBAL VARIABLES ===
         let selectedProjectTypeQuantum = null;
         let isCalculatingQuantum = false;
@@ -2883,6 +2890,12 @@
         let lastInsightTime = 0;
         let aiInsightsPaused = false;
 
+        // === SUPER SIMPLE TEST ===
+        function testAlert() {
+            alert('TEST WORKS!');
+            console.log('TEST WORKS!');
+        }
+        
         // === SIMPLE VOLATILITY FUNCTION ===
         function changeVolatility(volatility, button) {
             console.log('🔥 DIRECT: Volatility changed to:', volatility);
