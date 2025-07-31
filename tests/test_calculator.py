@@ -32,9 +32,9 @@ class TestROICalculator(unittest.TestCase):
         
         # Standard test data
         self.test_data = {
-            'project_type': 'ecommerce_platform',
+            'project_type': 'product_development',
             'company_size': 'medium',
-            'industry': 'retail',
+            'industry': 'ecommerce',
             'investment_amount': 50000,
             'timeline_months': 12,
             'risk_tolerance': 60,
@@ -45,7 +45,7 @@ class TestROICalculator(unittest.TestCase):
     def test_basic_roi_calculation(self):
         """Test basic ROI calculation functionality"""
         result = self.calculator.calculate_enhanced_roi_projection(
-            investment=self.test_data['investment_amount'],
+            investment=Decimal(str(self.test_data['investment_amount'])),
             industry=self.test_data['industry'],
             company_size=self.test_data['company_size'],
             project_type=self.test_data['project_type'],
@@ -53,14 +53,14 @@ class TestROICalculator(unittest.TestCase):
             currency=self.test_data['currency']
         )
         
-        # Assert result structure
-        self.assertIsInstance(result, dict)
-        self.assertIn('roi_percentage', result)
-        self.assertIn('total_investment', result)
+        # Assert result structure - ROIResult dataclass
+        self.assertIsInstance(result, ROIResult)
+        self.assertTrue(hasattr(result, 'roi_percentage'))
+        self.assertTrue(hasattr(result, 'total_investment'))
         
         # Assert reasonable values
-        self.assertGreater(result['total_investment'], 0)
-        self.assertIsInstance(result['roi_percentage'], (int, float, Decimal))
+        self.assertGreater(result.total_investment, 0)
+        self.assertIsInstance(result.roi_percentage, Decimal)
     
     @unittest.skipIf(EnhancedROICalculator is None, "EnhancedROICalculator not available")
     def test_industry_specific_calculations(self):
@@ -69,10 +69,15 @@ class TestROICalculator(unittest.TestCase):
         results = {}
         
         for industry in industries:
-            test_data = self.test_data.copy()
-            test_data['industry'] = industry
-            result = self.calculator.calculate_roi(**test_data)
-            results[industry] = result['roi_percentage']
+            result = self.calculator.calculate_enhanced_roi_projection(
+                investment=Decimal(str(self.test_data['investment_amount'])),
+                industry=industry,
+                company_size=self.test_data['company_size'],
+                project_type=self.test_data['project_type'],
+                timeline_months=self.test_data['timeline_months'],
+                currency=self.test_data['currency']
+            )
+            results[industry] = result.roi_percentage
         
         # Industries should produce different ROI values
         unique_rois = set(results.values())
@@ -85,10 +90,15 @@ class TestROICalculator(unittest.TestCase):
         results = {}
         
         for size in sizes:
-            test_data = self.test_data.copy()
-            test_data['company_size'] = size
-            result = self.calculator.calculate_roi(**test_data)
-            results[size] = result['roi_percentage']
+            result = self.calculator.calculate_enhanced_roi_projection(
+                investment=Decimal(str(self.test_data['investment_amount'])),
+                industry=self.test_data['industry'],
+                company_size=size,
+                project_type=self.test_data['project_type'],
+                timeline_months=self.test_data['timeline_months'],
+                currency=self.test_data['currency']
+            )
+            results[size] = result.roi_percentage
         
         # Company sizes should produce different results
         unique_rois = set(results.values())
@@ -99,17 +109,29 @@ class TestROICalculator(unittest.TestCase):
         if not EnhancedROICalculator:
             self.skipTest("EnhancedROICalculator not available")
         
-        # Test zero investment
-        with self.assertRaises((ValidationError, ValueError, ZeroDivisionError)):
-            test_data = self.test_data.copy()
-            test_data['investment_amount'] = 0
-            self.calculator.calculate_roi(**test_data)
+        # Test zero investment (should use estimated project cost)
+        result = self.calculator.calculate_enhanced_roi_projection(
+            investment=Decimal('0'),
+            industry=self.test_data['industry'],
+            company_size=self.test_data['company_size'],
+            project_type=self.test_data['project_type'],
+            timeline_months=self.test_data['timeline_months'],
+            currency=self.test_data['currency']
+        )
+        # Zero investment should trigger automatic cost estimation
+        self.assertGreater(result.total_investment, 0)
+        self.assertIsInstance(result, ROIResult)
         
         # Test negative investment
-        with self.assertRaises((ValidationError, ValueError)):
-            test_data = self.test_data.copy()
-            test_data['investment_amount'] = -1000
-            self.calculator.calculate_roi(**test_data)
+        with self.assertRaises(ValidationError):
+            self.calculator.calculate_enhanced_roi_projection(
+                investment=Decimal('-1000'),
+                industry=self.test_data['industry'],
+                company_size=self.test_data['company_size'],
+                project_type=self.test_data['project_type'],
+                timeline_months=self.test_data['timeline_months'],
+                currency=self.test_data['currency']
+            )
     
     def test_currency_conversion(self):
         """Test currency conversion functionality"""
@@ -173,25 +195,22 @@ class TestPerformanceBenchmarks(unittest.TestCase):
         import time
         
         calculator = EnhancedROICalculator()
-        test_data = {
-            'project_type': 'ecommerce_platform',
-            'company_size': 'medium',
-            'industry': 'retail',
-            'investment_amount': 50000,
-            'timeline_months': 12,
-            'risk_tolerance': 60,
-            'currency': 'USD'
-        }
         
         start_time = time.time()
-        result = calculator.calculate_roi(**test_data)
+        result = calculator.calculate_enhanced_roi_projection(
+            investment=Decimal('50000'),
+            industry='ecommerce',
+            company_size='medium',
+            project_type='product_development',
+            timeline_months=12,
+            currency='USD'
+        )
         end_time = time.time()
         
-        calculation_time = end_time - start_time
-        
-        # Calculation should complete in under 2 seconds
-        self.assertLess(calculation_time, 2.0, f"Calculation took {calculation_time:.2f}s - too slow!")
-        self.assertIsNotNone(result)
+        # Should complete within 2 seconds
+        execution_time = end_time - start_time
+        self.assertLess(execution_time, 2.0, f"Calculation took too long: {execution_time}s")
+        self.assertIsInstance(result, ROIResult)
     
     @unittest.skipIf(EnhancedROICalculator is None, "EnhancedROICalculator not available")
     def test_multiple_calculations_performance(self):
@@ -199,29 +218,28 @@ class TestPerformanceBenchmarks(unittest.TestCase):
         import time
         
         calculator = EnhancedROICalculator()
-        test_data = {
-            'project_type': 'ecommerce_platform',
-            'company_size': 'medium',
-            'industry': 'retail',
-            'investment_amount': 50000,
-            'timeline_months': 12,
-            'risk_tolerance': 60,
-            'currency': 'USD'
-        }
         
         num_calculations = 10
         start_time = time.time()
         
         for i in range(num_calculations):
-            result = calculator.calculate_roi(**test_data)
-            self.assertIsNotNone(result)
+            result = calculator.calculate_enhanced_roi_projection(
+                investment=Decimal('50000'),
+                industry='ecommerce',
+                company_size='medium',
+                project_type='product_development',
+                timeline_months=12,
+                currency='USD'
+            )
+            self.assertIsInstance(result, ROIResult)
         
         end_time = time.time()
-        total_time = end_time - start_time
-        avg_time = total_time / num_calculations
         
-        # Average calculation should be under 1 second
-        self.assertLess(avg_time, 1.0, f"Average calculation time {avg_time:.2f}s too slow!")
+        # Should complete 10 calculations within 5 seconds
+        total_time = end_time - start_time
+        self.assertLess(total_time, 5.0, f"Multiple calculations took too long: {total_time}s")
+        avg_time = total_time / num_calculations
+        self.assertLess(avg_time, 0.5, f"Average calculation time too high: {avg_time}s")
 
 
 if __name__ == '__main__':

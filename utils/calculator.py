@@ -198,13 +198,18 @@ class EnhancedROICalculator:
         """Calculate enhanced ROI with Monte Carlo simulation and advanced metrics"""
         
         try:
+            # Validate inputs
+            if investment is not None and investment < 0:
+                raise ValidationError("Investment amount cannot be negative")
+            
             industry_config = Config.INDUSTRIES[industry]
             project_config = Config.PROJECT_TYPES[project_type]
             company_config = Config.COMPANY_SIZES[company_size]
             
             # Handle optional investment: use estimated project cost if not provided
             if investment is None or investment == 0:
-                investment = self.calculate_project_cost(company_size, project_type, industry, timeline_months)
+                cost_result = self.calculate_project_cost(company_size, project_type, industry, currency, custom_timeline=timeline_months)
+                investment = cost_result['total_cost'] if isinstance(cost_result, dict) else cost_result
                 logger.info(f"Using estimated project cost: {investment}")
             
             # Real business revenue multipliers (2024 industry data)
@@ -253,6 +258,16 @@ class EnhancedROICalculator:
             revenue_multiplier = revenue_multipliers.get(project_type, Decimal('4.0'))
             cost_overrun = cost_overruns.get(project_type, Decimal('1.15'))
             operating_rate = operating_rates.get(project_type, Decimal('0.08'))
+            
+            # Apply industry-specific factors
+            industry_growth_factor = Decimal(str(industry_config['growth_rate']))
+            industry_risk_factor = Decimal(str(industry_config['risk_factor']))
+            
+            # Adjust revenue multiplier based on industry growth
+            revenue_multiplier = revenue_multiplier * (Decimal('1.0') + industry_growth_factor)
+            
+            # Adjust cost overrun based on industry risk
+            cost_overrun = cost_overrun * industry_risk_factor
             
             # Step 1: Calculate actual project cost with realistic overruns
             actual_cost = investment * cost_overrun
@@ -318,7 +333,7 @@ class EnhancedROICalculator:
                 confidence_interval=confidence_interval,
                 sensitivity_analysis=sensitivity_analysis,
                 currency=currency,
-                calculation_date=datetime.utcnow()
+                calculation_date=datetime.now()
             )
             
         except Exception as e:

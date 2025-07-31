@@ -18,6 +18,7 @@ class CurrencyConfig:
     code: str
     precision: int
     format_pattern: str
+    rate: float  # Exchange rate relative to USD (1.0 for USD)
     
     def format_amount(self, amount: float) -> str:
         """Format amount according to currency rules"""
@@ -105,20 +106,20 @@ class BaseConfig:
     
     # Enhanced Currency Support
     CURRENCIES: Dict[str, CurrencyConfig] = {
-        'USD': CurrencyConfig('$', 'US Dollar', 'USD', 2, '${:,.2f}'),
-        'EUR': CurrencyConfig('€', 'Euro', 'EUR', 2, '€{:,.2f}'),
-        'GBP': CurrencyConfig('£', 'British Pound', 'GBP', 2, '£{:,.2f}'),
-        'JPY': CurrencyConfig('¥', 'Japanese Yen', 'JPY', 0, '¥{:,}'),
-        'CAD': CurrencyConfig('C$', 'Canadian Dollar', 'CAD', 2, 'C${:,.2f}'),
-        'AUD': CurrencyConfig('A$', 'Australian Dollar', 'AUD', 2, 'A${:,.2f}'),
-        'CHF': CurrencyConfig('Fr', 'Swiss Franc', 'CHF', 2, 'Fr{:,.2f}'),
-        'CNY': CurrencyConfig('¥', 'Chinese Yuan', 'CNY', 2, '¥{:,.2f}'),
-        'INR': CurrencyConfig('₹', 'Indian Rupee', 'INR', 2, '₹{:,.2f}'),
-        'KRW': CurrencyConfig('₩', 'South Korean Won', 'KRW', 0, '₩{:,}'),
-        'SGD': CurrencyConfig('S$', 'Singapore Dollar', 'SGD', 2, 'S${:,.2f}'),
-        'HKD': CurrencyConfig('HK$', 'Hong Kong Dollar', 'HKD', 2, 'HK${:,.2f}'),
-        'BTC': CurrencyConfig('₿', 'Bitcoin', 'BTC', 8, '₿{:.8f}'),
-        'ETH': CurrencyConfig('Ξ', 'Ethereum', 'ETH', 6, 'Ξ{:.6f}'),
+        'USD': CurrencyConfig('$', 'US Dollar', 'USD', 2, '${:,.2f}', 1.0),
+        'EUR': CurrencyConfig('€', 'Euro', 'EUR', 2, '€{:,.2f}', 1.05),
+        'GBP': CurrencyConfig('£', 'British Pound', 'GBP', 2, '£{:,.2f}', 1.25),
+        'JPY': CurrencyConfig('¥', 'Japanese Yen', 'JPY', 0, '¥{:,}', 0.007),
+        'CAD': CurrencyConfig('C$', 'Canadian Dollar', 'CAD', 2, 'C${:,.2f}', 0.75),
+        'AUD': CurrencyConfig('A$', 'Australian Dollar', 'AUD', 2, 'A${:,.2f}', 0.65),
+        'CHF': CurrencyConfig('Fr', 'Swiss Franc', 'CHF', 2, 'Fr{:,.2f}', 1.10),
+        'CNY': CurrencyConfig('¥', 'Chinese Yuan', 'CNY', 2, '¥{:,.2f}', 0.15),
+        'INR': CurrencyConfig('₹', 'Indian Rupee', 'INR', 2, '₹{:,.2f}', 0.013),
+        'KRW': CurrencyConfig('₩', 'South Korean Won', 'KRW', 0, '₩{:,}', 0.0008),
+        'SGD': CurrencyConfig('S$', 'Singapore Dollar', 'SGD', 2, 'S${:,.2f}', 0.70),
+        'HKD': CurrencyConfig('HK$', 'Hong Kong Dollar', 'HKD', 2, 'HK${:,.2f}', 0.13),
+        'BTC': CurrencyConfig('₿', 'Bitcoin', 'BTC', 8, '₿{:.8f}', 30000.0),
+        'ETH': CurrencyConfig('Ξ', 'Ethereum', 'ETH', 6, 'Ξ{:.6f}', 2000.0),
     }
     
     # Industry Configuration with Enhanced Metadata
