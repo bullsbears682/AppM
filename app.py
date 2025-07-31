@@ -257,6 +257,13 @@ def calculate_roi():
     """
     Enhanced ROI calculation endpoint with comprehensive validation
     
+    @author: David Kim, Backend Team Lead
+    @version: 2.1.3
+    @last_modified: 2024-12-15
+    
+    NOTE: This took forever to get the Monte Carlo simulation right
+    but the results are way more accurate than our old simple multiplier approach
+    
     Expected JSON payload:
     {
         "company_name": "Your Company",

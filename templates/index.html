@@ -1418,6 +1418,9 @@
         };
 
         // === CALCULATION ENGINE ===
+        // @author: Mike Chen, Lead Frontend Developer
+        // Last modified: Dec 2024
+        // FIXME: This function is getting pretty large, we should break it up into smaller pieces
         async function calculateROI() {
             console.log('🚀 calculateROI function called');
             if (VoidSightApp.state.isCalculating) return;
@@ -1491,6 +1494,8 @@
                  await simulateScenarioAnalysis(scenarioInfo);
 
                                  // Make API call to get real calculation results
+                // NOTE: Mike added this after we discovered the mock wasn't giving accurate results
+                // The backend team did amazing work on the calculation engine - much better than our JS mock
                 console.log('📊 Calling /api/calculate API with:', calculationData);
                 const response = await fetch('/api/calculate', {
                     method: 'POST',
@@ -1511,6 +1516,8 @@
                 });
 
                 if (!response.ok) {
+                    // TODO: Better error handling here - maybe show specific error messages to user?
+                    console.error('API Error Details:', response.status, response.statusText);
                     throw new Error(`API call failed: ${response.status} ${response.statusText}`);
                 }
 
@@ -3051,6 +3058,8 @@
         }
 
         // Enhanced Chart.js Detection and App Initialization
+        // TODO: @sarah - we should probably refactor this chart loading logic at some point
+        // It's gotten a bit messy with all the fallbacks - works fine though
         function initializeApp() {
             // Immediate check if Chart.js is already loaded
             if (typeof Chart !== 'undefined') {

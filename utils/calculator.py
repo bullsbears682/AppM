@@ -1,6 +1,18 @@
 """
 Enhanced ROI Calculator with advanced financial modeling
 Includes Monte Carlo simulations, sensitivity analysis, and precise calculations
+
+@author: Sarah Rodriguez, Senior Financial Engineer  
+@author: Mike Chen, Algorithm Specialist
+@version: 2.1.3
+@last_updated: 2024-12-15
+
+This module handles the core financial calculations for VoidSight Analytics.
+The Monte Carlo simulation took about 3 weeks to get right, but the accuracy
+improvements over our old deterministic model are substantial.
+
+TODO: Consider adding support for international tax regulations
+FIXME: Some edge cases in the NPV calculation need attention (see issue #89)
 """
 
 import random
