@@ -1,0 +1,208 @@
+<!-- User Agreement Modal - Required Legal Acknowledgment -->
+<div id="userAgreementModal" class="modal" style="display: block; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8);">
+    <div class="modal-content" style="background: var(--glass-bg); margin: 2% auto; padding: 30px; border-radius: var(--radius-lg); width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--glass-border);">
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <i class="fas fa-shield-alt" style="font-size: 3rem; color: var(--warning-400); margin-bottom: 15px;"></i>
+            <h2 style="color: var(--primary-200); margin: 0;">Important Legal Notice</h2>
+            <p style="color: var(--secondary-300); margin: 10px 0;">Please read and acknowledge before using VoidSight Analytics</p>
+        </div>
+
+        <div style="background: var(--warning-bg); border: 1px solid var(--warning-400); border-radius: var(--radius-md); padding: 20px; margin-bottom: 20px;">
+            <h3 style="color: var(--warning-200); margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-exclamation-triangle"></i>
+                Educational Tool Only
+            </h3>
+            <p style="color: var(--warning-100); margin: 0; line-height: 1.6;">
+                VoidSight Analytics provides <strong>educational financial modeling tools only</strong>. 
+                All calculations and projections are estimates for learning purposes and should 
+                <strong>NOT</strong> be considered professional financial advice.
+            </p>
+        </div>
+
+        <div style="background: var(--glass-bg-dark); border-radius: var(--radius-md); padding: 20px; margin-bottom: 20px;">
+            <h4 style="color: var(--error-300); margin: 0 0 15px 0;">⚠️ Key Disclaimers</h4>
+            <ul style="color: var(--secondary-200); margin: 0; padding-left: 20px; line-height: 1.8;">
+                <li><strong>Not Financial Advice:</strong> Results are educational estimates only</li>
+                <li><strong>No Guarantees:</strong> Actual outcomes may vary significantly</li>
+                <li><strong>Professional Consultation Required:</strong> Consult qualified advisors for business decisions</li>
+                <li><strong>Assumption of Risk:</strong> You assume all risks of your business choices</li>
+                <li><strong>Liability Limitation:</strong> Our maximum liability is $100 USD total</li>
+            </ul>
+        </div>
+
+        <div style="background: var(--info-bg); border: 1px solid var(--info-400); border-radius: var(--radius-md); padding: 15px; margin-bottom: 25px;">
+            <p style="color: var(--info-100); margin: 0; font-size: 0.9rem; text-align: center;">
+                <i class="fas fa-info-circle"></i>
+                <strong>Always consult with qualified financial professionals before making significant business or investment decisions.</strong>
+            </p>
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <h4 style="color: var(--primary-300); margin: 0 0 15px 0;">Required Acknowledgments</h4>
+            
+            <label style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; cursor: pointer; color: var(--secondary-200); line-height: 1.5;">
+                <input type="checkbox" id="acknowledge1" style="margin-top: 3px;">
+                <span>I understand this is an educational tool only and not professional financial advice</span>
+            </label>
+            
+            <label style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; cursor: pointer; color: var(--secondary-200); line-height: 1.5;">
+                <input type="checkbox" id="acknowledge2" style="margin-top: 3px;">
+                <span>I understand all calculations are estimates and actual results may vary significantly</span>
+            </label>
+            
+            <label style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; cursor: pointer; color: var(--secondary-200); line-height: 1.5;">
+                <input type="checkbox" id="acknowledge3" style="margin-top: 3px;">
+                <span>I will consult qualified professionals before making business or investment decisions</span>
+            </label>
+            
+            <label style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; cursor: pointer; color: var(--secondary-200); line-height: 1.5;">
+                <input type="checkbox" id="acknowledge4" style="margin-top: 3px;">
+                <span>I assume all risks associated with my business decisions and agree to the liability limitations</span>
+            </label>
+            
+            <label style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px; cursor: pointer; color: var(--secondary-200); line-height: 1.5;">
+                <input type="checkbox" id="acknowledge5" style="margin-top: 3px;">
+                <span>I have read and agree to the <a href="#" onclick="openTerms()" style="color: var(--primary-400);">Terms of Service</a> and <a href="#" onclick="openPrivacy()" style="color: var(--primary-400);">Privacy Policy</a></span>
+            </label>
+        </div>
+
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button id="declineBtn" onclick="declineAgreement()" style="background: var(--error-600); color: white; border: none; padding: 12px 30px; border-radius: var(--radius-md); cursor: pointer; font-size: 1rem;">
+                <i class="fas fa-times"></i> Decline
+            </button>
+            <button id="agreeBtn" onclick="acceptAgreement()" disabled style="background: var(--success-600); color: white; border: none; padding: 12px 30px; border-radius: var(--radius-md); cursor: not-allowed; font-size: 1rem; opacity: 0.5;">
+                <i class="fas fa-check"></i> I Agree & Continue
+            </button>
+        </div>
+
+        <div style="margin-top: 20px; text-align: center;">
+            <small style="color: var(--secondary-400);">
+                By clicking "I Agree & Continue", you acknowledge that you have read, understood, and agree to all terms and disclaimers.
+            </small>
+        </div>
+    </div>
+</div>
+
+<script>
+// User Agreement Modal Logic
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if user has already agreed (stored in localStorage)
+    const hasAgreed = localStorage.getItem('voidsight_user_agreement');
+    const agreementVersion = localStorage.getItem('voidsight_agreement_version');
+    const currentVersion = '2024-12-15'; // Update this when terms change
+    
+    if (hasAgreed === 'true' && agreementVersion === currentVersion) {
+        document.getElementById('userAgreementModal').style.display = 'none';
+    } else {
+        // Show modal and disable main app functionality
+        document.getElementById('userAgreementModal').style.display = 'block';
+        disableMainApp();
+    }
+    
+    // Monitor checkbox changes
+    const checkboxes = document.querySelectorAll('#userAgreementModal input[type="checkbox"]');
+    const agreeBtn = document.getElementById('agreeBtn');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            agreeBtn.disabled = !allChecked;
+            agreeBtn.style.opacity = allChecked ? '1' : '0.5';
+            agreeBtn.style.cursor = allChecked ? 'pointer' : 'not-allowed';
+        });
+    });
+});
+
+function acceptAgreement() {
+    const checkboxes = document.querySelectorAll('#userAgreementModal input[type="checkbox"]');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    
+    if (!allChecked) {
+        alert('Please check all required acknowledgments before continuing.');
+        return;
+    }
+    
+    // Store agreement in localStorage
+    localStorage.setItem('voidsight_user_agreement', 'true');
+    localStorage.setItem('voidsight_agreement_version', '2024-12-15');
+    localStorage.setItem('voidsight_agreement_timestamp', new Date().toISOString());
+    
+    // Hide modal and enable app
+    document.getElementById('userAgreementModal').style.display = 'none';
+    enableMainApp();
+    
+    // Log agreement for analytics (anonymous)
+    console.log('User agreement accepted at:', new Date().toISOString());
+}
+
+function declineAgreement() {
+    alert('You must agree to the terms to use VoidSight Analytics. Redirecting to our website for more information.');
+    // Redirect to a landing page or close the application
+    window.location.href = 'https://voidsight.com/about';
+}
+
+function disableMainApp() {
+    // Disable all interactive elements
+    const interactiveElements = document.querySelectorAll('button, input, select, textarea');
+    interactiveElements.forEach(element => {
+        if (!element.closest('#userAgreementModal')) {
+            element.disabled = true;
+            element.style.opacity = '0.5';
+        }
+    });
+}
+
+function enableMainApp() {
+    // Re-enable all interactive elements
+    const interactiveElements = document.querySelectorAll('button, input, select, textarea');
+    interactiveElements.forEach(element => {
+        if (!element.closest('#userAgreementModal')) {
+            element.disabled = false;
+            element.style.opacity = '1';
+        }
+    });
+}
+
+function openTerms() {
+    window.open('TERMS_OF_SERVICE.md', '_blank');
+}
+
+function openPrivacy() {
+    window.open('PRIVACY_POLICY.md', '_blank');
+}
+
+// Reset agreement for testing (remove in production)
+function resetAgreement() {
+    localStorage.removeItem('voidsight_user_agreement');
+    localStorage.removeItem('voidsight_agreement_version');
+    localStorage.removeItem('voidsight_agreement_timestamp');
+    location.reload();
+}
+</script>
+
+<style>
+/* Modal Styles */
+#userAgreementModal {
+    font-family: 'Inter', sans-serif;
+}
+
+#userAgreementModal input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary-500);
+}
+
+#userAgreementModal a {
+    text-decoration: underline;
+}
+
+#userAgreementModal a:hover {
+    color: var(--primary-300);
+}
+
+/* Ensure modal appears above everything */
+#userAgreementModal {
+    z-index: 99999 !important;
+}
+</style>
