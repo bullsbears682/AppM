@@ -1490,10 +1490,67 @@
                  // Simulate progressive scenario analysis
                  await simulateScenarioAnalysis(scenarioInfo);
 
-                 // Generate comprehensive scenario results
-                 console.log('📊 Calling generateComprehensiveResults with:', calculationData, scenarioInfo);
-                 const results = generateComprehensiveResults(calculationData, scenarioInfo);
-                 console.log('📈 Generated results:', results);
+                                 // Make API call to get real calculation results
+                console.log('📊 Calling /api/calculate API with:', calculationData);
+                const response = await fetch('/api/calculate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        company_name: 'User Company', // Default name
+                        company_size: calculationData.company_size,
+                        current_industry: calculationData.target_industry,
+                        project_type: calculationData.project_type,
+                        target_industry: calculationData.target_industry,
+                        currency: 'USD',
+                        custom_investment: calculationData.custom_investment ? parseFloat(calculationData.custom_investment) : null,
+                        custom_timeline: calculationData.custom_timeline ? parseInt(calculationData.custom_timeline) : null,
+                        target_roi: calculationData.target_roi ? parseFloat(calculationData.target_roi) : null
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+                }
+
+                const apiResult = await response.json();
+                console.log('📈 API response:', apiResult);
+                
+                // Transform API response to match frontend expectations
+                const results = {
+                    roi_percentage: apiResult.roi_projection.roi_percentage,
+                    total_investment: apiResult.roi_projection.total_investment,
+                    projected_revenue: apiResult.roi_projection.projected_revenue,
+                    net_profit: apiResult.roi_projection.net_profit,
+                    payback_period_months: apiResult.roi_projection.payback_period_months,
+                    timeline_months: apiResult.cost_analysis.timeline_months,
+                    risk_score: apiResult.roi_projection.risk_score,
+                    confidence_level: 95,
+                    project_name: VoidSightApp.state.selectedProject.name,
+                    
+                    // Create scenario analysis from API data for chart compatibility
+                    scenario_analysis: {
+                        most_likely: {
+                            roi_percentage: apiResult.roi_projection.roi_percentage,
+                            projected_revenue: apiResult.roi_projection.projected_revenue,
+                            net_profit: apiResult.roi_projection.net_profit,
+                            total_investment: apiResult.roi_projection.total_investment
+                        },
+                        best_case: {
+                            roi_percentage: Math.round(apiResult.roi_projection.roi_percentage * 1.3),
+                            projected_revenue: Math.round(apiResult.roi_projection.projected_revenue * 1.3),
+                            net_profit: Math.round(apiResult.roi_projection.net_profit * 1.3),
+                            total_investment: apiResult.roi_projection.total_investment
+                        },
+                        worst_case: {
+                            roi_percentage: Math.round(apiResult.roi_projection.roi_percentage * 0.7),
+                            projected_revenue: Math.round(apiResult.roi_projection.projected_revenue * 0.7),
+                            net_profit: Math.round(apiResult.roi_projection.net_profit * 0.7),
+                            total_investment: apiResult.roi_projection.total_investment
+                        }
+                    }
+                };
                 
                 // Display results
                 displayResults(results);
@@ -2330,24 +2387,25 @@
                 return;
             }
 
-            // Enhanced Chart.js availability check
+            // Enhanced Chart.js availability check with graceful fallback
             if (typeof Chart === 'undefined' || !window.Chart) {
-                console.warn('Chart.js not loaded, attempting to display results without chart');
+                console.log('Chart.js not loaded yet, showing data table and attempting chart load');
                 mobileLog('⚠️ Chart.js not available - displaying data in table format');
                 
-                // Try to load Chart.js one more time if it failed initially
+                // Always show the data table first (user sees results immediately)
+                displayResultsWithoutChart(results);
+                
+                // Try to load Chart.js in background and update display if successful
                 if (chartJsLoadAttempts === 0) {
-                    mobileLog('🔄 Attempting to reload Chart.js...');
+                    mobileLog('🔄 Attempting to load Chart.js in background...');
                     loadChartJsFallback();
                     setTimeout(() => {
                         if (typeof Chart !== 'undefined') {
+                            // Replace the table with chart if Chart.js loads successfully
+                            mobileLog('✅ Chart.js loaded! Updating display with interactive chart...');
                             createEnhancedROIChart(results);
-                        } else {
-                            displayResultsWithoutChart(results);
                         }
-                    }, 1000);
-                } else {
-                    displayResultsWithoutChart(results);
+                    }, 2000);
                 }
                 return;
             }
@@ -2985,12 +3043,7 @@
                             <div style="color: var(--secondary-300); font-size: 0.9rem;">Payback Period</div>
                         </div>
                     </div>
-                    <div style="margin-top: var(--space-3); padding: var(--space-2); background: var(--warning-bg); border-radius: var(--radius-sm); border-left: 4px solid var(--warning-400);">
-                        <small style="color: var(--warning-300);">
-                            <i class="fas fa-info-circle"></i>
-                            Interactive charts are temporarily unavailable. All calculations are accurate and complete.
-                        </small>
-                    </div>
+                    <!-- Chart loading notification removed - calculations work fine with or without charts -->
                 </div>
             `;
             
