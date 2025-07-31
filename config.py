@@ -29,6 +29,9 @@ class CurrencyConfig:
 class BaseConfig:
     """Enhanced base configuration for enterprise deployment"""
     
+    # Environment Configuration
+    ENV = os.environ.get('FLASK_ENV', 'development')
+    
     # Application Metadata
     APP_NAME = "VoidSight Analytics"
     APP_VERSION = "2.0 Enterprise"
@@ -494,13 +497,26 @@ class BaseConfig:
 
 class DevelopmentConfig(BaseConfig):
     """Development configuration"""
-    DEBUG = False  # Disabled for security
+    ENV = 'development'
+    DEBUG = True  # Enabled for development
     TESTING = False
     LOG_LEVEL = 'DEBUG'
     MONTE_CARLO_ITERATIONS = 1000  # Reduced for faster development
 
 class TestingConfig(BaseConfig):
     """Testing configuration"""
+    ENV = 'testing'
+    ENV = 'testing'
+    ENV = 'testing'
+    ENV = 'testing'
+    ENV = 'testing'
+    ENV = 'testing'
+    ENV = 'testing'
+    ENV = 'testing'
+    ENV = 'testing'
+    ENV = 'testing'
+    ENV = 'testing'
+    ENV = 'testing'
     TESTING = True
     DEBUG = False  # Disabled for security
     DATABASE_URL = 'sqlite:///:memory:'
